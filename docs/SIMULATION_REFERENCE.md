@@ -14,6 +14,7 @@ The Python reference model is an executable contract for early systems design. I
 - Hungry herbivores consume matching resources; thirsty individuals consume freshwater.
 - Cold-sensitive species seek geothermal pools, and pool occupancy is capacity-limited.
 - Seeded simulation, JSON snapshot / restore and offline catch-up are deterministic in tested scenarios.
+- A paired interaction coordinator owns greeting / play / grooming / warning / conflict phase sequences, participant locks, consent checks, interruption and recovery; active coordinator state can be serialized.
 - A paired interaction coordinator owns greeting / play / grooming / warning / conflict phase sequences, pair locks, consent checks, interruption and recovery; active coordinator state can be serialized.
 
 ## Current automated test list
