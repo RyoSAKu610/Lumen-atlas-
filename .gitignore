@@ -26,3 +26,9 @@ out/
 !.env.example
 *.pem
 *.key
+
+# Python reference simulation
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
