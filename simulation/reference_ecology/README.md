@@ -23,6 +23,7 @@ PYTHONPATH=src python -m living_atlas.cli --minutes 180 --seed 17
 - Food and freshwater consumption with resource depletion.
 - Geothermal spring seeking, capacity limit, waiting, warmth relief and rest.
 - Seeded deterministic stepping, JSON snapshot / restore and offline catch-up.
+- Paired interaction coordinator with approach / signal / response / contact / resolution / recovery phases, participant locks, consent checks, interruption handling and active-state serialization.
 
 ## Explicit limitations
 - Movement is 2D point navigation, not UE5 locomotion, collision or IK.
