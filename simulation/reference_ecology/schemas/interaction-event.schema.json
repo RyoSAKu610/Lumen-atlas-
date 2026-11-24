@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lumen-atlas.invalid/schemas/interaction-event.schema.json",
+  "title": "LIVING ATLAS Interaction Event",
+  "type": "object",
+  "required": ["interaction_id","interaction_type","participants","phase","motivation","outcome","tick"],
+  "properties": {
+    "interaction_id": {"type":"string","minLength":1},
+    "interaction_type": {"enum":["greeting","play","grooming","warning","dominance","conflict","courtship","parental_care","cooperative_feeding","avoidance","submission","retreat","predation"]},
+    "participants": {"type":"array","minItems":2,"items":{"type":"string"},"uniqueItems":true},
+    "phase": {"enum":["observe","assess","signal","await_response","approach","align","contact","resolve","cooldown","separate","interrupted"]},
+    "motivation": {"type":"array","items":{"enum":["hunger","social_need","stress","threat","territory_pressure","reproductive_drive","juvenile_dependency","thermal_need","resource_competition"]}},
+    "animation_contract_id": {"type":["string","null"]},
+    "outcome": {"enum":["pending","completed","declined","interrupted","escalated","retreated","unresolved"]},
+    "tick": {"type":"integer","minimum":0},
+    "time_minutes": {"type":"integer","minimum":0,"maximum":1439},
+    "reason": {"type":"string"}
+  },
+  "additionalProperties": false
+}
