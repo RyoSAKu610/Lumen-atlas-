@@ -9,7 +9,13 @@ Requires Python 3.11+ and no third-party dependencies.
 ```bash
 cd simulation/reference_ecology
 PYTHONPATH=src python -m unittest discover -s tests -v
-PYTHONPATH=src python -m living_atlas.cli --minutes 180 --seed 17
+PYTHONPATH=src python -m living_atlas.cli --minutes 180 --seed 17 --interaction greeting
+
+# One-command run on macOS / Linux (tests + seeded world + interaction)
+bash scripts/run_reference_demo.sh
+
+# Windows PowerShell
+.\scripts\run_reference_demo.ps1
 ```
 
 ## Implemented in this reference slice
