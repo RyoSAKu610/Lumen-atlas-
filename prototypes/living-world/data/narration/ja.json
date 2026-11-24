@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "locale": "ja",
+  "provenance": "PROVISIONAL engineering placeholder (Claude). To be replaced by the Creative Director (GPT) narration pass.",
+  "templates": {
+    "system.world_created": ["{place}の観察を開始した。"],
+    "system.restored": ["観察記録を再開した。"],
+    "system.catchup": ["留守のあいだに{count}件の出来事があったようだ（概算）。"],
+    "world.dawn": ["夜が明ける。"],
+    "world.dusk": ["日が傾く。"],
+    "world.day_started": ["{day}日目。"],
+    "world.season_changed": ["季節は{season}へ。"],
+    "world.weather_changed": ["空模様が{weather}に変わった。"],
+    "world.override": ["観察条件を変更した。"],
+    "agent.born": ["{actor}が生まれた。"],
+    "agent.matured": ["{actor}が成体になった。"],
+    "agent.elder": ["{actor}は老齢期に入った。"],
+    "agent.died": ["{actor}が息を引き取った（{cause}）。"],
+    "interaction.started": ["{actor}が{target}に近づく。"],
+    "interaction.contact": ["{actor}と{target}が触れ合う。"],
+    "interaction.resolved": ["{actor}と{target}のやりとりが終わった（{outcome}）。"],
+    "interaction.interrupted": ["{actor}と{target}のやりとりが途切れた。"],
+    "hunt.stalk_started": ["{actor}が{target}に忍び寄る。"],
+    "hunt.chase_started": ["{actor}が{target}を追う。"],
+    "hunt.succeeded": ["{actor}の狩りが成功した。"],
+    "hunt.failed": ["{actor}の狩りは失敗に終わった。"],
+    "hunt.aborted": ["{actor}は狩りを諦めた。"],
+    "alarm.raised": ["{actor}が警戒の声を上げた。"],
+    "herd.defense": ["群れが{target}に向き直った。"],
+    "hotspring.entered": ["{actor}が{place}に浸かる。"],
+    "hotspring.displaced": ["{actor}が{target}に湯を譲った。"],
+    "courtship.bonded": ["{actor}と{target}がつがいになった。"],
+    "home.returned": ["{actor}が{place}に戻った。"],
+    "flight.soaring": ["{actor}が上昇気流に乗る。"],
+    "carcass.scavenged": ["{actor}が亡骸をついばむ。"]
+  },
+  "labels": {
+    "behaviors": {
+      "idle": "佇む", "wander": "散策", "graze": "採食", "forage": "探餌", "drink": "水飲み", "rest": "休息", "sleep": "睡眠",
+      "bathe": "湯浴み", "seek_company": "仲間を探す", "follow": "追従", "socialize": "交流", "play": "遊び", "warn": "威嚇",
+      "court": "求愛", "care": "子育て", "patrol": "巡回", "vigilance": "警戒", "flee": "逃走", "defend": "防衛",
+      "stalk": "忍び寄り", "chase": "追跡", "feed": "摂食", "return_home": "帰巣", "soar": "帆翔", "glide": "滑空",
+      "perch": "止まり", "interact": "やりとり"
+    },
+    "behaviorPhrases": {
+      "idle": "静かに佇んでいる", "wander": "あたりを歩いている", "graze": "草を食んでいる", "forage": "餌を探している",
+      "drink": "水を飲んでいる", "rest": "体を休めている", "sleep": "眠っている", "bathe": "湯に浸かっている",
+      "seek_company": "仲間のもとへ向かっている", "follow": "あとをついて歩いている", "socialize": "仲間に近づいている",
+      "play": "遊んでいる", "warn": "相手を威嚇している", "court": "求愛している", "care": "子の世話をしている",
+      "patrol": "縄張りを見回っている", "vigilance": "周囲を警戒している", "flee": "逃げている", "defend": "群れを守っている",
+      "stalk": "獲物に忍び寄っている", "chase": "獲物を追っている", "feed": "食べている", "return_home": "巣へ戻っている",
+      "soar": "上昇気流に乗っている", "glide": "滑空している", "perch": "岩に止まっている", "interact": "相手とやりとりしている"
+    },
+    "needs": {
+      "hunger": "空腹", "thirst": "渇き", "fatigue": "疲労", "cold": "寒さ", "heat": "暑さ", "social": "寂しさ",
+      "fear": "恐怖", "curiosity": "好奇心", "stamina": "スタミナ", "health": "健康", "breeding": "繁殖欲"
+    },
+    "interactionKinds": { "greet": "挨拶", "groom": "毛づくろい", "play": "遊び", "warn": "威嚇", "court": "求愛", "nurse": "授乳・世話" },
+    "interactionPhases": {
+      "approach": "接近", "orient": "向き合い", "signal": "合図", "response": "応答", "contact": "接触",
+      "resolve": "決着", "cooldown": "余韻", "separate": "離脱"
+    },
+    "outcomes": {
+      "bonded": "絆が深まった", "accepted": "受け入れられた", "ignored": "無視された", "rejected": "拒まれた",
+      "retreated": "退いた", "escalated": "争いに発展した", "interrupted": "中断された"
+    },
+    "seasons": { "spring": "春", "summer": "夏", "autumn": "秋", "winter": "冬" },
+    "weathers": { "clear": "晴れ", "cloudy": "曇り", "rain": "雨", "fog": "霧", "snow": "雪", "storm": "嵐" },
+    "dayPhases": { "night": "夜", "dawn": "夜明け", "day": "昼", "dusk": "夕暮れ" },
+    "lifeStages": { "juvenile": "幼体", "adult": "成体", "elder": "老齢" },
+    "sexes": { "female": "メス", "male": "オス" },
+    "causesOfDeath": { "predation": "捕食", "starvation": "飢え", "dehydration": "渇き", "old_age": "老衰", "exposure": "寒さ", "injury": "怪我" }
+  },
+  "nicknames": {
+    "giant_grazer": ["イワオ", "コケ", "ヤマ", "オボロ", "ツチ", "ミネ", "ハガネ", "シズ", "カサネ", "トキ", "ムロ", "ヨモギ", "アサギ", "クロガネ", "ユルリ", "ナギ"],
+    "kit_forager": ["ホタル", "コハク", "ミケ", "チヨ", "ツムギ", "ヒナ", "コロ", "ユズ", "アカリ", "モモ", "スズ", "キキ", "ハル", "ポン", "リン", "ナツメ"],
+    "ridge_stalker": ["カゲ", "スミ", "ヤミ", "クロ", "シノブ", "ハヤテ", "ツバキ", "オニビ", "ミナモ", "ヨル", "サヤ", "イナズマ", "カスミ", "トバリ", "ムラサメ", "シグレ"],
+    "thermal_glider": ["カゼ", "ソラ", "ハヤ", "シロ", "ツバサ", "アオ", "ユキ", "ヒバリ", "ミソラ", "ハネ", "コチ", "ナル", "タカネ", "キリ", "ハヤセ", "ウタ"]
+  }
+}

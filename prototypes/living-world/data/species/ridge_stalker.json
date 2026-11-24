@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "ridge_stalker",
+  "family": "quadruped_predator",
+  "ecologicalRole": "apex_predator",
+  "body": { "length": 2.6, "shoulderHeight": 1.05, "massKg": 160, "radius": 0.8, "headReach": 1.6, "headHeight": 1.0 },
+  "locomotion": {
+    "walkSpeed": 1.2, "trotSpeed": 2.8, "runSpeed": 7, "sprintSpeed": 12,
+    "acceleration": 7, "turnRate": 2.6, "strideLength": 1.1, "maxSlopeDeg": 45,
+    "canSwim": true, "swimSpeed": 0.9, "flight": null
+  },
+  "senses": { "sightRange": 80, "sightFovDeg": 200, "nightVision": 0.9, "hearingRange": 70, "scentRange": 90 },
+  "diet": { "vegetation": 0, "meat": 1, "carrion": 0.6, "feedRatePerHour": 0.9 },
+  "activity": { "night": 0.8, "dawn": 1, "day": 0.35, "dusk": 1 },
+  "thermal": { "comfortMinC": -2, "comfortMaxC": 24, "insulation": 0.7, "hotSpringAffinity": 0.2 },
+  "needsRates": { "hungerPerHour": 0.045, "thirstPerHour": 0.05, "fatiguePerHour": 0.05, "recoveryPerHour": 0.2, "socialPerHour": 0.01, "curiosityPerHour": 0.04 },
+  "social": { "model": "solitary_territorial", "cohesion": 0.05, "greetingStyle": "display", "territorial": true, "territoryRadius": 70, "aggression": 0.7, "boldness": 0.85, "playfulness": 0.2 },
+  "lifeCycle": {
+    "maturityDays": 10, "elderDays": 36, "maxAgeDays": 50, "breedingSeasons": ["winter"],
+    "gestationDays": 3, "litterSize": [1, 2], "reproduction": "live_birth", "parentalCareDays": 6, "juvenileScale": 0.35
+  },
+  "predation": {
+    "prey": ["kit_forager", "giant_grazer"],
+    "attackRange": 2.2, "baseSuccess": 0.35, "stalkSpeedFactor": 0.35, "chaseMaxSeconds": 14,
+    "giveUpDistance": 45, "preferVulnerable": 0.8, "mealSize": 1.2
+  },
+  "antiPredator": { "alarmCall": false, "herdDefense": false, "fleeDistance": 10, "vigilance": 0.3 },
+  "behaviors": ["idle", "wander", "drink", "rest", "sleep", "patrol", "warn", "stalk", "chase", "feed", "vigilance", "flee", "court", "care", "return_home", "interact"],
+  "utilityWeights": { "stalk": 1.1 },
+  "carryingCapacity": 3,
+  "animationSet": "AN_quadruped_predator"
+}

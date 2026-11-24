@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "provenance": "PROVISIONAL engineering placeholder (Claude). To be replaced by the Creative Director (GPT) shot grammar.",
+  "shots": [
+    { "id": "valley_establishing", "name": { "ja": "谷の全景", "en": "Valley establishing" }, "triggers": ["idle", "world.dawn", "world.dusk"], "priority": 0.2, "framing": "establishing_wide", "fovDeg": 50, "distance": 40, "height": 12, "azimuthDeg": 150, "orbitDegPerSec": 1.5, "durationSec": [10, 16], "subject": "group_centroid", "notes": "Placeholder." },
+    { "id": "pair_greeting", "name": { "ja": "挨拶の二人", "en": "Greeting two-shot" }, "triggers": ["interaction.started:greet", "interaction.started:groom"], "priority": 0.7, "framing": "two_shot", "fovDeg": 35, "distance": 3, "height": 1.1, "azimuthDeg": 90, "orbitDegPerSec": 0, "durationSec": [6, 10], "subject": "pair_midpoint", "notes": "Placeholder." },
+    { "id": "hunt_telephoto", "name": { "ja": "望遠の狩り", "en": "Telephoto hunt" }, "triggers": ["hunt.stalk_started", "hunt.chase_started"], "priority": 0.95, "framing": "telephoto_compressed", "fovDeg": 18, "distance": 14, "height": 1.2, "azimuthDeg": 120, "orbitDegPerSec": 0, "durationSec": [6, 12], "subject": "actor", "notes": "Placeholder." },
+    { "id": "giant_low_angle", "name": { "ja": "巨体の仰角", "en": "Giant low angle" }, "triggers": ["hotspring.entered", "behavior:bathe", "herd.defense"], "priority": 0.6, "framing": "low_angle_hero", "fovDeg": 40, "distance": 2.2, "height": 0.4, "azimuthDeg": 40, "orbitDegPerSec": 2, "durationSec": [7, 11], "subject": "actor", "notes": "Placeholder." },
+    { "id": "glider_aerial", "name": { "ja": "空の追走", "en": "Aerial follow" }, "triggers": ["flight.soaring", "behavior:soar", "behavior:glide"], "priority": 0.5, "framing": "aerial_follow", "fovDeg": 45, "distance": 6, "height": 2, "azimuthDeg": 160, "orbitDegPerSec": 0, "durationSec": [6, 10], "subject": "actor", "notes": "Placeholder." },
+    { "id": "play_side", "name": { "ja": "遊びの横移動", "en": "Play tracking" }, "triggers": ["interaction.started:play", "behavior:play"], "priority": 0.65, "framing": "tracking_side", "fovDeg": 38, "distance": 5, "height": 1.0, "azimuthDeg": 90, "orbitDegPerSec": 0, "durationSec": [6, 9], "subject": "pair_midpoint", "notes": "Placeholder." }
+  ],
+  "idleRotation": ["valley_establishing"],
+  "rules": ["Placeholder rule one.", "Placeholder rule two.", "Placeholder rule three."]
+}

@@ -1,0 +1,26 @@
+import * as THREE from 'three';
+import { loadGameDataOrThrow } from '../src/data/load';
+import { Terrain } from '../src/sim/terrain';
+
+const data = loadGameDataOrThrow();
+const terrain = Terrain.build(data.region, 20261124);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#a9c3e6');
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.5, 2000);
+camera.position.set(90, 60, 110);
+camera.lookAt(-40, 18, -30);
+const m = terrain.meshData();
+const g = new THREE.BufferGeometry();
+g.setAttribute('position', new THREE.BufferAttribute(m.positions, 3));
+g.setAttribute('normal', new THREE.BufferAttribute(m.normals, 3));
+g.setIndex(new THREE.BufferAttribute(m.indices, 1));
+scene.add(new THREE.Mesh(g, new THREE.MeshStandardMaterial({ color: '#5f8a42' })));
+scene.add(new THREE.HemisphereLight('#b8d4f2', '#5b6646', 1));
+const sun = new THREE.DirectionalLight('#fff4e6', 2.5);
+sun.position.set(-50, 80, 30);
+scene.add(sun);
+renderer.render(scene, camera);
+(window as unknown as { __LA_READY: boolean }).__LA_READY = true;

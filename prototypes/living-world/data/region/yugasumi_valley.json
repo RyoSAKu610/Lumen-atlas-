@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "id": "REG_yugasumi_valley",
+  "name": { "ja": "湯霞の谷", "en": "Yugasumi Valley" },
+  "fictional": true,
+  "provenance": "Provisional engineering layout (Claude) for the vertical slice; composition pending Creative Director (GPT) revision. Invented location; mood loosely informed by Japanese geothermal mountain valleys but not a depiction of any real place.",
+  "description": {
+    "ja": "滝から流れ出す清流と、湯けむりの立つ温泉が抱かれた小さな谷。架空の土地です。",
+    "en": "A compact valley cradling a waterfall-fed river and a steaming hot spring. An invented place."
+  },
+  "size": 400,
+  "resolution": 257,
+  "terrain": {
+    "axis": [
+      { "p": [-170, -175], "floor": 52, "halfWidth": 26 },
+      { "p": [-120, -128], "floor": 47, "halfWidth": 22 },
+      { "p": [-99, -107], "floor": 45, "halfWidth": 18 },
+      { "p": [-90, -96], "floor": 27, "halfWidth": 20 },
+      { "p": [-62, -62], "floor": 22, "halfWidth": 36 },
+      { "p": [-30, -22], "floor": 18, "halfWidth": 58 },
+      { "p": [20, 10], "floor": 15, "halfWidth": 60 },
+      { "p": [70, 30], "floor": 12, "halfWidth": 48 },
+      { "p": [120, 70], "floor": 9, "halfWidth": 40 },
+      { "p": [170, 130], "floor": 6, "halfWidth": 34 },
+      { "p": [215, 185], "floor": 4, "halfWidth": 30 }
+    ],
+    "floorHalfWidth": 45,
+    "ridgeFalloff": 110,
+    "ridgeHeight": 42,
+    "floorRoughness": 1.8,
+    "ridgeRoughness": 24,
+    "edgeWarp": 0.6,
+    "features": [
+      { "id": "roost_crag", "kind": "plateau", "center": [40, -72], "radius": 13, "height": 18, "falloff": 4 },
+      { "id": "den_knoll", "kind": "mound", "center": [-62, 26], "radius": 14, "height": 3.5, "falloff": 10 },
+      { "id": "lookout_rise", "kind": "mound", "center": [-88, -18], "radius": 9, "height": 5, "falloff": 7 }
+    ]
+  },
+  "river": {
+    "points": [
+      [-175, -178], [-140, -148], [-112, -120], [-99, -107], [-91, -97], [-80, -86], [-60, -70],
+      [-42, -50], [-36, -30], [-20, -12], [5, -4], [30, 4], [52, 18], [78, 34], [104, 52],
+      [126, 76], [150, 104], [176, 138], [210, 178]
+    ],
+    "halfWidth": 4,
+    "depth": 1.5
+  },
+  "pools": [
+    {
+      "id": "yugasumi_spring",
+      "kind": "hot_spring",
+      "name": { "ja": "湯霞の泉", "en": "Yugasumi Spring" },
+      "center": [-40, 12],
+      "radius": 9,
+      "depth": 1.4,
+      "temperatureC": 41,
+      "capacity": 6
+    },
+    {
+      "id": "kiri_spring",
+      "kind": "hot_spring",
+      "name": { "ja": "霧の湯", "en": "Mist Spring" },
+      "center": [12, -40],
+      "radius": 5,
+      "depth": 1.1,
+      "temperatureC": 44,
+      "capacity": 3
+    },
+    {
+      "id": "falls_pool",
+      "kind": "plunge_pool",
+      "name": { "ja": "滝壺", "en": "Falls Pool" },
+      "center": [-86, -92],
+      "radius": 8,
+      "depth": 2.4,
+      "temperatureC": 11,
+      "capacity": 4
+    }
+  ],
+  "landmarks": [
+    { "id": "white_veil_falls", "kind": "waterfall", "name": { "ja": "白絹の滝", "en": "White Veil Falls" }, "center": [-95, -102], "radius": 10, "note": "" },
+    { "id": "crag_roost", "kind": "roost", "name": { "ja": "鷹巣岩", "en": "Crag Roost" }, "center": [40, -72], "radius": 10, "note": "" },
+    { "id": "knoll_den", "kind": "den", "name": { "ja": "丘の巣穴", "en": "Knoll Den" }, "center": [-62, 26], "radius": 6, "note": "" },
+    { "id": "east_den", "kind": "den", "name": { "ja": "東の巣穴", "en": "East Den" }, "center": [62, 60], "radius": 5, "note": "" },
+    { "id": "stalker_lookout", "kind": "lookout", "name": { "ja": "見張り岩", "en": "Lookout Rock" }, "center": [-88, -18], "radius": 5, "note": "" },
+    { "id": "lantern_ruin", "kind": "ruin", "name": { "ja": "苔灯籠の跡", "en": "Mossy Lantern Ruin" }, "center": [-26, 26], "radius": 3, "note": "Fictional creative addition: weathered stone remains, no human presence." },
+    { "id": "sakura_heart", "kind": "grove_heart", "name": { "ja": "桜の芯", "en": "Sakura Heart" }, "center": [50, 56], "radius": 6, "note": "" },
+    { "id": "mineral_lick", "kind": "salt_lick", "name": { "ja": "塩舐め場", "en": "Mineral Lick" }, "center": [96, 22], "radius": 5, "note": "" }
+  ],
+  "zones": [
+    { "id": "central_meadow", "kind": "meadow", "center": [-5, 0], "radiusX": 72, "radiusZ": 48, "rotation": 0.5, "density": 1 },
+    { "id": "sakura_grove", "kind": "sakura_grove", "center": [50, 56], "radiusX": 30, "radiusZ": 18, "rotation": 0.6, "density": 0.9 },
+    { "id": "flower_terrace", "kind": "flower_field", "center": [0, 48], "radiusX": 26, "radiusZ": 14, "rotation": 0.3, "density": 0.85 },
+    { "id": "lower_marsh", "kind": "reed_marsh", "center": [140, 100], "radiusX": 24, "radiusZ": 13, "rotation": 0.8, "density": 0.85 },
+    { "id": "west_maples", "kind": "maple_wood", "center": [-128, -42], "radiusX": 30, "radiusZ": 24, "rotation": 0.3, "density": 0.85 },
+    { "id": "den_cedars", "kind": "cedar_forest", "center": [-92, 4], "radiusX": 20, "radiusZ": 26, "rotation": 0.2, "density": 0.9 },
+    { "id": "falls_mossrocks", "kind": "moss_rocks", "center": [-100, -86], "radiusX": 22, "radiusZ": 14, "rotation": 0.8, "density": 0.8 }
+  ],
+  "spawns": [
+    { "speciesId": "giant_grazer", "count": 7, "near": "central_meadow", "spread": 18, "groups": 1 },
+    { "speciesId": "kit_forager", "count": 9, "near": "knoll_den", "spread": 9, "groups": 2 },
+    { "speciesId": "ridge_stalker", "count": 2, "near": "stalker_lookout", "spread": 50, "groups": 2 },
+    { "speciesId": "thermal_glider", "count": 6, "near": "crag_roost", "spread": 10, "groups": 1 }
+  ],
+  "wind": { "direction": 2.3, "speed": 3 },
+  "climate": {
+    "seasonalMeanC": { "spring": 11, "summer": 22, "autumn": 13, "winter": -1 },
+    "diurnalRangeC": 9,
+    "weather": {
+      "spring": { "clear": 4, "cloudy": 3, "rain": 2, "fog": 1.5, "snow": 0.1, "storm": 0.3 },
+      "summer": { "clear": 4, "cloudy": 2, "rain": 2.5, "fog": 1, "snow": 0, "storm": 1 },
+      "autumn": { "clear": 4, "cloudy": 3, "rain": 2, "fog": 2, "snow": 0.2, "storm": 0.4 },
+      "winter": { "clear": 3, "cloudy": 3, "rain": 0.5, "fog": 1.5, "snow": 3.5, "storm": 0.5 }
+    }
+  },
+  "cameraViewpoints": [
+    { "id": "valley_overlook", "name": { "ja": "谷の見晴らし", "en": "Valley Overlook" }, "position": [90, 60, 110], "target": [-40, 18, -30], "fovDeg": 50 },
+    { "id": "spring_side", "name": { "ja": "湯けむりの縁", "en": "Spring Edge" }, "position": [-14, 24, 40], "target": [-40, 16, 12], "fovDeg": 42 },
+    { "id": "falls_view", "name": { "ja": "滝の眺め", "en": "Falls View" }, "position": [-55, 42, -50], "target": [-92, 34, -100], "fovDeg": 45 }
+  ]
+}

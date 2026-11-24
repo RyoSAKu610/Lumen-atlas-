@@ -1,0 +1,35 @@
+{
+  "name": "living-atlas-living-world",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "LIVING ATLAS vertical slice: deterministic ecology simulation + WebGL observation prototype. Not the UE5 production runtime.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "validate:data": "tsx scripts/validate-data.ts",
+    "terrain:preview": "tsx scripts/terrain-preview.ts",
+    "simulate": "tsx scripts/simulate.ts",
+    "bench": "tsx scripts/bench.ts",
+    "shot": "node scripts/screenshot.mjs"
+  },
+  "dependencies": {
+    "three": "^0.187.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/pngjs": "^6.0.5",
+    "@types/three": "^0.187.0",
+    "pngjs": "^7.0.0",
+    "puppeteer-core": "^25.18.1",
+    "tsx": "^4.23.15",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.1"
+  }
+}

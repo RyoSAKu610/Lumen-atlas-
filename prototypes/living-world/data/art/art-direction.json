@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "regionId": "REG_yugasumi_valley",
+  "provenance": {
+    "author": "Claude (engineering placeholder)",
+    "date": "2026-11-24",
+    "notes": "PROVISIONAL values so the renderer can be developed. To be replaced by the Creative Director (GPT) pass."
+  },
+  "lighting": [
+    { "hour": 0, "sunColor": "#3a4a7a", "sunIntensity": 0.35, "hemiSky": "#1c2a4a", "hemiGround": "#0b0f14", "hemiIntensity": 0.35, "skyZenith": "#050a18", "skyHorizon": "#18233d", "sunGlow": "#2a3a66", "fogColor": "#121a2c", "fogDensity": 0.0028, "exposure": 1.0, "starsOpacity": 1 },
+    { "hour": 4.5, "sunColor": "#50608f", "sunIntensity": 0.3, "hemiSky": "#26365c", "hemiGround": "#0e1218", "hemiIntensity": 0.4, "skyZenith": "#0a1430", "skyHorizon": "#3a3f62", "sunGlow": "#6a5a7a", "fogColor": "#262c44", "fogDensity": 0.0035, "exposure": 1.0, "starsOpacity": 0.7 },
+    { "hour": 5.6, "sunColor": "#ff9a6a", "sunIntensity": 1.2, "hemiSky": "#7f8fb8", "hemiGround": "#3a3028", "hemiIntensity": 0.7, "skyZenith": "#3a5a9a", "skyHorizon": "#f2a98a", "sunGlow": "#ffb27a", "fogColor": "#c9a6a0", "fogDensity": 0.004, "exposure": 1.05, "starsOpacity": 0.15 },
+    { "hour": 7, "sunColor": "#ffd0a0", "sunIntensity": 2.4, "hemiSky": "#a9c3e6", "hemiGround": "#4f4a3a", "hemiIntensity": 0.9, "skyZenith": "#5d8fd0", "skyHorizon": "#f4d6b8", "sunGlow": "#ffe0b0", "fogColor": "#d8dce0", "fogDensity": 0.0025, "exposure": 1.0, "starsOpacity": 0 },
+    { "hour": 12, "sunColor": "#fff4e6", "sunIntensity": 3.2, "hemiSky": "#b8d4f2", "hemiGround": "#5b6646", "hemiIntensity": 1.0, "skyZenith": "#4d86d6", "skyHorizon": "#cfe2f2", "sunGlow": "#fff6e0", "fogColor": "#c8d8e6", "fogDensity": 0.0016, "exposure": 0.95, "starsOpacity": 0 },
+    { "hour": 16.5, "sunColor": "#ffe6c4", "sunIntensity": 2.8, "hemiSky": "#b0cbe8", "hemiGround": "#5b5a40", "hemiIntensity": 0.95, "skyZenith": "#5288d2", "skyHorizon": "#e6e0cc", "sunGlow": "#ffe8c0", "fogColor": "#d6d8d0", "fogDensity": 0.0018, "exposure": 1.0, "starsOpacity": 0 },
+    { "hour": 18, "sunColor": "#ffb070", "sunIntensity": 2.2, "hemiSky": "#9fb2d6", "hemiGround": "#5a4632", "hemiIntensity": 0.8, "skyZenith": "#4a6cb0", "skyHorizon": "#ffc48a", "sunGlow": "#ffb066", "fogColor": "#e0b898", "fogDensity": 0.0026, "exposure": 1.05, "starsOpacity": 0 },
+    { "hour": 19, "sunColor": "#ff7a4a", "sunIntensity": 1.0, "hemiSky": "#6e78a8", "hemiGround": "#3a2c2a", "hemiIntensity": 0.6, "skyZenith": "#2c3c78", "skyHorizon": "#f08a6a", "sunGlow": "#ff8a5a", "fogColor": "#a87a84", "fogDensity": 0.0032, "exposure": 1.1, "starsOpacity": 0.2 },
+    { "hour": 20.5, "sunColor": "#4a5a9a", "sunIntensity": 0.35, "hemiSky": "#2a3a66", "hemiGround": "#12141c", "hemiIntensity": 0.45, "skyZenith": "#0c1634", "skyHorizon": "#2e3a66", "sunGlow": "#3a4a80", "fogColor": "#1c2440", "fogDensity": 0.003, "exposure": 1.0, "starsOpacity": 0.85 },
+    { "hour": 24, "sunColor": "#3a4a7a", "sunIntensity": 0.35, "hemiSky": "#1c2a4a", "hemiGround": "#0b0f14", "hemiIntensity": 0.35, "skyZenith": "#050a18", "skyHorizon": "#18233d", "sunGlow": "#2a3a66", "fogColor": "#121a2c", "fogDensity": 0.0028, "exposure": 1.0, "starsOpacity": 1 }
+  ],
+  "seasons": {
+    "spring": { "grassBase": "#4f7a3a", "grassTip": "#9cc46a", "flowerAccent": "#f3c6d8", "cedar": "#2f4a34", "sakuraCanopy": "#f2bfd0", "mapleCanopy": "#8fb35a", "pine": "#3a5a40", "petalRate": 1.2, "petalColor": "#f7d3df", "ground": "#6b6248", "snowCover": 0, "waterTint": "#7fb8b8" },
+    "summer": { "grassBase": "#3f6e2c", "grassTip": "#8dbb4a", "flowerAccent": "#f2e27a", "cedar": "#27432c", "sakuraCanopy": "#5f8f45", "mapleCanopy": "#4f8a3c", "pine": "#2f5236", "petalRate": 0, "petalColor": "#ffffff", "ground": "#5f5a40", "snowCover": 0, "waterTint": "#6aaeb0" },
+    "autumn": { "grassBase": "#7a6a3a", "grassTip": "#c9a45a", "flowerAccent": "#e07a4a", "cedar": "#33452f", "sakuraCanopy": "#c8703a", "mapleCanopy": "#d2452a", "pine": "#3a5038", "petalRate": 0.8, "petalColor": "#d8622e", "ground": "#6e5a3c", "snowCover": 0, "waterTint": "#7aa6a0" },
+    "winter": { "grassBase": "#8a8670", "grassTip": "#c8c4b0", "flowerAccent": null, "cedar": "#2c3d33", "sakuraCanopy": "#6a5a52", "mapleCanopy": "#6a5048", "pine": "#2e4436", "petalRate": 0, "petalColor": "#ffffff", "ground": "#8a8578", "snowCover": 0.75, "waterTint": "#8fb6c4" }
+  },
+  "weather": {
+    "clear": { "fogMultiplier": 1, "lightMultiplier": 1, "saturation": 1, "tint": "#ffffff", "cloudCover": 0.1 },
+    "cloudy": { "fogMultiplier": 1.4, "lightMultiplier": 0.6, "saturation": 0.85, "tint": "#dfe4ea", "cloudCover": 0.7 },
+    "rain": { "fogMultiplier": 2.4, "lightMultiplier": 0.45, "saturation": 0.8, "tint": "#c6d0d8", "cloudCover": 0.95 },
+    "fog": { "fogMultiplier": 6, "lightMultiplier": 0.6, "saturation": 0.75, "tint": "#e6e8ea", "cloudCover": 0.6 },
+    "snow": { "fogMultiplier": 3, "lightMultiplier": 0.6, "saturation": 0.7, "tint": "#e8eef4", "cloudCover": 0.9 },
+    "storm": { "fogMultiplier": 3.2, "lightMultiplier": 0.3, "saturation": 0.7, "tint": "#a8b0bc", "cloudCover": 1 }
+  },
+  "terrain": {
+    "meadow": "#5f8a42", "meadowDry": "#a69a5a", "moss": "#4f6e3a", "rock": "#7a7468", "cliff": "#5e5850",
+    "sinter": "#e8e0cc", "sulfur": "#d8c45a", "riverbed": "#8a8270", "forestFloor": "#3d3a2a", "marsh": "#5a6e46", "snow": "#f2f4f8"
+  },
+  "water": { "shallow": "#6fb5b0", "deep": "#1f4f62", "hotSpringShallow": "#9fe0d6", "hotSpringDeep": "#2a8fa0", "foam": "#f4f8f6", "steam": "#f2f2ee" },
+  "atmosphere": { "fireflyColor": "#e8ff9a", "fireflyDensity": 60, "steamOpacity": 0.55, "godRays": 0.4, "bloom": 0.35, "painterly": 0.5 },
+  "creatures": {
+    "giant_grazer": {
+      "speciesId": "giant_grazer",
+      "displayName": { "ja": "苔背の巨獣（仮）", "en": "Mossback (provisional)" },
+      "scientificName": "Muscotherium provisorium",
+      "tagline": { "ja": "仮の説明", "en": "Provisional" },
+      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
+      "silhouette": "Provisional: columnar legs, broad back with moss mantle.",
+      "morphology": {
+        "torso": { "length": 0.42, "girthFront": 0.17, "girthMid": 0.19, "girthRear": 0.16, "depthRatio": 1.15, "hump": 0.06, "backSlope": 0.08 },
+        "neck": { "length": 0.22, "radius": 0.09, "pitchDeg": 25 },
+        "head": { "length": 0.17, "width": 0.11, "height": 0.12, "snoutLength": 0.06, "snoutTaper": 0.3, "jaw": "blunt", "ears": { "style": "round", "length": 0.05 }, "horns": { "style": "crest", "length": 0.08, "spread": 0.05 }, "eyeSize": 0.12, "eyeForward": 0.1 },
+        "tail": { "length": 0.35, "baseRadius": 0.07, "tipRadius": 0.015, "segments": 8, "style": "taper", "restCurve": -0.3 },
+        "legs": {
+          "pairs": 2,
+          "front": { "upper": 0.2, "lower": 0.19, "foot": 0.04, "radiusTop": 0.075, "radiusBottom": 0.06, "stanceWidth": 0.24, "digitigrade": false, "footStyle": "column" },
+          "hind": { "upper": 0.21, "lower": 0.18, "foot": 0.045, "radiusTop": 0.085, "radiusBottom": 0.062, "stanceWidth": 0.25, "digitigrade": false, "footStyle": "column" }
+        },
+        "wings": null,
+        "dorsal": { "style": "moss_mantle", "height": 0.05, "coverage": 0.8, "count": 14 }
+      },
+      "material": { "base": "#6f6a58", "belly": "#a49a7f", "accent": "#7da36a", "pattern": "dapples", "patternColor": "#5a5646", "patternScale": 3, "roughness": 0.85, "sheen": 0.2, "dorsalColor": "#6f9a52", "hornColor": "#d9d2bf", "eye": "#2a2014", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.35, "legScale": 1.15, "tailScale": 0.8, "coat": "#8a8268" },
+      "maleVariant": { "scale": 1.08, "hornScale": 1.4 },
+      "behaviorExpression": { "greet": "provisional" },
+      "vocal": { "call": "ホゥン", "alarm": "ドゥッ" }
+    },
+    "kit_forager": {
+      "speciesId": "kit_forager",
+      "displayName": { "ja": "灯尾（仮）", "en": "Lanterntail (provisional)" },
+      "scientificName": "Lampadocauda provisoria",
+      "tagline": { "ja": "仮の説明", "en": "Provisional" },
+      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
+      "silhouette": "Provisional: light, long bushy tail with glowing tip, big ears.",
+      "morphology": {
+        "torso": { "length": 0.42, "girthFront": 0.11, "girthMid": 0.12, "girthRear": 0.11, "depthRatio": 1.0, "hump": 0, "backSlope": -0.05 },
+        "neck": { "length": 0.12, "radius": 0.07, "pitchDeg": 30 },
+        "head": { "length": 0.22, "width": 0.15, "height": 0.13, "snoutLength": 0.1, "snoutTaper": 0.75, "jaw": "tapered", "ears": { "style": "pointed", "length": 0.18 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.22, "eyeForward": 0.4 },
+        "tail": { "length": 0.75, "baseRadius": 0.08, "tipRadius": 0.05, "segments": 10, "style": "bushy", "restCurve": 0.8 },
+        "legs": {
+          "pairs": 2,
+          "front": { "upper": 0.2, "lower": 0.2, "foot": 0.07, "radiusTop": 0.04, "radiusBottom": 0.025, "stanceWidth": 0.14, "digitigrade": true, "footStyle": "pad" },
+          "hind": { "upper": 0.24, "lower": 0.22, "foot": 0.1, "radiusTop": 0.05, "radiusBottom": 0.025, "stanceWidth": 0.15, "digitigrade": true, "footStyle": "pad" }
+        },
+        "wings": null,
+        "dorsal": { "style": "none", "height": 0, "coverage": 0, "count": 0 }
+      },
+      "material": { "base": "#c9874a", "belly": "#f0dfc4", "accent": "#f6efe2", "pattern": "bands", "patternColor": "#8a4e2a", "patternScale": 4, "roughness": 0.75, "sheen": 0.6, "dorsalColor": "#b0703a", "hornColor": "#ffffff", "eye": "#1a120c", "emissive": "#ffd27a", "emissiveIntensity": 0.8, "emissiveWhere": "markings" },
+      "juvenile": { "headScale": 1.4, "legScale": 1.1, "tailScale": 0.7, "coat": "#d9a46e" },
+      "maleVariant": { "scale": 1.05, "hornScale": 0 },
+      "behaviorExpression": { "play": "provisional" },
+      "vocal": { "call": "キュルッ", "alarm": "キッ" }
+    },
+    "ridge_stalker": {
+      "speciesId": "ridge_stalker",
+      "displayName": { "ja": "影縞（仮）", "en": "Shadowstripe (provisional)" },
+      "scientificName": "Umbrafelis provisoria",
+      "tagline": { "ja": "仮の説明", "en": "Provisional" },
+      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
+      "silhouette": "Provisional: low, long-bodied, whip tail, forward eyes.",
+      "morphology": {
+        "torso": { "length": 0.45, "girthFront": 0.11, "girthMid": 0.095, "girthRear": 0.09, "depthRatio": 1.2, "hump": 0.02, "backSlope": 0.04 },
+        "neck": { "length": 0.14, "radius": 0.06, "pitchDeg": 10 },
+        "head": { "length": 0.15, "width": 0.1, "height": 0.09, "snoutLength": 0.05, "snoutTaper": 0.5, "jaw": "blunt", "ears": { "style": "pointed", "length": 0.05 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.16, "eyeForward": 0.95 },
+        "tail": { "length": 0.8, "baseRadius": 0.05, "tipRadius": 0.02, "segments": 12, "style": "whip", "restCurve": 0.2 },
+        "legs": {
+          "pairs": 2,
+          "front": { "upper": 0.17, "lower": 0.17, "foot": 0.06, "radiusTop": 0.05, "radiusBottom": 0.03, "stanceWidth": 0.11, "digitigrade": true, "footStyle": "pad" },
+          "hind": { "upper": 0.2, "lower": 0.19, "foot": 0.09, "radiusTop": 0.06, "radiusBottom": 0.03, "stanceWidth": 0.12, "digitigrade": true, "footStyle": "pad" }
+        },
+        "wings": null,
+        "dorsal": { "style": "mane", "height": 0.03, "coverage": 0.4, "count": 12 }
+      },
+      "material": { "base": "#3b3f44", "belly": "#8d8a80", "accent": "#c94f2c", "pattern": "rosettes", "patternColor": "#24272b", "patternScale": 5, "roughness": 0.6, "sheen": 0.35, "dorsalColor": "#2b2e33", "hornColor": "#dddddd", "eye": "#e8b13a", "emissive": "#ff6a3a", "emissiveIntensity": 0.35, "emissiveWhere": "eyes" },
+      "juvenile": { "headScale": 1.3, "legScale": 1.15, "tailScale": 0.75, "coat": "#585c60" },
+      "maleVariant": { "scale": 1.1, "hornScale": 0 },
+      "behaviorExpression": { "stalk": "provisional" },
+      "vocal": { "call": "グルル", "alarm": "ガッ" }
+    },
+    "thermal_glider": {
+      "speciesId": "thermal_glider",
+      "displayName": { "ja": "湯翔（仮）", "en": "Thermalwing (provisional)" },
+      "scientificName": "Thermopteryx provisoria",
+      "tagline": { "ja": "仮の説明", "en": "Provisional" },
+      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
+      "silhouette": "Provisional: broad fingered wings, long neck, crest.",
+      "morphology": {
+        "torso": { "length": 0.32, "girthFront": 0.1, "girthMid": 0.09, "girthRear": 0.07, "depthRatio": 1.1, "hump": 0, "backSlope": 0.3 },
+        "neck": { "length": 0.2, "radius": 0.045, "pitchDeg": 40 },
+        "head": { "length": 0.16, "width": 0.08, "height": 0.08, "snoutLength": 0.1, "snoutTaper": 0.9, "jaw": "beaked", "ears": { "style": "feathered", "length": 0.08 }, "horns": { "style": "crest", "length": 0.1, "spread": 0.02 }, "eyeSize": 0.2, "eyeForward": 0.5 },
+        "tail": { "length": 0.45, "baseRadius": 0.04, "tipRadius": 0.01, "segments": 6, "style": "fan", "restCurve": -0.2 },
+        "legs": {
+          "pairs": 1,
+          "front": null,
+          "hind": { "upper": 0.16, "lower": 0.18, "foot": 0.08, "radiusTop": 0.04, "radiusBottom": 0.018, "stanceWidth": 0.12, "digitigrade": true, "footStyle": "talon" }
+        },
+        "wings": { "span": 3.2, "chord": 0.38, "style": "feathered", "foldedLength": 0.55, "fingers": 6 },
+        "dorsal": { "style": "none", "height": 0, "coverage": 0, "count": 0 }
+      },
+      "material": { "base": "#e9e4d8", "belly": "#ffffff", "accent": "#33415c", "pattern": "bands", "patternColor": "#2c3550", "patternScale": 3, "roughness": 0.7, "sheen": 0.5, "dorsalColor": "#d8d2c4", "hornColor": "#f2c46b", "eye": "#120c08", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.3, "legScale": 1.2, "tailScale": 0.6, "coat": "#cfc8b8" },
+      "maleVariant": { "scale": 1.0, "hornScale": 1.3 },
+      "behaviorExpression": { "soar": "provisional" },
+      "vocal": { "call": "ピィー", "alarm": "キャッ" }
+    }
+  },
+  "ui": {
+    "accent": "#d7b56f", "accentSoft": "#f1d59a", "ink": "#0b1211", "paper": "#e9ede4", "danger": "#d9876e", "calm": "#9dbc83",
+    "displayFont": "\"Yu Mincho\", \"Hiragino Mincho ProN\", serif",
+    "bodyFont": "\"Hiragino Kaku Gothic ProN\", \"Yu Gothic\", system-ui, sans-serif"
+  }
+}
