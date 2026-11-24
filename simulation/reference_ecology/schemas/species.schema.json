@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lumen-atlas.invalid/schemas/species.schema.json",
+  "title": "LIVING ATLAS Species Profile",
+  "type": "object",
+  "required": ["species_id","name","trophic_role","diet","preferred_temp_c","cold_tolerance_c","hot_tolerance_c","sociality","territoriality","speed","aggression","warm_spring_affinity"],
+  "properties": {
+    "species_id": {"type":"string","pattern":"^[a-z0-9][a-z0-9_-]{1,63}$"},
+    "name": {"type":"string","minLength":1},
+    "trophic_role": {"enum":["producer","herbivore","omnivore","predator","scavenger","symbiont"]},
+    "diet": {"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "preferred_temp_c": {"type":"number","minimum":-80,"maximum":80},
+    "cold_tolerance_c": {"type":"number","minimum":-100,"maximum":80},
+    "hot_tolerance_c": {"type":"number","minimum":-80,"maximum":100},
+    "sociality": {"type":"number","minimum":0,"maximum":1},
+    "territoriality": {"type":"number","minimum":0,"maximum":1},
+    "speed": {"type":"number","exclusiveMinimum":0},
+    "aggression": {"type":"number","minimum":0,"maximum":1},
+    "warm_spring_affinity": {"type":"number","minimum":0,"maximum":1}
+  },
+  "additionalProperties": false
+}
