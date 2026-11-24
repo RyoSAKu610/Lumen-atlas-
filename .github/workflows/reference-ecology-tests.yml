@@ -1,0 +1,30 @@
+name: Reference Ecology Tests
+
+on:
+  push:
+    paths:
+      - 'simulation/reference_ecology/**'
+      - '.github/workflows/reference-ecology-tests.yml'
+  pull_request:
+    paths:
+      - 'simulation/reference_ecology/**'
+      - '.github/workflows/reference-ecology-tests.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run reference ecology tests
+        working-directory: simulation/reference_ecology
+        env:
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -v
+      - name: Run seeded simulation smoke test
+        working-directory: simulation/reference_ecology
+        env:
+          PYTHONPATH: src
+        run: python -m living_atlas.cli --minutes 180 --seed 17

@@ -1,0 +1,7 @@
+{
+  "hanabikari": {"species_id":"hanabikari","name":"花灯狐","trophic_role":"omnivore","diet":["fruit","insects","small_prey"],"preferred_temp_c":18,"cold_tolerance_c":-8,"hot_tolerance_c":38,"sociality":0.9,"territoriality":0.35,"speed":2.8,"aggression":0.35,"warm_spring_affinity":0.75},
+  "tsukitsuno": {"species_id":"tsukitsuno","name":"月角鹿","trophic_role":"herbivore","diet":["grass","fruit"],"preferred_temp_c":13,"cold_tolerance_c":-18,"hot_tolerance_c":34,"sociality":0.95,"territoriality":0.3,"speed":2.5,"aggression":0.25,"warm_spring_affinity":0.25},
+  "iwabane": {"species_id":"iwabane","name":"岩羽","trophic_role":"omnivore","diet":["fruit","shellfish","carrion"],"preferred_temp_c":16,"cold_tolerance_c":-12,"hot_tolerance_c":42,"sociality":0.4,"territoriality":0.65,"speed":1.8,"aggression":0.6,"warm_spring_affinity":0.65},
+  "mizuhane": {"species_id":"mizuhane","name":"水羽","trophic_role":"omnivore","diet":["insects","shellfish"],"preferred_temp_c":23,"cold_tolerance_c":5,"hot_tolerance_c":39,"sociality":0.85,"territoriality":0.15,"speed":2.2,"aggression":0.15,"warm_spring_affinity":0.95},
+  "kagaribi": {"species_id":"kagaribi","name":"篝翼","trophic_role":"predator","diet":["small_prey","carrion"],"preferred_temp_c":20,"cold_tolerance_c":-5,"hot_tolerance_c":40,"sociality":0.55,"territoriality":0.7,"speed":3.5,"aggression":0.85,"warm_spring_affinity":0.25}
+}
