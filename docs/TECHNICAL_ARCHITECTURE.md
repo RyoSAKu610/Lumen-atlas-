@@ -11,7 +11,7 @@ Unreal Engine 5 desktop application. The current HTML prototype is a temporary r
 - **Perception** — sight, hearing, scent, threat detection, environmental awareness and remembered locations.
 - **DecisionAI** — Utility AI for competing needs plus StateTree / Behavior Trees for structured behavior.
 - **SocialGraph** — familiarity, kinship, trust, affection, dominance, rivalry, fear and cooperation.
-- **InteractionCoordinator** — reserves interaction partners, selects compatible paired/group animation, synchronizes phases, validates distance/contact, resolves interruption and outcome.
+- **InteractionCoordinator** — reserves interaction partners, selects compatible paired/group animation, synchronizes phases, validates distance/contact, resolves interruption and outcome. The Python reference coordinator in simulation/reference_ecology defines the initial state / event contract; it is not the UE5 animation player.
 - **PredatorPrey** — detection, stalking, chase, escape, herd defense, attack resolution, feeding and recovery.
 - **LifeCycle** — courtship, nesting, breeding, pregnancy/eggs, birth/hatching, parental care, growth, aging and death.
 - **Ecology** — food web, vegetation, water, mineral / geothermal resources, migration pressure, population and carrying capacity.
@@ -54,3 +54,7 @@ Species profiles should be data-driven and include morphology, locomotion family
 
 ## Performance
 Use simulation LOD, bounded perception queries, spatial partitioning, event-driven updates, pooled actors, animation budgets and profiling. Never silently disable essential ecology to reach a target frame rate.
+
+
+## Executable reference
+See `simulation/reference_ecology/` for the deterministic Python behavior oracle and `docs/INTERACTION_CONTRACT.md` / `docs/INTERACTION_COORDINATOR.md` for paired phase and animation hand-off definitions. Passing Python tests is not evidence that the UE5 implementation has passed.
