@@ -7,6 +7,7 @@ A persistent wildlife ecosystem where original creatures live, interact, learn, 
 **Repository:** https://github.com/RyoSAKu610/Lumen-atlas-
 
 ## Start here
+- [共同開発スタートガイド（日本語）](docs/START_HERE_JP.md) — 各AIの担当、ブランチ、テスト、PRの進め方。
 - [Project status](docs/PROJECT_STATUS.md) — what exists, what is only a prototype, and what remains incomplete.
 - [Art direction & world bible](docs/ART_DIRECTION.md) — visual language, original creature rules, and Japan × fantasy direction.
 - [Technical architecture](docs/TECHNICAL_ARCHITECTURE.md) — UE5 system boundaries, bootstrap, AI, interactions, and persistence.
