@@ -189,7 +189,29 @@ class LivingAtlasSimulationTests(unittest.TestCase):
         self.assertIsNotNone(coordinator.start(world, "greeting", a.individual_id, b.individual_id))
         self.assertIsNone(coordinator.start(world, "greeting", b.individual_id, a.individual_id))
 
-    def test_invalid_time_steps_are_rejected(self):
+    def test_warning_interaction_changes_partner_fear_without_damage(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        initiator, partner = world.individuals["rockwing-001"], world.individuals["fox-001"]
+        before_health, before_fear = partner.health, partner.fear
+        interaction_id = coordinator.start(world, "warning", initiator.individual_id, partner.individual_id)
+        self.assertIsNotNone(interaction_id)
+        coordinator.advance(world, 7)
+        self.assertEqual(coordinator.active[interaction_id].outcome, "completed")
+        self.assertEqual(partner.health, before_health)
+        self.assertGreater(partner.fear, before_fear)
+
+    def test_conflict_interaction_records_winner_and_retreat(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        initiator, partner = world.individuals["rockwing-001"], world.individuals["fox-001"]
+        interaction_id = coordinator.start(world, "conflict", initiator.individual_id, partner.individual_id)
+        self.assertIsNotNone(interaction_id)
+        coordinator.advance(world, 9)
+        self.assertEqual(coordinator.active[interaction_id].outcome, "retreated")
+        self.assertTrue(any(note.startswith("conflict:") for c in (initiator, partner) for note in c.memories))
+
+    def test_positive_step_validation(self):
         world = create_demo_world()
         with self.assertRaises(ValueError):
             world.step(0)
