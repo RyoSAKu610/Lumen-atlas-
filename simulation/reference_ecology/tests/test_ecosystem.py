@@ -2,11 +2,13 @@ import unittest
 
 from living_atlas import create_demo_world, World
 from living_atlas.world import Individual
+from living_atlas.interactions import InteractionCoordinator
 
 
 class LivingAtlasSimulationTests(unittest.TestCase):
     def test_seeded_world_is_reproducible(self):
-        a, b = create_demo_world(123), create_demo_world(123)
+        a = create_demo_world(123)
+        b = create_demo_world(123)
         a.advance_offline(180)
         b.advance_offline(180)
         self.assertEqual(a.to_json(), b.to_json())
@@ -125,6 +127,67 @@ class LivingAtlasSimulationTests(unittest.TestCase):
         self.assertEqual(set(world.species), {"hanabikari", "tsukitsuno", "iwabane", "mizuhane", "kagaribi"})
         self.assertTrue(all(0 <= s.sociality <= 1 for s in world.species.values()))
         self.assertTrue(all(s.hot_tolerance_c >= s.cold_tolerance_c for s in world.species.values()))
+
+    def test_greeting_runs_coordinated_phases_and_releases_pair(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        a, b = world.individuals["fox-001"], world.individuals["fox-002"]
+        before = a.relationships[b.individual_id]
+        interaction_id = coordinator.start(world, "greeting", a.individual_id, b.individual_id)
+        self.assertIsNotNone(interaction_id)
+        self.assertEqual(a.current_action, "interaction_greeting_observe")
+        a_energy, b_energy = a.energy, b.energy
+        coordinator.advance(world, 8)
+        instance = coordinator.active[interaction_id]
+        self.assertEqual(instance.outcome, "completed")
+        self.assertNotIn(a.individual_id, coordinator.busy)
+        self.assertGreater(a.relationships[b.individual_id], before)
+        self.assertEqual(a.energy, a_energy)
+        self.assertEqual(b.energy, b_energy)
+        self.assertEqual(a.current_action, "recover")
+        self.assertTrue(any(e.kind == "interaction_phase" for e in world.events))
+        self.assertTrue(any(e.kind == "interaction_completed" for e in world.events))
+
+    def test_play_is_declined_when_partner_is_stressed(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        a, b = world.individuals["fox-001"], world.individuals["fox-002"]
+        b.stress = 85
+        self.assertIsNone(coordinator.start(world, "play", a.individual_id, b.individual_id))
+        self.assertFalse(coordinator.active)
+        self.assertTrue(any(e.kind == "interaction_declined" for e in world.events))
+
+    def test_fear_interrupts_both_participants_and_unlocks_them(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        a, b = world.individuals["fox-001"], world.individuals["fox-002"]
+        interaction_id = coordinator.start(world, "greeting", a.individual_id, b.individual_id)
+        self.assertIsNotNone(interaction_id)
+        b.fear = 95
+        coordinator.advance(world, 1)
+        self.assertEqual(coordinator.active[interaction_id].outcome, "interrupted")
+        self.assertNotIn(a.individual_id, coordinator.busy)
+        self.assertNotIn(b.individual_id, coordinator.busy)
+        self.assertEqual(a.current_action, "recover")
+        self.assertTrue(any(e.kind == "interaction_interrupted" for e in world.events))
+
+    def test_active_interaction_snapshot_restores_pair_locks(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        a, b = world.individuals["fox-001"], world.individuals["fox-002"]
+        interaction_id = coordinator.start(world, "greeting", a.individual_id, b.individual_id)
+        coordinator.advance(world, 2)
+        restored = InteractionCoordinator.from_json(coordinator.to_json())
+        self.assertEqual(restored.active[interaction_id].phase, coordinator.active[interaction_id].phase)
+        self.assertEqual(restored.busy[a.individual_id], interaction_id)
+        self.assertEqual(restored.busy[b.individual_id], interaction_id)
+
+    def test_busy_individual_cannot_start_duplicate_interaction(self):
+        world = create_demo_world()
+        coordinator = InteractionCoordinator()
+        a, b = world.individuals["fox-001"], world.individuals["fox-002"]
+        self.assertIsNotNone(coordinator.start(world, "greeting", a.individual_id, b.individual_id))
+        self.assertIsNone(coordinator.start(world, "greeting", b.individual_id, a.individual_id))
 
     def test_invalid_time_steps_are_rejected(self):
         world = create_demo_world()
