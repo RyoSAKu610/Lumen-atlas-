@@ -4,12 +4,12 @@
 - [x] Identify the existing GitHub repository and establish it as the project home.
 - [x] Commit initial vision, status, architecture, AI workstreams and roadmap.
 - [ ] Add the browser prototype's GIF assets and verify a clean-clone launch.
-- [ ] Add issue templates, labels, branch protection and CI.
+- [ ] Add issue templates, labels and branch protection.\n- [x] Add Python reference ecology model, paired interaction coordinator, 21 tests and GitHub Actions CI.
 - [ ] Decide UE5 version, source-control strategy for large binary assets, and target hardware baseline.
 
 ## Phase 1 — First real UE5 vertical slice
 Scope: one compact valley, 3 species, 20–30 individuals.
-- [ ] Create UE5 project and module skeleton.
+- [ ] Create UE5 project and module skeleton.\n- [ ] Port the tested Python interaction and ecology contracts into UE5 C++ / StateTree; do not carry over 2D movement as final locomotion.
 - [ ] Implement one-click WorldBootstrap and versioned save/restore.
 - [ ] Implement CreatureIdentity, Needs and world clock.
 - [ ] Create one rigged quadruped, one small social species and one predator.
