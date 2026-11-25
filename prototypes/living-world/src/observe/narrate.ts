@@ -20,6 +20,11 @@ export function speciesName(art: ArtDirection, speciesId: string): string {
   return art.creatures[speciesId]?.displayName.ja ?? speciesId;
 }
 
+/** Display name without the parenthetical reading, so the journal does not nest brackets. */
+export function speciesShort(art: ArtDirection, speciesId: string): string {
+  return speciesName(art, speciesId).replace(/（[^）]*）/g, '');
+}
+
 export function placeName(region: RegionLayout, placeId: string | null): string {
   if (!placeId) return '谷';
   const landmark = region.landmarks.find((l) => l.id === placeId);
@@ -68,7 +73,7 @@ function individual(sources: NarrationSources, id: AgentId | undefined, fallback
   const agent = sources.agent(id);
   if (!agent) return { full: fallback, name: fallback, species: '' };
   const name = nicknameFor(sources.narration, agent.speciesId, agent.id);
-  const species = speciesName(sources.art, agent.speciesId);
+  const species = speciesShort(sources.art, agent.speciesId);
   return { full: `${name}（${species}）`, name, species };
 }
 
