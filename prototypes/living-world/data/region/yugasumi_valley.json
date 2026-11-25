@@ -1,0 +1,216 @@
+{
+  "schemaVersion": 1,
+  "id": "REG_yugasumi_valley",
+  "name": { "ja": "湯霞の谷", "en": "Yugasumi Valley" },
+  "fictional": true,
+  "provenance": "Original fictional composition by GPT Creative Direction, 2026-11-24. Japanese mountain forests, volcanic sinter, and onsen steam are broad visual references only; the geography, landmarks, ecology, and mossy stone-lantern ruin are invented and do not depict a real site.",
+  "description": {
+    "ja": "白絹の滝からほどける川と、冷たい谷気の中で息づく湯霞の泉。桜の前景、花の段丘、杉の斜面、葦の低湿地が、ひとつの温かな水場を囲む架空の幽谷。",
+    "en": "An invented mountain hollow where a river unspools from White Veil Falls and a warm spring breathes into cold valley air. Sakura foregrounds, a flower shelf, cedar slopes, and a low reed marsh encircle its living heart."
+  },
+  "size": 400,
+  "resolution": 257,
+  "terrain": {
+    "axis": [
+      { "p": [-184, -178], "floor": 56, "halfWidth": 24 },
+      { "p": [-145, -142], "floor": 52, "halfWidth": 25 },
+      { "p": [-116, -112], "floor": 49, "halfWidth": 20 },
+      { "p": [-104, -100], "floor": 30, "halfWidth": 23 },
+      { "p": [-82, -76], "floor": 27, "halfWidth": 34 },
+      { "p": [-52, -43], "floor": 23, "halfWidth": 52 },
+      { "p": [-18, -10], "floor": 20, "halfWidth": 68 },
+      { "p": [20, 10], "floor": 18, "halfWidth": 72 },
+      { "p": [58, 34], "floor": 15, "halfWidth": 62 },
+      { "p": [96, 60], "floor": 12, "halfWidth": 52 },
+      { "p": [132, 94], "floor": 9, "halfWidth": 44 },
+      { "p": [166, 137], "floor": 6, "halfWidth": 36 },
+      { "p": [192, 182], "floor": 4, "halfWidth": 29 }
+    ],
+    "floorHalfWidth": 54,
+    "ridgeFalloff": 96,
+    "ridgeHeight": 48,
+    "floorRoughness": 1.15,
+    "ridgeRoughness": 27,
+    "edgeWarp": 0.48,
+    "features": [
+      { "id": "roost_crag", "kind": "plateau", "center": [47, -60], "radius": 15, "height": 22, "falloff": 5 },
+      { "id": "den_knoll", "kind": "mound", "center": [-53, 42], "radius": 16, "height": 2.4, "falloff": 15 },
+      { "id": "lookout_rise", "kind": "mound", "center": [-69, -18], "radius": 11, "height": 3.8, "falloff": 13 },
+      { "id": "spring_basin", "kind": "basin", "center": [-20, 11], "radius": 27, "height": 2.8, "falloff": 18 },
+      { "id": "flower_shelf", "kind": "mound", "center": [20, 48], "radius": 24, "height": 2.1, "falloff": 18 }
+    ]
+  },
+  "river": {
+    "points": [
+      [-186, -181],
+      [-158, -154],
+      [-132, -129],
+      [-115, -112],
+      [-105, -101],
+      [-96, -91],
+      [-82, -76],
+      [-66, -59],
+      [-50, -41],
+      [-35, -27],
+      [-13, -18],
+      [9, -8],
+      [31, 7],
+      [53, 25],
+      [76, 40],
+      [99, 61],
+      [123, 83],
+      [146, 111],
+      [169, 142],
+      [193, 181]
+    ],
+    "halfWidth": 3.7,
+    "depth": 1.35
+  },
+  "pools": [
+    {
+      "id": "yugasumi_spring",
+      "kind": "hot_spring",
+      "name": { "ja": "湯霞の泉", "en": "Yugasumi Spring" },
+      "center": [-21, 12],
+      "radius": 12.5,
+      "depth": 1.45,
+      "temperatureC": 40.5,
+      "capacity": 8
+    },
+    {
+      "id": "kiri_spring",
+      "kind": "hot_spring",
+      "name": { "ja": "片霞の湯", "en": "Half-Mist Spring" },
+      "center": [13, -37],
+      "radius": 5.5,
+      "depth": 1.05,
+      "temperatureC": 44,
+      "capacity": 3
+    },
+    {
+      "id": "falls_pool",
+      "kind": "plunge_pool",
+      "name": { "ja": "白絹の滝壺", "en": "White Veil Pool" },
+      "center": [-97, -92],
+      "radius": 8.5,
+      "depth": 2.6,
+      "temperatureC": 9,
+      "capacity": 4
+    }
+  ],
+  "landmarks": [
+    {
+      "id": "white_veil_falls",
+      "kind": "waterfall",
+      "name": { "ja": "白絹の滝", "en": "White Veil Falls" },
+      "center": [-107, -103],
+      "radius": 10,
+      "note": "The river crosses the close 49 m to 30 m floor step here; pale water anchors the far background from the main overlook."
+    },
+    {
+      "id": "crag_roost",
+      "kind": "roost",
+      "name": { "ja": "風読岩", "en": "Windreader Crag" },
+      "center": [47, -60],
+      "radius": 11,
+      "note": "A raised flat-topped crag above the east shoulder of the basin, exposed to prevailing wind and overlooking both springs."
+    },
+    {
+      "id": "knoll_den",
+      "kind": "den",
+      "name": { "ja": "根抱きの巣穴", "en": "Root-Hold Den" },
+      "center": [-53, 42],
+      "radius": 6,
+      "note": "A gently raised, well-drained den beneath cedar roots, with two concealed routes to the meadow."
+    },
+    {
+      "id": "east_den",
+      "kind": "den",
+      "name": { "ja": "花影の巣穴", "en": "Flower-Shadow Den" },
+      "center": [69, 61],
+      "radius": 5.5,
+      "note": "A second family den at the seam between sakura shade and the lower meadow, safely above the marsh."
+    },
+    {
+      "id": "stalker_lookout",
+      "kind": "lookout",
+      "name": { "ja": "暮見の岩", "en": "Duskwatch Rock" },
+      "center": [-69, -18],
+      "radius": 5,
+      "note": "A low walkable rise on the downwind cedar edge; cover reaches close enough for observation without making the rock a cliff."
+    },
+    {
+      "id": "lantern_ruin",
+      "kind": "ruin",
+      "name": { "ja": "無銘の苔灯", "en": "Nameless Moss Lantern" },
+      "center": [-4, 31],
+      "radius": 3.5,
+      "note": "Fictional creative addition: three weather-softened stone fragments suggesting a lantern form, swallowed by moss. No inscription, path, offerings, intact architecture, or human presence."
+    },
+    {
+      "id": "sakura_heart",
+      "kind": "grove_heart",
+      "name": { "ja": "霞桜の芯", "en": "Heart of the Mist Sakura" },
+      "center": [52, 56],
+      "radius": 7,
+      "note": "The oldest asymmetrical tree mass; its dark trunk frames the spring from the main overlook while blossom catches late light."
+    },
+    {
+      "id": "mineral_lick",
+      "kind": "salt_lick",
+      "name": { "ja": "白脈の舐め場", "en": "White-Seam Lick" },
+      "center": [83, 28],
+      "radius": 5.5,
+      "note": "A pale mineral seam on level meadow, placed away from the spring so grazing giants circulate through the whole basin."
+    }
+  ],
+  "zones": [
+    { "id": "central_meadow", "kind": "meadow", "center": [2, 8], "radiusX": 79, "radiusZ": 53, "rotation": 0.48, "density": 0.92 },
+    { "id": "sakura_grove", "kind": "sakura_grove", "center": [53, 58], "radiusX": 34, "radiusZ": 20, "rotation": 0.55, "density": 0.82 },
+    { "id": "flower_terrace", "kind": "flower_field", "center": [18, 48], "radiusX": 31, "radiusZ": 16, "rotation": 0.28, "density": 0.88 },
+    { "id": "lower_marsh", "kind": "reed_marsh", "center": [132, 98], "radiusX": 31, "radiusZ": 17, "rotation": 0.76, "density": 0.9 },
+    { "id": "west_maples", "kind": "maple_wood", "center": [-124, -43], "radiusX": 32, "radiusZ": 26, "rotation": 0.32, "density": 0.78 },
+    { "id": "den_cedars", "kind": "cedar_forest", "center": [-68, 24], "radiusX": 35, "radiusZ": 31, "rotation": 0.18, "density": 0.86 },
+    { "id": "falls_mossrocks", "kind": "moss_rocks", "center": [-105, -88], "radiusX": 25, "radiusZ": 17, "rotation": 0.72, "density": 0.84 }
+  ],
+  "spawns": [
+    { "speciesId": "giant_grazer", "count": 7, "near": "central_meadow", "spread": 21, "groups": 1 },
+    { "speciesId": "kit_forager", "count": 9, "near": "knoll_den", "spread": 10, "groups": 2 },
+    { "speciesId": "ridge_stalker", "count": 2, "near": "stalker_lookout", "spread": 44, "groups": 2 },
+    { "speciesId": "thermal_glider", "count": 6, "near": "crag_roost", "spread": 11, "groups": 1 }
+  ],
+  "wind": { "direction": 2.42, "speed": 3.4 },
+  "climate": {
+    "seasonalMeanC": { "spring": 9.5, "summer": 21, "autumn": 11.5, "winter": -2.5 },
+    "diurnalRangeC": 10.5,
+    "weather": {
+      "spring": { "clear": 3.5, "cloudy": 3.2, "rain": 2.3, "fog": 1.8, "snow": 0.2, "storm": 0.25 },
+      "summer": { "clear": 4.2, "cloudy": 2.1, "rain": 2.7, "fog": 1.1, "snow": 0, "storm": 0.9 },
+      "autumn": { "clear": 3.8, "cloudy": 2.8, "rain": 1.8, "fog": 2.5, "snow": 0.3, "storm": 0.35 },
+      "winter": { "clear": 2.8, "cloudy": 3.1, "rain": 0.3, "fog": 1.7, "snow": 4.2, "storm": 0.55 }
+    }
+  },
+  "cameraViewpoints": [
+    {
+      "id": "valley_overlook",
+      "name": { "ja": "霞桜の見晴らし", "en": "Mist-Sakura Overlook" },
+      "position": [104, 56, 101],
+      "target": [-24, 18, -13],
+      "fovDeg": 44
+    },
+    {
+      "id": "spring_side",
+      "name": { "ja": "湯霞の縁", "en": "Steamline Edge" },
+      "position": [7, 24, 39],
+      "target": [-22, 18, 11],
+      "fovDeg": 38
+    },
+    {
+      "id": "falls_view",
+      "name": { "ja": "苔岩の滝見", "en": "Moss-Rock Falls View" },
+      "position": [-67, 41, -57],
+      "target": [-106, 35, -103],
+      "fovDeg": 42
+    }
+  ]
+}

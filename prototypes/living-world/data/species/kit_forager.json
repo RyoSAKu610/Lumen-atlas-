@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "kit_forager",
+  "family": "quadruped_small",
+  "ecologicalRole": "social_omnivore",
+  "body": { "length": 0.9, "shoulderHeight": 0.45, "massKg": 14, "radius": 0.4, "headReach": 0.6, "headHeight": 0.45 },
+  "locomotion": {
+    "walkSpeed": 1.0, "trotSpeed": 2.2, "runSpeed": 5.0, "sprintSpeed": 8.0,
+    "acceleration": 6, "turnRate": 4, "strideLength": 0.45, "maxSlopeDeg": 40,
+    "canSwim": true, "swimSpeed": 0.6, "flight": null
+  },
+  "senses": { "sightRange": 35, "sightFovDeg": 280, "nightVision": 0.75, "hearingRange": 60, "scentRange": 40 },
+  "diet": { "vegetation": 0.5, "meat": 0.3, "carrion": 0.3, "feedRatePerHour": 0.8 },
+  "activity": { "night": 0.5, "dawn": 1, "day": 0.6, "dusk": 1 },
+  "thermal": { "comfortMinC": 4, "comfortMaxC": 27, "insulation": 0.6, "hotSpringAffinity": 0.6 },
+  "needsRates": { "hungerPerHour": 0.07, "thirstPerHour": 0.06, "fatiguePerHour": 0.07, "recoveryPerHour": 0.25, "socialPerHour": 0.08, "curiosityPerHour": 0.06 },
+  "social": { "model": "family", "cohesion": 0.7, "greetingStyle": "sniff", "territorial": false, "territoryRadius": 0, "aggression": 0.2, "boldness": 0.45, "playfulness": 0.95 },
+  "lifeCycle": {
+    "maturityDays": 4, "elderDays": 16, "maxAgeDays": 24, "breedingSeasons": ["spring", "summer"],
+    "gestationDays": 1.5, "litterSize": [2, 3], "reproduction": "live_birth", "parentalCareDays": 3, "juvenileScale": 0.35
+  },
+  "predation": null,
+  "antiPredator": { "alarmCall": true, "herdDefense": false, "fleeDistance": 22, "vigilance": 0.7 },
+  "behaviors": ["idle", "wander", "forage", "drink", "rest", "sleep", "bathe", "seek_company", "follow", "socialize", "play", "court", "care", "vigilance", "flee", "return_home", "feed", "interact"],
+  "utilityWeights": { "play": 1.3, "return_home": 1.2 },
+  "carryingCapacity": 18,
+  "animationSet": "AN_quadruped_small"
+}

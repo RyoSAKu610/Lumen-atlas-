@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "thermal_glider",
+  "family": "winged_flyer",
+  "ecologicalRole": "aerial_scavenger",
+  "body": { "length": 1.4, "shoulderHeight": 0.7, "massKg": 9, "radius": 0.6, "headReach": 0.85, "headHeight": 0.75 },
+  "locomotion": {
+    "walkSpeed": 0.7, "trotSpeed": 1.2, "runSpeed": 2.2, "sprintSpeed": 3,
+    "acceleration": 4, "turnRate": 2.5, "strideLength": 0.35, "maxSlopeDeg": 60,
+    "canSwim": false, "swimSpeed": 0,
+    "flight": {
+      "cruiseSpeed": 9, "minSpeed": 5, "climbRate": 2.2, "sinkRate": 0.8, "soarClimbRate": 2.5,
+      "cruiseAltitude": 45, "maxAltitude": 120, "takeoffDistance": 6
+    }
+  },
+  "senses": { "sightRange": 160, "sightFovDeg": 300, "nightVision": 0.2, "hearingRange": 50, "scentRange": 30 },
+  "diet": { "vegetation": 0.1, "meat": 0.2, "carrion": 1, "feedRatePerHour": 1.0 },
+  "activity": { "night": 0.05, "dawn": 0.6, "day": 1, "dusk": 0.6 },
+  "thermal": { "comfortMinC": 2, "comfortMaxC": 30, "insulation": 0.6, "hotSpringAffinity": 0.4 },
+  "needsRates": { "hungerPerHour": 0.05, "thirstPerHour": 0.04, "fatiguePerHour": 0.06, "recoveryPerHour": 0.22, "socialPerHour": 0.04, "curiosityPerHour": 0.05 },
+  "social": { "model": "loose_flock", "cohesion": 0.4, "greetingStyle": "preen", "territorial": false, "territoryRadius": 0, "aggression": 0.25, "boldness": 0.6, "playfulness": 0.4 },
+  "lifeCycle": {
+    "maturityDays": 6, "elderDays": 30, "maxAgeDays": 44, "breedingSeasons": ["spring"],
+    "gestationDays": 2, "litterSize": [1, 2], "reproduction": "eggs", "parentalCareDays": 4, "juvenileScale": 0.4
+  },
+  "predation": null,
+  "antiPredator": { "alarmCall": true, "herdDefense": false, "fleeDistance": 15, "vigilance": 0.5 },
+  "behaviors": ["idle", "wander", "forage", "drink", "rest", "sleep", "soar", "glide", "perch", "socialize", "court", "care", "flee", "feed", "return_home", "interact"],
+  "utilityWeights": { "soar": 1.2 },
+  "carryingCapacity": 10,
+  "animationSet": "AN_winged_flyer"
+}

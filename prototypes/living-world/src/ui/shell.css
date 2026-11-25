@@ -1,0 +1,171 @@
+:root {
+  color-scheme: dark;
+  --ink: #18211f;
+  --paper: #e2e0d3;
+  --paper-dim: rgba(226, 224, 211, 0.88);
+  --accent: #b89a61;
+  --calm: #789184;
+  --danger: #a95d4e;
+  --display: "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --body: "Hiragino Kaku Gothic ProN", "Yu Gothic", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #app {
+  margin: 0;
+  height: 100%;
+  background: #0b1211;
+  color: var(--paper);
+  font-family: var(--body);
+}
+
+#app { position: relative; overflow: hidden; }
+
+.la-viewport {
+  position: absolute;
+  inset: 0;
+}
+
+.la-viewport canvas { display: block; width: 100%; height: 100%; }
+
+.la-panel {
+  position: absolute;
+  z-index: 2;
+  color: var(--ink);
+  background: var(--paper-dim);
+  border: 1px solid rgba(24, 33, 31, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+}
+
+.la-panel[hidden] { display: none; }
+
+.la-clock {
+  top: 16px;
+  left: 16px;
+  min-width: 220px;
+  padding: 14px 16px 12px;
+}
+
+.la-kicker {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.la-title {
+  margin: 2px 0 8px;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: 0.04em;
+}
+
+.la-meta, .la-shot {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.la-shot { color: #3d4a45; }
+
+.la-status {
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.la-journal {
+  left: 16px;
+  bottom: 78px;
+  width: min(380px, calc(100% - 32px));
+  max-height: 34vh;
+  padding: 12px 14px;
+  overflow: auto;
+}
+
+.la-journal h2, .la-dossier h2 {
+  margin: 0 0 8px;
+  font-family: var(--display);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.la-entry { margin: 0 0 8px; font-size: 13px; line-height: 1.55; }
+.la-entry time { display: block; color: #6d6452; font-size: 10px; letter-spacing: 0.08em; }
+
+.la-dossier {
+  top: 16px;
+  right: 16px;
+  width: min(320px, calc(100% - 32px));
+  max-height: calc(100% - 110px);
+  padding: 14px;
+  overflow: auto;
+}
+
+.la-dossier h3 { margin: 0; font-family: var(--display); font-size: 20px; font-weight: 500; }
+.la-sub { margin: 2px 0 10px; color: #4c564f; font-size: 12px; }
+.la-phrase { margin: 0 0 10px; font-size: 13px; }
+
+.la-need { display: grid; grid-template-columns: 64px 1fr 28px; gap: 6px; align-items: center; margin: 3px 0; font-size: 11px; }
+.la-track { height: 4px; background: rgba(24, 33, 31, 0.12); }
+.la-fill { height: 100%; background: var(--calm); }
+.la-fill.warn { background: var(--danger); }
+
+.la-why, .la-rel { margin: 10px 0 0; padding: 0; list-style: none; font-size: 12px; line-height: 1.45; }
+.la-why li, .la-rel li { margin: 0 0 4px; }
+
+.la-controls {
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 10px;
+  max-width: calc(100% - 24px);
+  overflow-x: auto;
+}
+
+.la-controls button, .la-roster button, .la-release {
+  border: 1px solid rgba(24, 33, 31, 0.18);
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.la-controls button[aria-pressed="true"], .la-roster button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.la-roster {
+  right: 16px;
+  bottom: 78px;
+  width: min(220px, calc(100% - 32px));
+  max-height: 24vh;
+  padding: 8px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.la-release { display: block; margin-top: 8px; }
+
+@media (max-width: 720px) {
+  .la-dossier { display: none; }
+  .la-dossier.open { display: block; top: auto; bottom: 78px; max-height: 46vh; }
+  .la-roster { display: none; }
+  .la-journal { max-height: 22vh; }
+}

@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "giant_grazer",
+  "family": "quadruped_giant",
+  "ecologicalRole": "megafauna_grazer",
+  "body": { "length": 6.5, "shoulderHeight": 3.2, "massKg": 5200, "radius": 2.0, "headReach": 4.2, "headHeight": 3.0 },
+  "locomotion": {
+    "walkSpeed": 1.3, "trotSpeed": 2.4, "runSpeed": 4.2, "sprintSpeed": 6.0,
+    "acceleration": 1.2, "turnRate": 0.6, "strideLength": 2.4, "maxSlopeDeg": 28,
+    "canSwim": true, "swimSpeed": 0.8, "flight": null
+  },
+  "senses": { "sightRange": 70, "sightFovDeg": 300, "nightVision": 0.3, "hearingRange": 90, "scentRange": 60 },
+  "diet": { "vegetation": 1, "meat": 0, "carrion": 0, "feedRatePerHour": 0.5 },
+  "activity": { "night": 0.25, "dawn": 0.8, "day": 1, "dusk": 0.8 },
+  "thermal": { "comfortMinC": 6, "comfortMaxC": 26, "insulation": 0.5, "hotSpringAffinity": 0.95 },
+  "needsRates": { "hungerPerHour": 0.035, "thirstPerHour": 0.05, "fatiguePerHour": 0.045, "recoveryPerHour": 0.16, "socialPerHour": 0.04, "curiosityPerHour": 0.02 },
+  "social": { "model": "herd", "cohesion": 0.85, "greetingStyle": "nuzzle", "territorial": false, "territoryRadius": 0, "aggression": 0.15, "boldness": 0.7, "playfulness": 0.3 },
+  "lifeCycle": {
+    "maturityDays": 12, "elderDays": 40, "maxAgeDays": 56, "breedingSeasons": ["spring"],
+    "gestationDays": 3, "litterSize": [1, 1], "reproduction": "live_birth", "parentalCareDays": 8, "juvenileScale": 0.32
+  },
+  "predation": null,
+  "antiPredator": { "alarmCall": true, "herdDefense": true, "fleeDistance": 30, "vigilance": 0.5 },
+  "behaviors": ["idle", "wander", "graze", "drink", "rest", "sleep", "bathe", "seek_company", "follow", "socialize", "play", "court", "care", "vigilance", "flee", "defend", "interact"],
+  "utilityWeights": { "bathe": 1.3, "defend": 1.2 },
+  "carryingCapacity": 12,
+  "animationSet": "AN_quadruped_giant"
+}
