@@ -1,0 +1,27 @@
+name: Living World Prototype CI
+on:
+  pull_request:
+    paths: ['prototypes/living-world/**', '.github/workflows/living-world-ci.yml']
+  push:
+    branches: [main]
+    paths: ['prototypes/living-world/**', '.github/workflows/living-world-ci.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: prototypes/living-world
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: prototypes/living-world/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run validate:data
+      - run: npm run build
