@@ -51,3 +51,11 @@ Run it with:
 
 ## Definition of done
 A feature is done only when source, required assets, setup steps and a reproducible test are committed. A reference model or generated image is not proof that a production runtime feature exists.
+
+
+## Current Three.js vertical slice — 2026-11-25
+- PR #13 adds the Yugasumi Valley region data, four species profiles, detailed visual / morphology data, Japanese narration, observation UI, camera logic and Three.js integration contracts.
+- The observer still waits for `src/sim/index.ts`, `src/render/env/index.ts`, and `src/render/creatures/index.ts`. Until those modules exist, the app intentionally shows a not-yet-connected state; this is not yet a playable living-world simulation.
+- Node CI passed on PR #13 commit `1d9db540b8f06e47578c900acad94f9203062c55`: dependency install, typecheck, unit tests, bundled-data validation and production build all succeeded. [Workflow run #2](https://github.com/RyoSAKu610/Lumen-atlas-/actions/runs/45648483525).
+- Current tests validate data schemas, seeded RNG / terrain, hot-spring placement, sky positions, narration and documentary camera behavior. They do not yet prove live simulation progression, environment rendering, creature locomotion or synchronized skeletal interactions.
+- PR #14 adds the four-species visual handoff and Yugasumi environment brief. These are art specifications, not completed UE5 models or animations.
