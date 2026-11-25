@@ -1,80 +1,333 @@
 {
   "schemaVersion": 1,
   "locale": "ja",
-  "provenance": "PROVISIONAL engineering placeholder (Claude). To be replaced by the Creative Director (GPT) narration pass.",
+  "provenance": "Documentary narration for the fictional Yugasumi Valley, written in the Creative Director pass (Grok, filling the GPT voice). Observational present tense. No real place or taxon is named.",
   "templates": {
-    "system.world_created": ["{place}の観察を開始した。"],
-    "system.restored": ["観察記録を再開した。"],
-    "system.catchup": ["留守のあいだに{count}件の出来事があったようだ（概算）。"],
-    "world.dawn": ["夜が明ける。"],
-    "world.dusk": ["日が傾く。"],
-    "world.day_started": ["{day}日目。"],
-    "world.season_changed": ["季節は{season}へ。"],
-    "world.weather_changed": ["空模様が{weather}に変わった。"],
-    "world.override": ["観察条件を変更した。"],
-    "agent.born": ["{actor}が生まれた。"],
-    "agent.matured": ["{actor}が成体になった。"],
-    "agent.elder": ["{actor}は老齢期に入った。"],
-    "agent.died": ["{actor}が息を引き取った（{cause}）。"],
-    "interaction.started": ["{actor}が{target}に近づく。"],
-    "interaction.contact": ["{actor}と{target}が触れ合う。"],
-    "interaction.resolved": ["{actor}と{target}のやりとりが終わった（{outcome}）。"],
-    "interaction.interrupted": ["{actor}と{target}のやりとりが途切れた。"],
-    "hunt.stalk_started": ["{actor}が{target}に忍び寄る。"],
-    "hunt.chase_started": ["{actor}が{target}を追う。"],
-    "hunt.succeeded": ["{actor}の狩りが成功した。"],
-    "hunt.failed": ["{actor}の狩りは失敗に終わった。"],
-    "hunt.aborted": ["{actor}は狩りを諦めた。"],
-    "alarm.raised": ["{actor}が警戒の声を上げた。"],
-    "herd.defense": ["群れが{target}に向き直った。"],
-    "hotspring.entered": ["{actor}が{place}に浸かる。"],
-    "hotspring.displaced": ["{actor}が{target}に湯を譲った。"],
-    "courtship.bonded": ["{actor}と{target}がつがいになった。"],
-    "home.returned": ["{actor}が{place}に戻った。"],
-    "flight.soaring": ["{actor}が上昇気流に乗る。"],
-    "carcass.scavenged": ["{actor}が亡骸をついばむ。"]
+    "system.world_created": [
+      "湯霞の谷。観察を始める。湯けむりが谷底の光をほどいている。",
+      "白絹の滝の音が、まだ遠い。ここから一日の記録をつける。",
+      "{place}を見渡せる場所に腰を据えた。風は谷を下っている。"
+    ],
+    "system.restored": [
+      "記録を開き直す。谷の時刻は、閉じたときのまま進み始める。",
+      "同じ光、同じ風。観察は途中から続く。"
+    ],
+    "system.catchup": [
+      "目を離していたあいだに、谷では{count}件ほどの出来事があった。細部は概算だ。",
+      "不在のあいだ、季節の針は動いた。戻った記録は{count}件。粗い見積もりである。"
+    ],
+    "world.dawn": [
+      "夜がほどける。湯気が朝の光に先んじて白くなる。",
+      "稜線が先に温まり、谷底はまだ青い。",
+      "鳥より先に、滝の音が昼の調子に変わる。"
+    ],
+    "world.dusk": [
+      "光が斜面を上へ追い上げ、谷底から順に冷えていく。",
+      "影が川を渡りはじめる。家族の動線が巣へ向かいだす。",
+      "湯けむりだけが、夕闇のなかでまだ明るい。"
+    ],
+    "world.day_started": [
+      "{day}日目。谷は昨日の足跡の上に、新しい露を置いている。",
+      "{day}日目の朝。水の音は同じで、通る者だけが違う。"
+    ],
+    "world.season_changed": [
+      "季節が{season}に移る。草の色と、風の重さが先に変わる。",
+      "{season}。湯の湯気は同じでも、それを包む空気が違う。"
+    ],
+    "world.weather_changed": [
+      "空が{weather}に変わる。谷の奥行きが、それで伸びたり縮んだりする。",
+      "{weather}。音の届く距離が、さきほどまでと違う。"
+    ],
+    "world.override": [
+      "観察の条件をこちらで変えた。谷の側の因果は、そのまま残る。"
+    ],
+    "agent.born": [
+      "{actor}が生まれた。まだ世界は、母親の体温の範囲に収まっている。",
+      "小さな{actorSpecies}、{actorName}。最初の一歩は、まだ記録に値しないほど短い。",
+      "{place}の近くで{actor}が産声を上げる。群れの輪が、ひとつ内側へ寄る。"
+    ],
+    "agent.matured": [
+      "{actor}は成体の歩幅を持つようになった。幼さは、耳と目の大きさにだけ残る。",
+      "{actorName}が独りで採食できる体になった。それでも、ときどき親の影を探す。"
+    ],
+    "agent.elder": [
+      "{actor}の歩みに、余白が増えた。急がないことが、この谷での強さになっている。",
+      "{actorName}は老齢に入った。湯と日向を、以前より正確に選ぶ。"
+    ],
+    "agent.died": [
+      "{actor}が動かなくなった。原因は{cause}。谷は、その場所の風だけを残す。",
+      "{actorName}の記録はここで閉じる。{cause}。周囲の草は、すぐにはそのことを知らない。",
+      "{actor}が息を引き取った。{cause}。残された温もりは、やがて他の腹を満たす。"
+    ],
+    "interaction.started": [
+      "{actor}が{target}との距離を、歩幅ひとつずつ詰めている。",
+      "{actor}が{target}に気づき、進路をそちらへ曲げた。"
+    ],
+    "interaction.started:greet": [
+      "{actor}が{target}の匂いを確かめるように、斜めから近づく。",
+      "顔を合わせる前に、{actor}は歩調を落とした。相手は{target}。"
+    ],
+    "interaction.started:play": [
+      "{actor}が低く身を沈め、{target}を遊びに誘う。",
+      "重心が前に落ちた。{actor}と{target}のあいだに、遊びの間合いができる。"
+    ],
+    "interaction.started:warn": [
+      "{actor}が境界で止まり、{target}に体の正面を向けた。",
+      "音を殺した接近が終わる。{actor}は{target}へ、退けという姿勢を取る。"
+    ],
+    "interaction.started:groom": [
+      "{actor}が{target}の傍らに座り、口先を肩へ向ける。",
+      "急がない接触。{actor}は{target}の毛並みを整えるつもりで寄る。"
+    ],
+    "interaction.started:court": [
+      "{actor}が{target}の周りを、いつもの歩幅より遅く回る。",
+      "繁殖の季節の歩き方だ。{actor}は{target}から目を離さない。"
+    ],
+    "interaction.started:nurse": [
+      "{actor}が体を傾け、{target}の届く位置に腹を落とす。",
+      "子の側へ。{actor}は立ち止まることを、今日の仕事にしている。"
+    ],
+    "interaction.contact": [
+      "{actor}と{target}の距離が、頭の届くところまで縮んだ。",
+      "接触。{actor}と{target}は、互いの輪郭を鼻先で確かめる。"
+    ],
+    "interaction.contact:greet": [
+      "{actor}と{target}が額を寄せる。知っている相手の確認は、短い。",
+      "匂いを交わし、{actor}は{target}の名を、もう一度記憶に上書きする。"
+    ],
+    "interaction.resolved": [
+      "{actor}と{target}のやりとりが終わる。結末は{outcome}。",
+      "間合いが戻る。{actor}と{target}は、それぞれの採食へ向き直る。"
+    ],
+    "interaction.resolved:greet:bonded": [
+      "{actor}と{target}は、挨拶のあともしばらく並んで歩いた。",
+      "顔を合わせただけで十分だった。{actor}と{target}のあいだの緊張がほどける。"
+    ],
+    "interaction.resolved:greet:accepted": [
+      "{actor}の挨拶を、{target}は受け入れた。それ以上は求めない。",
+      "短い確認が済む。{actor}も{target}も、草のほうへ顔を戻す。"
+    ],
+    "interaction.resolved:greet:ignored": [
+      "{target}は{actor}を見なかったことにした。挨拶は、風に溶ける。",
+      "{actor}が寄せた鼻先に、{target}は応えない。"
+    ],
+    "interaction.resolved:greet:rejected": [
+      "{target}は半歩下がり、{actor}の挨拶を拒んだ。",
+      "知らない匂い。{target}は{actor}に脇を向ける。"
+    ],
+    "interaction.resolved:warn:retreated": [
+      "{target}が境界から退く。{actor}は追わない。",
+      "威嚇は、声より姿勢で足りた。{target}は自分の側へ戻る。"
+    ],
+    "interaction.resolved:warn:escalated": [
+      "退かなかった。{actor}と{target}のあいだで、短い衝突が起きた。",
+      "境界の主張がぶつかり、両者は傷の有無を確かめるように離れる。"
+    ],
+    "interaction.resolved:play:accepted": [
+      "遊びは、どちらかが草に気を取られて終わる。{actor}も{target}も、まだ息が浅い。",
+      "{actor}と{target}は追い合いを切り上げ、並んで座った。"
+    ],
+    "interaction.resolved:groom:bonded": [
+      "毛づくろいのあと、{actor}と{target}の呼吸が揃っている。",
+      "{target}は目を細めたまま、{actor}の隣を離れない。"
+    ],
+    "interaction.resolved:court:bonded": [
+      "{actor}と{target}は、つがいとして並ぶことを選んだ。",
+      "求愛が終わる。これからは、同じ寝場所を知っている二頭だ。"
+    ],
+    "interaction.resolved:nurse:accepted": [
+      "{target}は腹を満たし、{actor}の脚のあいだで目を閉じる。",
+      "授乳が一段落する。{actor}は子の背中を、もう一度鼻で数える。"
+    ],
+    "interaction.interrupted": [
+      "{actor}と{target}のやりとりが途切れた。谷のほうが、先に動いた。",
+      "接触の途中で、両者が顔を上げる。理由は、近くの気配だ。"
+    ],
+    "interaction.interrupted:greet": [
+      "挨拶は最後までいかなかった。{actor}も{target}も、同じ方向を見ている。",
+      "{actor}が寄せかけた額を戻す。{target}はすでに半身を開いている。"
+    ],
+    "hunt.stalk_started": [
+      "{actor}が風下に体を落とし、{target}とのあいだの草を一枚ずつ消していく。",
+      "足音が、歩幅の半分になる。{actor}の視線の先に{target}。",
+      "{actor}は走らない。走らないことが、いまの狩りだ。"
+    ],
+    "hunt.chase_started": [
+      "間合いが割れた。{actor}が{target}を追い、谷の音が一瞬遅れる。",
+      "{target}が跳ね、{actor}がそれに重なる。追跡はもう隠すものではない。",
+      "草が割れる。{actor}の狩りは、忍びから速度へ移った。"
+    ],
+    "hunt.succeeded": [
+      "{actor}の狩りが実る。{target}は、そこで記録を終える。",
+      "短い沈黙のあと、{actor}が食事を始める。成功は、派手ではない。",
+      "{place}の近くで決着がついた。{actor}は息を整え、頭を下げた。"
+    ],
+    "hunt.failed": [
+      "{actor}は追い切れなかった。{target}は草の向こうで歩幅を戻している。",
+      "狩りは失敗。{actor}は舌を出し、日陰を探す。",
+      "距離が開き、{actor}は追うのをやめた。今日の腹は、まだ空のままだ。"
+    ],
+    "hunt.aborted": [
+      "{actor}は途中で狩りを捨てた。相手が、一頭ではなかった。",
+      "群れの向きが変わり、{actor}は身を低くしたまま退く。",
+      "続ける理由が消えた。{actor}は稜線の陰へ戻り、息を殺す。"
+    ],
+    "alarm.raised": [
+      "{actor}が頭を上げ、短い声を谷に置いた。近くの仲間が、同じ方向を見る。",
+      "警戒の声。{actor}の体はすでに子の側へ半歩寄っている。",
+      "{actor}が知らせる。草を食む音が、その周囲だけ止まった。"
+    ],
+    "herd.defense": [
+      "成体が輪の外側を向き、子をその内側に残す。",
+      "群れが{target}に正面を向けた。速度ではなく、質量で道を塞ぐ。",
+      "角と肩が並ぶ。{target}にとって、一頭の獲物はもうそこにない。"
+    ],
+    "hotspring.entered": [
+      "{actor}が湯に脚を沈め、息をひとつ長く吐く。",
+      "{place}の湯気が、{actor}の背で二股に割れる。",
+      "冷えた体が、湯のふちで高さを失う。{actor}はそこに留まる。"
+    ],
+    "hotspring.displaced": [
+      "{actor}が湯の縁に上がり、{target}に場所を空ける。",
+      "湯は狭い。{actor}は{target}の体格を見て、自分の番を終えた。"
+    ],
+    "courtship.bonded": [
+      "{actor}と{target}がつがいになる。これからの数日、二人の動線は重なる。",
+      "並んで歩くことが、約束になる。{actor}と{target}。"
+    ],
+    "home.returned": [
+      "{actor}が{place}の匂いの濃い場所まで戻り、そこで歩幅をゼロにする。",
+      "夕暮れの帰巣。{actor}は入り口の前で一度止まり、中の気配を数える。",
+      "{place}に着いた。今日の採食は、ここで口座を閉じる。"
+    ],
+    "flight.soaring": [
+      "{actor}が羽ばたきをやめ、湯の上の見えない柱に体を預ける。",
+      "翼が水平を保ったまま、{actor}は円をひとつ描く。高度は、風が決めている。",
+      "{actor}が帆翔する。谷底の獣たちは、その影が過ぎるまで草を見ている。"
+    ],
+    "carcass.scavenged": [
+      "{actor}が降り、残されたものを静かに分ける。死は、ここで次の腹に移る。",
+      "{place}の近く。{actor}は風に乗り、地面の食事を確かめてから嘴を入れる。",
+      "誰の狩りでもなくなったあと、{actor}が空から参加する。"
+    ]
   },
   "labels": {
     "behaviors": {
-      "idle": "佇む", "wander": "散策", "graze": "採食", "forage": "探餌", "drink": "水飲み", "rest": "休息", "sleep": "睡眠",
-      "bathe": "湯浴み", "seek_company": "仲間を探す", "follow": "追従", "socialize": "交流", "play": "遊び", "warn": "威嚇",
-      "court": "求愛", "care": "子育て", "patrol": "巡回", "vigilance": "警戒", "flee": "逃走", "defend": "防衛",
-      "stalk": "忍び寄り", "chase": "追跡", "feed": "摂食", "return_home": "帰巣", "soar": "帆翔", "glide": "滑空",
-      "perch": "止まり", "interact": "やりとり"
+      "idle": "佇む",
+      "wander": "散策",
+      "graze": "採食",
+      "forage": "探餌",
+      "drink": "水飲み",
+      "rest": "休息",
+      "sleep": "睡眠",
+      "bathe": "湯浴み",
+      "seek_company": "仲間を探す",
+      "follow": "追従",
+      "socialize": "交流",
+      "play": "遊び",
+      "warn": "威嚇",
+      "court": "求愛",
+      "care": "世話",
+      "patrol": "巡回",
+      "vigilance": "警戒",
+      "flee": "逃走",
+      "defend": "防衛",
+      "stalk": "忍び寄り",
+      "chase": "追跡",
+      "feed": "摂食",
+      "return_home": "帰巣",
+      "soar": "帆翔",
+      "glide": "滑空",
+      "perch": "止まり",
+      "interact": "やりとり"
     },
     "behaviorPhrases": {
-      "idle": "静かに佇んでいる", "wander": "あたりを歩いている", "graze": "草を食んでいる", "forage": "餌を探している",
-      "drink": "水を飲んでいる", "rest": "体を休めている", "sleep": "眠っている", "bathe": "湯に浸かっている",
-      "seek_company": "仲間のもとへ向かっている", "follow": "あとをついて歩いている", "socialize": "仲間に近づいている",
-      "play": "遊んでいる", "warn": "相手を威嚇している", "court": "求愛している", "care": "子の世話をしている",
-      "patrol": "縄張りを見回っている", "vigilance": "周囲を警戒している", "flee": "逃げている", "defend": "群れを守っている",
-      "stalk": "獲物に忍び寄っている", "chase": "獲物を追っている", "feed": "食べている", "return_home": "巣へ戻っている",
-      "soar": "上昇気流に乗っている", "glide": "滑空している", "perch": "岩に止まっている", "interact": "相手とやりとりしている"
+      "idle": "風を聞きながら、ただ立っている",
+      "wander": "決まった目的なく、谷の起伏をなぞっている",
+      "graze": "頭を下げ、草を一口ずつ選んでいる",
+      "forage": "鼻先を地面に近づけ、食べられるものを探している",
+      "drink": "川岸で足を止め、水面に口をつけている",
+      "rest": "脚を畳み、半分だけ目を開けている",
+      "sleep": "呼吸だけを残して眠っている",
+      "bathe": "湯に体を預け、蒸気のなかで温まっている",
+      "seek_company": "知っている匂いのするほうへ歩いている",
+      "follow": "前を行く者の歩幅に、自分の足を合わせている",
+      "socialize": "相手の反応を見ながら距離を詰めている",
+      "play": "重心を前に落とし、追い駆けている",
+      "warn": "耳を伏せ、これ以上来るなと体で示している",
+      "court": "相手の周囲をゆっくり回り、歩調を合わせている",
+      "care": "子の位置を確認し、自分の体を盾にしている",
+      "patrol": "縄張りの縁を、同じ順路で見ている",
+      "vigilance": "採食の手を止め、頭だけを上げている",
+      "flee": "振り返らず、開いた地面へ走っている",
+      "defend": "群れの外側に肩を並べ、侵入者へ向いている",
+      "stalk": "風下の陰で腹を地面に近づけ、歩幅を殺している",
+      "chase": "隠すのをやめ、全速で距離を削っている",
+      "feed": "得たものを、急がずに食べている",
+      "return_home": "日が落ちる前に、巣の匂いへ戻っている",
+      "soar": "羽ばたかず、上昇する空気に乗っている",
+      "glide": "翼を固定し、次の地点まで高度を使っている",
+      "perch": "岩の上で翼を畳み、谷を見下ろしている",
+      "interact": "相手と同じリズムで、接触の途中にいる"
     },
     "needs": {
-      "hunger": "空腹", "thirst": "渇き", "fatigue": "疲労", "cold": "寒さ", "heat": "暑さ", "social": "寂しさ",
-      "fear": "恐怖", "curiosity": "好奇心", "stamina": "スタミナ", "health": "健康", "breeding": "繁殖欲"
+      "hunger": "空腹",
+      "thirst": "渇き",
+      "fatigue": "疲労",
+      "cold": "寒さ",
+      "heat": "暑さ",
+      "social": "孤独",
+      "fear": "恐れ",
+      "curiosity": "好奇心",
+      "stamina": "余力",
+      "health": "体調",
+      "breeding": "繁殖の衝動"
     },
-    "interactionKinds": { "greet": "挨拶", "groom": "毛づくろい", "play": "遊び", "warn": "威嚇", "court": "求愛", "nurse": "授乳・世話" },
+    "interactionKinds": {
+      "greet": "挨拶",
+      "groom": "毛づくろい",
+      "play": "遊び",
+      "warn": "威嚇",
+      "court": "求愛",
+      "nurse": "授乳と世話"
+    },
     "interactionPhases": {
-      "approach": "接近", "orient": "向き合い", "signal": "合図", "response": "応答", "contact": "接触",
-      "resolve": "決着", "cooldown": "余韻", "separate": "離脱"
+      "approach": "接近",
+      "orient": "向き合い",
+      "signal": "合図",
+      "response": "応答",
+      "contact": "接触",
+      "resolve": "決着",
+      "cooldown": "余韻",
+      "separate": "離脱"
     },
     "outcomes": {
-      "bonded": "絆が深まった", "accepted": "受け入れられた", "ignored": "無視された", "rejected": "拒まれた",
-      "retreated": "退いた", "escalated": "争いに発展した", "interrupted": "中断された"
+      "bonded": "絆が深まった",
+      "accepted": "受け入れられた",
+      "ignored": "受け流された",
+      "rejected": "拒まれた",
+      "retreated": "退いた",
+      "escalated": "衝突になった",
+      "interrupted": "中断された"
     },
     "seasons": { "spring": "春", "summer": "夏", "autumn": "秋", "winter": "冬" },
     "weathers": { "clear": "晴れ", "cloudy": "曇り", "rain": "雨", "fog": "霧", "snow": "雪", "storm": "嵐" },
     "dayPhases": { "night": "夜", "dawn": "夜明け", "day": "昼", "dusk": "夕暮れ" },
     "lifeStages": { "juvenile": "幼体", "adult": "成体", "elder": "老齢" },
     "sexes": { "female": "メス", "male": "オス" },
-    "causesOfDeath": { "predation": "捕食", "starvation": "飢え", "dehydration": "渇き", "old_age": "老衰", "exposure": "寒さ", "injury": "怪我" }
+    "causesOfDeath": {
+      "predation": "捕食",
+      "starvation": "飢え",
+      "dehydration": "水不足",
+      "old_age": "老衰",
+      "exposure": "寒暖の衰弱",
+      "injury": "傷"
+    }
   },
   "nicknames": {
-    "giant_grazer": ["イワオ", "コケ", "ヤマ", "オボロ", "ツチ", "ミネ", "ハガネ", "シズ", "カサネ", "トキ", "ムロ", "ヨモギ", "アサギ", "クロガネ", "ユルリ", "ナギ"],
-    "kit_forager": ["ホタル", "コハク", "ミケ", "チヨ", "ツムギ", "ヒナ", "コロ", "ユズ", "アカリ", "モモ", "スズ", "キキ", "ハル", "ポン", "リン", "ナツメ"],
-    "ridge_stalker": ["カゲ", "スミ", "ヤミ", "クロ", "シノブ", "ハヤテ", "ツバキ", "オニビ", "ミナモ", "ヨル", "サヤ", "イナズマ", "カスミ", "トバリ", "ムラサメ", "シグレ"],
-    "thermal_glider": ["カゼ", "ソラ", "ハヤ", "シロ", "ツバサ", "アオ", "ユキ", "ヒバリ", "ミソラ", "ハネ", "コチ", "ナル", "タカネ", "キリ", "ハヤセ", "ウタ"]
+    "giant_grazer": ["イワオ", "コケ", "ヤマ", "オボロ", "ツチ", "ミネ", "ハガネ", "シズ", "カサネ", "トキ", "ムロ", "ヨモギ", "アサギ", "クロガネ", "ユルリ", "ナギ", "ヌルデ", "ドウロ", "シグレ", "モロ", "フブキ", "タタラ", "ホド", "ユゲ"],
+    "kit_forager": ["ホタル", "コハク", "ミケ", "チヨ", "ツムギ", "ヒナ", "コロ", "ユズ", "アカリ", "モモ", "スズ", "キキ", "ハル", "ポン", "リン", "ナツメ", "コマ", "ススキ", "ヒカリ", "マメ", "ウタ", "シロツメ", "ポン太", "アズキ"],
+    "ridge_stalker": ["カゲ", "スミ", "ヤミ", "クロ", "シノブ", "ハヤテ", "ツバキ", "オニビ", "ミナモ", "ヨル", "サヤ", "イナズマ", "カスミ", "トバリ", "ムラサメ", "シグレ", "クレナイ", "フチ", "シズカ", "ホノオ", "ナギサ", "クモ", "サビ", "レン"],
+    "thermal_glider": ["カゼ", "ソラ", "ハヤ", "シロ", "ツバサ", "アオ", "ユキ", "ヒバリ", "ミソラ", "ハネ", "コチ", "ナル", "タカネ", "キリ", "ハヤセ", "ウタ", "ユゲ", "ワ", "アセビ", "ノボル", "ヒカル", "モヤ", "テン", "サザナミ"]
   }
 }

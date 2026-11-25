@@ -2,150 +2,236 @@
   "schemaVersion": 1,
   "regionId": "REG_yugasumi_valley",
   "provenance": {
-    "author": "Claude (engineering placeholder)",
+    "author": "GPT Creative Direction",
     "date": "2026-11-24",
-    "notes": "PROVISIONAL values so the renderer can be developed. To be replaced by the Creative Director (GPT) pass."
+    "notes": "Original visual-development data for the fictional Yugasumi Valley vertical slice. Japanese geothermal mountain landscapes inform material and atmosphere only; no real site is depicted."
   },
   "lighting": [
-    { "hour": 0, "sunColor": "#3a4a7a", "sunIntensity": 0.35, "hemiSky": "#1c2a4a", "hemiGround": "#0b0f14", "hemiIntensity": 0.35, "skyZenith": "#050a18", "skyHorizon": "#18233d", "sunGlow": "#2a3a66", "fogColor": "#121a2c", "fogDensity": 0.0028, "exposure": 1.0, "starsOpacity": 1 },
-    { "hour": 4.5, "sunColor": "#50608f", "sunIntensity": 0.3, "hemiSky": "#26365c", "hemiGround": "#0e1218", "hemiIntensity": 0.4, "skyZenith": "#0a1430", "skyHorizon": "#3a3f62", "sunGlow": "#6a5a7a", "fogColor": "#262c44", "fogDensity": 0.0035, "exposure": 1.0, "starsOpacity": 0.7 },
-    { "hour": 5.6, "sunColor": "#ff9a6a", "sunIntensity": 1.2, "hemiSky": "#7f8fb8", "hemiGround": "#3a3028", "hemiIntensity": 0.7, "skyZenith": "#3a5a9a", "skyHorizon": "#f2a98a", "sunGlow": "#ffb27a", "fogColor": "#c9a6a0", "fogDensity": 0.004, "exposure": 1.05, "starsOpacity": 0.15 },
-    { "hour": 7, "sunColor": "#ffd0a0", "sunIntensity": 2.4, "hemiSky": "#a9c3e6", "hemiGround": "#4f4a3a", "hemiIntensity": 0.9, "skyZenith": "#5d8fd0", "skyHorizon": "#f4d6b8", "sunGlow": "#ffe0b0", "fogColor": "#d8dce0", "fogDensity": 0.0025, "exposure": 1.0, "starsOpacity": 0 },
-    { "hour": 12, "sunColor": "#fff4e6", "sunIntensity": 3.2, "hemiSky": "#b8d4f2", "hemiGround": "#5b6646", "hemiIntensity": 1.0, "skyZenith": "#4d86d6", "skyHorizon": "#cfe2f2", "sunGlow": "#fff6e0", "fogColor": "#c8d8e6", "fogDensity": 0.0016, "exposure": 0.95, "starsOpacity": 0 },
-    { "hour": 16.5, "sunColor": "#ffe6c4", "sunIntensity": 2.8, "hemiSky": "#b0cbe8", "hemiGround": "#5b5a40", "hemiIntensity": 0.95, "skyZenith": "#5288d2", "skyHorizon": "#e6e0cc", "sunGlow": "#ffe8c0", "fogColor": "#d6d8d0", "fogDensity": 0.0018, "exposure": 1.0, "starsOpacity": 0 },
-    { "hour": 18, "sunColor": "#ffb070", "sunIntensity": 2.2, "hemiSky": "#9fb2d6", "hemiGround": "#5a4632", "hemiIntensity": 0.8, "skyZenith": "#4a6cb0", "skyHorizon": "#ffc48a", "sunGlow": "#ffb066", "fogColor": "#e0b898", "fogDensity": 0.0026, "exposure": 1.05, "starsOpacity": 0 },
-    { "hour": 19, "sunColor": "#ff7a4a", "sunIntensity": 1.0, "hemiSky": "#6e78a8", "hemiGround": "#3a2c2a", "hemiIntensity": 0.6, "skyZenith": "#2c3c78", "skyHorizon": "#f08a6a", "sunGlow": "#ff8a5a", "fogColor": "#a87a84", "fogDensity": 0.0032, "exposure": 1.1, "starsOpacity": 0.2 },
-    { "hour": 20.5, "sunColor": "#4a5a9a", "sunIntensity": 0.35, "hemiSky": "#2a3a66", "hemiGround": "#12141c", "hemiIntensity": 0.45, "skyZenith": "#0c1634", "skyHorizon": "#2e3a66", "sunGlow": "#3a4a80", "fogColor": "#1c2440", "fogDensity": 0.003, "exposure": 1.0, "starsOpacity": 0.85 },
-    { "hour": 24, "sunColor": "#3a4a7a", "sunIntensity": 0.35, "hemiSky": "#1c2a4a", "hemiGround": "#0b0f14", "hemiIntensity": 0.35, "skyZenith": "#050a18", "skyHorizon": "#18233d", "sunGlow": "#2a3a66", "fogColor": "#121a2c", "fogDensity": 0.0028, "exposure": 1.0, "starsOpacity": 1 }
+    { "hour": 0, "sunColor": "#8ea6c4", "sunIntensity": 0.16, "hemiSky": "#17243b", "hemiGround": "#090d10", "hemiIntensity": 0.31, "skyZenith": "#050914", "skyHorizon": "#17263a", "sunGlow": "#60728f", "fogColor": "#101c25", "fogDensity": 0.0034, "exposure": 0.88, "starsOpacity": 0.92 },
+    { "hour": 4.3, "sunColor": "#9298b5", "sunIntensity": 0.2, "hemiSky": "#24334d", "hemiGround": "#111415", "hemiIntensity": 0.39, "skyZenith": "#0b1530", "skyHorizon": "#3c4057", "sunGlow": "#8b6f78", "fogColor": "#29343d", "fogDensity": 0.0041, "exposure": 0.92, "starsOpacity": 0.62 },
+    { "hour": 5.25, "sunColor": "#f38d68", "sunIntensity": 0.72, "hemiSky": "#657d9b", "hemiGround": "#302921", "hemiIntensity": 0.57, "skyZenith": "#284873", "skyHorizon": "#d18a7c", "sunGlow": "#ffad79", "fogColor": "#ad8f86", "fogDensity": 0.0048, "exposure": 1.02, "starsOpacity": 0.18 },
+    { "hour": 6.35, "sunColor": "#ffd0a1", "sunIntensity": 2.05, "hemiSky": "#9db7c9", "hemiGround": "#494336", "hemiIntensity": 0.82, "skyZenith": "#537aa3", "skyHorizon": "#ecd0b2", "sunGlow": "#ffd5a3", "fogColor": "#cfcbc0", "fogDensity": 0.0032, "exposure": 1.0, "starsOpacity": 0 },
+    { "hour": 9.2, "sunColor": "#fff0cf", "sunIntensity": 3.35, "hemiSky": "#a9c6d7", "hemiGround": "#4f5844", "hemiIntensity": 1.0, "skyZenith": "#5587af", "skyHorizon": "#cadbd8", "sunGlow": "#ffe3b2", "fogColor": "#c1d1ca", "fogDensity": 0.0017, "exposure": 0.95, "starsOpacity": 0 },
+    { "hour": 13, "sunColor": "#fff8e8", "sunIntensity": 4.15, "hemiSky": "#b5d1df", "hemiGround": "#59604a", "hemiIntensity": 1.08, "skyZenith": "#4c82ad", "skyHorizon": "#c9dce0", "sunGlow": "#fff2d3", "fogColor": "#c2d3cf", "fogDensity": 0.00125, "exposure": 0.91, "starsOpacity": 0 },
+    { "hour": 16.4, "sunColor": "#ffe0ae", "sunIntensity": 3.0, "hemiSky": "#9fb9ca", "hemiGround": "#514c3c", "hemiIntensity": 0.9, "skyZenith": "#557a9f", "skyHorizon": "#dfc7a8", "sunGlow": "#ffd099", "fogColor": "#c8c4b2", "fogDensity": 0.0019, "exposure": 0.97, "starsOpacity": 0 },
+    { "hour": 17.75, "sunColor": "#f79a68", "sunIntensity": 1.82, "hemiSky": "#7e8fa8", "hemiGround": "#45372e", "hemiIntensity": 0.7, "skyZenith": "#3e5c85", "skyHorizon": "#e89c78", "sunGlow": "#ffae72", "fogColor": "#bd9585", "fogDensity": 0.0029, "exposure": 1.03, "starsOpacity": 0.04 },
+    { "hour": 18.7, "sunColor": "#d96755", "sunIntensity": 0.62, "hemiSky": "#586583", "hemiGround": "#2d2524", "hemiIntensity": 0.52, "skyZenith": "#263b68", "skyHorizon": "#a96368", "sunGlow": "#e7775b", "fogColor": "#725f69", "fogDensity": 0.0038, "exposure": 1.0, "starsOpacity": 0.34 },
+    { "hour": 20.2, "sunColor": "#8293bb", "sunIntensity": 0.2, "hemiSky": "#233250", "hemiGround": "#0d1114", "hemiIntensity": 0.36, "skyZenith": "#09142a", "skyHorizon": "#273755", "sunGlow": "#53678e", "fogColor": "#172631", "fogDensity": 0.0036, "exposure": 0.9, "starsOpacity": 0.82 },
+    { "hour": 24, "sunColor": "#8ea6c4", "sunIntensity": 0.16, "hemiSky": "#17243b", "hemiGround": "#090d10", "hemiIntensity": 0.31, "skyZenith": "#050914", "skyHorizon": "#17263a", "sunGlow": "#60728f", "fogColor": "#101c25", "fogDensity": 0.0034, "exposure": 0.88, "starsOpacity": 0.92 }
   ],
   "seasons": {
-    "spring": { "grassBase": "#4f7a3a", "grassTip": "#9cc46a", "flowerAccent": "#f3c6d8", "cedar": "#2f4a34", "sakuraCanopy": "#f2bfd0", "mapleCanopy": "#8fb35a", "pine": "#3a5a40", "petalRate": 1.2, "petalColor": "#f7d3df", "ground": "#6b6248", "snowCover": 0, "waterTint": "#7fb8b8" },
-    "summer": { "grassBase": "#3f6e2c", "grassTip": "#8dbb4a", "flowerAccent": "#f2e27a", "cedar": "#27432c", "sakuraCanopy": "#5f8f45", "mapleCanopy": "#4f8a3c", "pine": "#2f5236", "petalRate": 0, "petalColor": "#ffffff", "ground": "#5f5a40", "snowCover": 0, "waterTint": "#6aaeb0" },
-    "autumn": { "grassBase": "#7a6a3a", "grassTip": "#c9a45a", "flowerAccent": "#e07a4a", "cedar": "#33452f", "sakuraCanopy": "#c8703a", "mapleCanopy": "#d2452a", "pine": "#3a5038", "petalRate": 0.8, "petalColor": "#d8622e", "ground": "#6e5a3c", "snowCover": 0, "waterTint": "#7aa6a0" },
-    "winter": { "grassBase": "#8a8670", "grassTip": "#c8c4b0", "flowerAccent": null, "cedar": "#2c3d33", "sakuraCanopy": "#6a5a52", "mapleCanopy": "#6a5048", "pine": "#2e4436", "petalRate": 0, "petalColor": "#ffffff", "ground": "#8a8578", "snowCover": 0.75, "waterTint": "#8fb6c4" }
+    "spring": { "grassBase": "#46633f", "grassTip": "#91a96b", "flowerAccent": "#d6a9b6", "cedar": "#263f35", "sakuraCanopy": "#d9aeb9", "mapleCanopy": "#738d58", "pine": "#304a3e", "petalRate": 1.65, "petalColor": "#ebcad0", "ground": "#625b49", "snowCover": 0.05, "waterTint": "#75a7a4" },
+    "summer": { "grassBase": "#355b3b", "grassTip": "#719957", "flowerAccent": "#d9c66c", "cedar": "#1f392f", "sakuraCanopy": "#54794d", "mapleCanopy": "#49724a", "pine": "#284438", "petalRate": 0, "petalColor": "#e8e0d4", "ground": "#4e4b3e", "snowCover": 0, "waterTint": "#5d9695" },
+    "autumn": { "grassBase": "#6b6540", "grassTip": "#ad9455", "flowerAccent": "#b95b3f", "cedar": "#293d34", "sakuraCanopy": "#a15e45", "mapleCanopy": "#a83d31", "pine": "#30463a", "petalRate": 1.15, "petalColor": "#bd6745", "ground": "#5f503e", "snowCover": 0, "waterTint": "#709491" },
+    "winter": { "grassBase": "#77786a", "grassTip": "#aeb1a5", "flowerAccent": null, "cedar": "#24362f", "sakuraCanopy": "#5d5651", "mapleCanopy": "#574b47", "pine": "#283b33", "petalRate": 0, "petalColor": "#f1f1ea", "ground": "#77746b", "snowCover": 0.68, "waterTint": "#83a6ae" }
   },
   "weather": {
-    "clear": { "fogMultiplier": 1, "lightMultiplier": 1, "saturation": 1, "tint": "#ffffff", "cloudCover": 0.1 },
-    "cloudy": { "fogMultiplier": 1.4, "lightMultiplier": 0.6, "saturation": 0.85, "tint": "#dfe4ea", "cloudCover": 0.7 },
-    "rain": { "fogMultiplier": 2.4, "lightMultiplier": 0.45, "saturation": 0.8, "tint": "#c6d0d8", "cloudCover": 0.95 },
-    "fog": { "fogMultiplier": 6, "lightMultiplier": 0.6, "saturation": 0.75, "tint": "#e6e8ea", "cloudCover": 0.6 },
-    "snow": { "fogMultiplier": 3, "lightMultiplier": 0.6, "saturation": 0.7, "tint": "#e8eef4", "cloudCover": 0.9 },
-    "storm": { "fogMultiplier": 3.2, "lightMultiplier": 0.3, "saturation": 0.7, "tint": "#a8b0bc", "cloudCover": 1 }
+    "clear": { "fogMultiplier": 0.8, "lightMultiplier": 1.08, "saturation": 1.02, "tint": "#fff5df", "cloudCover": 0.08 },
+    "cloudy": { "fogMultiplier": 1.35, "lightMultiplier": 0.66, "saturation": 0.78, "tint": "#cbd3cf", "cloudCover": 0.76 },
+    "rain": { "fogMultiplier": 2.15, "lightMultiplier": 0.48, "saturation": 0.7, "tint": "#aebfc2", "cloudCover": 0.96 },
+    "fog": { "fogMultiplier": 6.8, "lightMultiplier": 0.62, "saturation": 0.62, "tint": "#d8d7cb", "cloudCover": 0.64 },
+    "snow": { "fogMultiplier": 3.1, "lightMultiplier": 0.72, "saturation": 0.58, "tint": "#dbe3e5", "cloudCover": 0.9 },
+    "storm": { "fogMultiplier": 3.7, "lightMultiplier": 0.26, "saturation": 0.55, "tint": "#83959d", "cloudCover": 1 }
   },
   "terrain": {
-    "meadow": "#5f8a42", "meadowDry": "#a69a5a", "moss": "#4f6e3a", "rock": "#7a7468", "cliff": "#5e5850",
-    "sinter": "#e8e0cc", "sulfur": "#d8c45a", "riverbed": "#8a8270", "forestFloor": "#3d3a2a", "marsh": "#5a6e46", "snow": "#f2f4f8"
+    "meadow": "#57734a",
+    "meadowDry": "#91835a",
+    "moss": "#405e43",
+    "rock": "#666861",
+    "cliff": "#494e4d",
+    "sinter": "#d8d1bd",
+    "sulfur": "#b7a650",
+    "riverbed": "#6f756d",
+    "forestFloor": "#34392f",
+    "marsh": "#4d6655",
+    "snow": "#e7ebe9"
   },
-  "water": { "shallow": "#6fb5b0", "deep": "#1f4f62", "hotSpringShallow": "#9fe0d6", "hotSpringDeep": "#2a8fa0", "foam": "#f4f8f6", "steam": "#f2f2ee" },
-  "atmosphere": { "fireflyColor": "#e8ff9a", "fireflyDensity": 60, "steamOpacity": 0.55, "godRays": 0.4, "bloom": 0.35, "painterly": 0.5 },
+  "water": {
+    "shallow": "#679b99",
+    "deep": "#274f5b",
+    "hotSpringShallow": "#91c8bc",
+    "hotSpringDeep": "#377e80",
+    "foam": "#e8ece5",
+    "steam": "#deded4"
+  },
+  "atmosphere": {
+    "fireflyColor": "#d9e58a",
+    "fireflyDensity": 72,
+    "steamOpacity": 0.63,
+    "godRays": 0.48,
+    "bloom": 0.26,
+    "painterly": 0.68
+  },
   "creatures": {
     "giant_grazer": {
       "speciesId": "giant_grazer",
-      "displayName": { "ja": "苔背の巨獣（仮）", "en": "Mossback (provisional)" },
-      "scientificName": "Muscotherium provisorium",
-      "tagline": { "ja": "仮の説明", "en": "Provisional" },
-      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
-      "silhouette": "Provisional: columnar legs, broad back with moss mantle.",
+      "displayName": { "ja": "苔衣（こけごろも）", "en": "Mossmantle Colossus" },
+      "scientificName": "Vaporidorsa columnera",
+      "tagline": { "ja": "湯けむりを背に負う、谷のゆるやかな山脈。", "en": "A slow-moving ridgeline carrying the valley's steam upon its back." },
+      "description": { "ja": "柱のような四肢と、肩から腰へ垂れる苔色の外套をもつ大型草食獣。群れは幼体を内側に置き、冬の夜には湯霞の泉へ静かな道を刻む。", "en": "A vast grazer on four columnar limbs, with a lichen-toned mantle falling from shoulder to hip. Herds keep calves inside their formation and wear patient paths to the spring on winter nights." },
+      "silhouette": "Thumbnail read: four near-vertical columns under a deep barrel, a high broken shoulder-mantle, small low-slung wedge head, and a short heavy counterweight tail. Never elephantine: no trunk, fan ears, or tusks.",
       "morphology": {
-        "torso": { "length": 0.42, "girthFront": 0.17, "girthMid": 0.19, "girthRear": 0.16, "depthRatio": 1.15, "hump": 0.06, "backSlope": 0.08 },
-        "neck": { "length": 0.22, "radius": 0.09, "pitchDeg": 25 },
-        "head": { "length": 0.17, "width": 0.11, "height": 0.12, "snoutLength": 0.06, "snoutTaper": 0.3, "jaw": "blunt", "ears": { "style": "round", "length": 0.05 }, "horns": { "style": "crest", "length": 0.08, "spread": 0.05 }, "eyeSize": 0.12, "eyeForward": 0.1 },
-        "tail": { "length": 0.35, "baseRadius": 0.07, "tipRadius": 0.015, "segments": 8, "style": "taper", "restCurve": -0.3 },
+        "torso": { "length": 0.5, "girthFront": 0.2, "girthMid": 0.215, "girthRear": 0.18, "depthRatio": 1.22, "hump": 0.105, "backSlope": 0.1 },
+        "neck": { "length": 0.24, "radius": 0.105, "pitchDeg": 22 },
+        "head": { "length": 0.18, "width": 0.125, "height": 0.115, "snoutLength": 0.07, "snoutTaper": 0.18, "jaw": "blunt", "ears": { "style": "round", "length": 0.038 }, "horns": { "style": "curved", "length": 0.095, "spread": 0.115 }, "eyeSize": 0.09, "eyeForward": 0.08 },
+        "tail": { "length": 0.26, "baseRadius": 0.062, "tipRadius": 0.025, "segments": 7, "style": "club", "restCurve": -0.24 },
         "legs": {
           "pairs": 2,
-          "front": { "upper": 0.2, "lower": 0.19, "foot": 0.04, "radiusTop": 0.075, "radiusBottom": 0.06, "stanceWidth": 0.24, "digitigrade": false, "footStyle": "column" },
-          "hind": { "upper": 0.21, "lower": 0.18, "foot": 0.045, "radiusTop": 0.085, "radiusBottom": 0.062, "stanceWidth": 0.25, "digitigrade": false, "footStyle": "column" }
+          "front": { "upper": 0.245, "lower": 0.195, "foot": 0.052, "radiusTop": 0.09, "radiusBottom": 0.065, "stanceWidth": 0.285, "digitigrade": false, "footStyle": "column" },
+          "hind": { "upper": 0.235, "lower": 0.19, "foot": 0.058, "radiusTop": 0.1, "radiusBottom": 0.07, "stanceWidth": 0.3, "digitigrade": false, "footStyle": "column" }
         },
         "wings": null,
-        "dorsal": { "style": "moss_mantle", "height": 0.05, "coverage": 0.8, "count": 14 }
+        "dorsal": { "style": "moss_mantle", "height": 0.085, "coverage": 0.84, "count": 17 }
       },
-      "material": { "base": "#6f6a58", "belly": "#a49a7f", "accent": "#7da36a", "pattern": "dapples", "patternColor": "#5a5646", "patternScale": 3, "roughness": 0.85, "sheen": 0.2, "dorsalColor": "#6f9a52", "hornColor": "#d9d2bf", "eye": "#2a2014", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
-      "juvenile": { "headScale": 1.35, "legScale": 1.15, "tailScale": 0.8, "coat": "#8a8268" },
-      "maleVariant": { "scale": 1.08, "hornScale": 1.4 },
-      "behaviorExpression": { "greet": "provisional" },
-      "vocal": { "call": "ホゥン", "alarm": "ドゥッ" }
+      "material": { "base": "#565c55", "belly": "#77776b", "accent": "#829071", "pattern": "dapples", "patternColor": "#414a45", "patternScale": 2.4, "roughness": 0.94, "sheen": 0.12, "dorsalColor": "#596d52", "hornColor": "#b9ad91", "eye": "#b78943", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.48, "legScale": 1.18, "tailScale": 0.62, "coat": "#74786b" },
+      "maleVariant": { "scale": 1.07, "hornScale": 1.48 },
+      "behaviorExpression": {
+        "greet": "Anticipation: both slow and lower the horn line. Action: cheek and mantle edge press in a long nuzzle. Follow-through: shared exhale, then parallel stance.",
+        "groom": "One presents a mantle flank; the partner rakes loose lichen with the blunt lower incisors, then both shake the skin in a slow ripple.",
+        "play": "Calves plant the forefeet, swing the oversized head sideways, then bound with rear legs together; adults answer only with a measured shoulder feint.",
+        "court": "The suitor walks a broad half-circle, showing horn span and mantle depth, then waits motionless for the other to close the distance.",
+        "nurse": "The calf folds its long front legs and tucks beneath the adult barrel; the adult widens stance and curls the tail away from contact.",
+        "bathe": "Tests the lip with one foot, descends weight-first, then lets the barrel settle until steam catches on the mantle; exit includes a full-body water roll.",
+        "graze": "Forelegs remain planted while neck sweeps a deliberate arc; lips tear whole grass clumps and the jaw continues grinding during the next step.",
+        "vigilance": "Chewing stops first, then head and short ears align; nearby adults copy the stillness in a delayed wave.",
+        "alarm": "A chest resonance precedes the visible call; mantle lifts, head snaps high, and the nearest calf moves inward.",
+        "flee": "Turns are weighty and staged through four planted feet; calves accelerate first while adults run as an outer moving wall.",
+        "defend": "Adults step shoulder-to-shoulder, lower paired horns, stamp once, then advance only enough to deny the predator a line to the calves.",
+        "sleep": "Knees fold in sequence; the barrel settles sternum-first, with one sentinel remaining upright and the mantle rising on deep breaths."
+      },
+      "vocal": { "call": "ヴォォゥン", "alarm": "ドゥンッ" }
     },
     "kit_forager": {
       "speciesId": "kit_forager",
-      "displayName": { "ja": "灯尾（仮）", "en": "Lanterntail (provisional)" },
-      "scientificName": "Lampadocauda provisoria",
-      "tagline": { "ja": "仮の説明", "en": "Provisional" },
-      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
-      "silhouette": "Provisional: light, long bushy tail with glowing tip, big ears.",
+      "displayName": { "ja": "薄尾（すすきお）", "en": "Reedbrush Kit" },
+      "scientificName": "Calamicauda vesperelle",
+      "tagline": { "ja": "夕草を縫い、家族の匂いをたどる小さな探索者。", "en": "A small dusk-wanderer stitching paths through grass by scent and memory." },
+      "description": { "ja": "花弁形の耳と、枯れ薄に似た長い房尾をもつ雑食獣。薄明の家族群は鼻先の挨拶を重ね、幼体は倒木や互いの影まで遊び場に変える。", "en": "A social omnivore with petal-fold ears and a long tail like a dry reed plume. At twilight families renew scent greetings, while young turn roots, stones, and even one another's shadows into games." },
+      "silhouette": "Thumbnail read: light arched body on springy digitigrade legs, two tall petal-fold ears, narrow muzzle, and an extravagant reed-plume tail carried above the back. Tail mass, not eye size, owns the read.",
       "morphology": {
-        "torso": { "length": 0.42, "girthFront": 0.11, "girthMid": 0.12, "girthRear": 0.11, "depthRatio": 1.0, "hump": 0, "backSlope": -0.05 },
-        "neck": { "length": 0.12, "radius": 0.07, "pitchDeg": 30 },
-        "head": { "length": 0.22, "width": 0.15, "height": 0.13, "snoutLength": 0.1, "snoutTaper": 0.75, "jaw": "tapered", "ears": { "style": "pointed", "length": 0.18 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.22, "eyeForward": 0.4 },
-        "tail": { "length": 0.75, "baseRadius": 0.08, "tipRadius": 0.05, "segments": 10, "style": "bushy", "restCurve": 0.8 },
+        "torso": { "length": 0.45, "girthFront": 0.105, "girthMid": 0.115, "girthRear": 0.125, "depthRatio": 0.9, "hump": 0.012, "backSlope": -0.06 },
+        "neck": { "length": 0.18, "radius": 0.062, "pitchDeg": 28 },
+        "head": { "length": 0.24, "width": 0.125, "height": 0.115, "snoutLength": 0.12, "snoutTaper": 0.82, "jaw": "tapered", "ears": { "style": "long", "length": 0.2 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.18, "eyeForward": 0.38 },
+        "tail": { "length": 0.9, "baseRadius": 0.072, "tipRadius": 0.045, "segments": 12, "style": "plume", "restCurve": 1.18 },
         "legs": {
           "pairs": 2,
-          "front": { "upper": 0.2, "lower": 0.2, "foot": 0.07, "radiusTop": 0.04, "radiusBottom": 0.025, "stanceWidth": 0.14, "digitigrade": true, "footStyle": "pad" },
-          "hind": { "upper": 0.24, "lower": 0.22, "foot": 0.1, "radiusTop": 0.05, "radiusBottom": 0.025, "stanceWidth": 0.15, "digitigrade": true, "footStyle": "pad" }
+          "front": { "upper": 0.2, "lower": 0.19, "foot": 0.075, "radiusTop": 0.034, "radiusBottom": 0.022, "stanceWidth": 0.135, "digitigrade": true, "footStyle": "pad" },
+          "hind": { "upper": 0.235, "lower": 0.205, "foot": 0.105, "radiusTop": 0.045, "radiusBottom": 0.024, "stanceWidth": 0.15, "digitigrade": true, "footStyle": "pad" }
         },
         "wings": null,
         "dorsal": { "style": "none", "height": 0, "coverage": 0, "count": 0 }
       },
-      "material": { "base": "#c9874a", "belly": "#f0dfc4", "accent": "#f6efe2", "pattern": "bands", "patternColor": "#8a4e2a", "patternScale": 4, "roughness": 0.75, "sheen": 0.6, "dorsalColor": "#b0703a", "hornColor": "#ffffff", "eye": "#1a120c", "emissive": "#ffd27a", "emissiveIntensity": 0.8, "emissiveWhere": "markings" },
-      "juvenile": { "headScale": 1.4, "legScale": 1.1, "tailScale": 0.7, "coat": "#d9a46e" },
-      "maleVariant": { "scale": 1.05, "hornScale": 0 },
-      "behaviorExpression": { "play": "provisional" },
-      "vocal": { "call": "キュルッ", "alarm": "キッ" }
+      "material": { "base": "#8b6852", "belly": "#c7b395", "accent": "#d8c69d", "pattern": "bands", "patternColor": "#4f4b47", "patternScale": 5.2, "roughness": 0.82, "sheen": 0.48, "dorsalColor": "#6a594d", "hornColor": "#d8d0ba", "eye": "#26362f", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.52, "legScale": 0.86, "tailScale": 0.48, "coat": "#a4876d" },
+      "maleVariant": { "scale": 1.04, "hornScale": 0 },
+      "behaviorExpression": {
+        "greet": "Anticipation: tail lowers and ears open sideways. Action: three quick nose-to-cheek sniffs with a brief shoulder pass. Follow-through: tails cross, then lift.",
+        "groom": "Forepaws brace on the partner's shoulder while incisors comb the tail base; the recipient closes one ear and leans into the pressure.",
+        "play": "A freeze precedes each burst; juveniles side-hop, pounce through tail plumes, tumble, then spring apart and invite pursuit with forequarters low.",
+        "warn": "Ears flatten into one narrow leaf shape, body rises on straight legs, and the plume tail lashes once before a dry bark.",
+        "court": "Partners trace mirrored figure-eights, pausing nose-to-tail; acceptance is a synchronized tail lift and quiet flank contact.",
+        "nurse": "Young knead with alternating forepaws; the parent curls the plume around the litter as a windbreak, then grooms each crown.",
+        "bathe": "Wades only to belly depth, splashes the tail deliberately, and darts out to shake from nose to tail tip.",
+        "forage": "Ears triangulate independently while the nose parts litter; discoveries are pinned with both forepaws before a quick testing bite.",
+        "vigilance": "Rises onto hind toes with tail held horizontal as a family signal; one ear tracks home while the other tracks danger.",
+        "alarm": "A single sharp bark freezes the family; the caller tail-flicks toward the den before following last.",
+        "flee": "Three bounding strides, a broken-angle turn behind cover, then a low sprint with ears folded and tail streaming.",
+        "feed": "Sits back on the haunches, rotates food between nimble forepaws, and pauses often to listen.",
+        "sleep": "Family members coil nose-to-tail; juveniles disappear under adult plumes except for folded ear tips."
+      },
+      "vocal": { "call": "クリュル", "alarm": "ケッ！" }
     },
     "ridge_stalker": {
       "speciesId": "ridge_stalker",
-      "displayName": { "ja": "影縞（仮）", "en": "Shadowstripe (provisional)" },
-      "scientificName": "Umbrafelis provisoria",
-      "tagline": { "ja": "仮の説明", "en": "Provisional" },
-      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
-      "silhouette": "Provisional: low, long-bodied, whip tail, forward eyes.",
+      "displayName": { "ja": "暮裂（くれさき）", "en": "Duskcleft Stalker" },
+      "scientificName": "Crepuscissa riftwalker",
+      "tagline": { "ja": "風下の陰に伏せ、谷の動きがほどける瞬間を待つ。", "en": "It lies in the downwind seam and waits for the valley's order to loosen." },
+      "description": { "ja": "低く長い胴、強い後肢、肩で割れる黒い鬣をもつ単独性の捕食者。狩りは忍耐に始まり、しばしば失敗に終わる。縄張りの境では争いよりも側面姿勢と尾の合図を選ぶ。", "en": "A solitary predator built low and long, with powerful hindquarters and a dark mane split over the shoulders. Its hunts begin in patience and often end empty; at borders it prefers broadside display and tail signals to injury." },
+      "silhouette": "Thumbnail read: head, spine, and tail form one low horizontal stroke; oversized folded hindquarters sit above it, while a short split shoulder-mane makes a dark notch. No feline rosettes, saber teeth, or dragon spines.",
       "morphology": {
-        "torso": { "length": 0.45, "girthFront": 0.11, "girthMid": 0.095, "girthRear": 0.09, "depthRatio": 1.2, "hump": 0.02, "backSlope": 0.04 },
-        "neck": { "length": 0.14, "radius": 0.06, "pitchDeg": 10 },
-        "head": { "length": 0.15, "width": 0.1, "height": 0.09, "snoutLength": 0.05, "snoutTaper": 0.5, "jaw": "blunt", "ears": { "style": "pointed", "length": 0.05 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.16, "eyeForward": 0.95 },
-        "tail": { "length": 0.8, "baseRadius": 0.05, "tipRadius": 0.02, "segments": 12, "style": "whip", "restCurve": 0.2 },
+        "torso": { "length": 0.54, "girthFront": 0.105, "girthMid": 0.095, "girthRear": 0.125, "depthRatio": 1.12, "hump": 0.025, "backSlope": -0.1 },
+        "neck": { "length": 0.17, "radius": 0.065, "pitchDeg": -4 },
+        "head": { "length": 0.18, "width": 0.115, "height": 0.085, "snoutLength": 0.075, "snoutTaper": 0.62, "jaw": "tapered", "ears": { "style": "round", "length": 0.038 }, "horns": { "style": "none", "length": 0, "spread": 0 }, "eyeSize": 0.14, "eyeForward": 0.92 },
+        "tail": { "length": 0.82, "baseRadius": 0.047, "tipRadius": 0.014, "segments": 14, "style": "whip", "restCurve": -0.08 },
         "legs": {
           "pairs": 2,
-          "front": { "upper": 0.17, "lower": 0.17, "foot": 0.06, "radiusTop": 0.05, "radiusBottom": 0.03, "stanceWidth": 0.11, "digitigrade": true, "footStyle": "pad" },
-          "hind": { "upper": 0.2, "lower": 0.19, "foot": 0.09, "radiusTop": 0.06, "radiusBottom": 0.03, "stanceWidth": 0.12, "digitigrade": true, "footStyle": "pad" }
+          "front": { "upper": 0.155, "lower": 0.145, "foot": 0.065, "radiusTop": 0.045, "radiusBottom": 0.027, "stanceWidth": 0.115, "digitigrade": true, "footStyle": "pad" },
+          "hind": { "upper": 0.205, "lower": 0.165, "foot": 0.09, "radiusTop": 0.063, "radiusBottom": 0.029, "stanceWidth": 0.13, "digitigrade": true, "footStyle": "pad" }
         },
         "wings": null,
-        "dorsal": { "style": "mane", "height": 0.03, "coverage": 0.4, "count": 12 }
+        "dorsal": { "style": "mane", "height": 0.055, "coverage": 0.34, "count": 9 }
       },
-      "material": { "base": "#3b3f44", "belly": "#8d8a80", "accent": "#c94f2c", "pattern": "rosettes", "patternColor": "#24272b", "patternScale": 5, "roughness": 0.6, "sheen": 0.35, "dorsalColor": "#2b2e33", "hornColor": "#dddddd", "eye": "#e8b13a", "emissive": "#ff6a3a", "emissiveIntensity": 0.35, "emissiveWhere": "eyes" },
-      "juvenile": { "headScale": 1.3, "legScale": 1.15, "tailScale": 0.75, "coat": "#585c60" },
-      "maleVariant": { "scale": 1.1, "hornScale": 0 },
-      "behaviorExpression": { "stalk": "provisional" },
-      "vocal": { "call": "グルル", "alarm": "ガッ" }
+      "material": { "base": "#343b3c", "belly": "#676963", "accent": "#9a5843", "pattern": "stripes", "patternColor": "#202728", "patternScale": 6.5, "roughness": 0.68, "sheen": 0.28, "dorsalColor": "#1f2728", "hornColor": "#8d897c", "eye": "#d2a04c", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.38, "legScale": 0.92, "tailScale": 0.66, "coat": "#545c5b" },
+      "maleVariant": { "scale": 1.09, "hornScale": 0 },
+      "behaviorExpression": {
+        "greet": "Rare and guarded: familiar adults approach on parallel tracks, exchange flank scent without face contact, then separate without turning backs.",
+        "groom": "One deliberate lick along the split mane follows scent recognition; prolonged grooming is reserved for parent and young.",
+        "play": "Young rehearse ambushes with exaggerated shoulder dips and inhibited paw contact, breaking off the instant the partner vocalizes.",
+        "warn": "Anticipation: turns broadside at the boundary. Action: split mane rises, tail draws a rigid hook, lips part silently. Follow-through: three backward steps without surrendering eye line.",
+        "court": "The male leaves a scrape, retreats downwind, and lowers the mane; the female controls every closing distance.",
+        "nurse": "The mother lies with head uphill, scanning; young press beneath the rear ribcage and freeze whenever her tail tip stops.",
+        "vigilance": "Only the eyes and small ears move; the tail tip counts wind shifts against the ground.",
+        "alarm": "No loud call: a low chest pulse, exposed rust throat, and sudden mane flare carry the warning.",
+        "flee": "Drops from view before accelerating, using two long bounds and a hard lateral cut into terrain shadow.",
+        "defend": "Protecting young, it circles rather than charges, keeping the threat in front and the den behind its stronger hindquarters.",
+        "stalk": "Shoulder blades alternate beneath a level spine; each forepaw tests the ground, belly nearly touches cover, and movement stops when prey looks up.",
+        "chase": "Hindquarters release in two explosive bounds; tail straightens as a rudder, mouth stays closed until the final lunge.",
+        "feed": "Pins with both forepaws, tears backward with the neck, then lifts its head to scan after every few bites.",
+        "sleep": "Chooses a lee hollow, spine curved around the vulnerable belly, nose tucked under the split mane but ears exposed."
+      },
+      "vocal": { "call": "ウゥルォ", "alarm": "ヴァッ" }
     },
     "thermal_glider": {
       "speciesId": "thermal_glider",
-      "displayName": { "ja": "湯翔（仮）", "en": "Thermalwing (provisional)" },
-      "scientificName": "Thermopteryx provisoria",
-      "tagline": { "ja": "仮の説明", "en": "Provisional" },
-      "description": { "ja": "仮の説明文。", "en": "Provisional description." },
-      "silhouette": "Provisional: broad fingered wings, long neck, crest.",
+      "displayName": { "ja": "湯輪翔（ゆわとび）", "en": "Vaporwheel Glider" },
+      "scientificName": "Anemorbita fumaralis",
+      "tagline": { "ja": "湯の上に見えない輪を描き、谷の死を空へ返す。", "en": "It draws invisible rings above the springs and returns the valley's dead to the sky." },
+      "description": { "ja": "一対の脚と二枚の長翼をもつ昼行性の腐肉食者。黒い指羽と淡い腹が、上空では墨の輪と白い芯に見える。岩棚から風を読み、湯の上昇気流をほとんど羽ばたかずに登る。", "en": "A day-active scavenger standing on one leg pair beneath two long wings. Dark fingered primaries and a pale belly form an ink ring around a white center overhead. It reads wind from the crag and climbs spring thermals with scarcely a wingbeat." },
+      "silhouette": "Thumbnail read: in flight, very broad shallow-M wings with seven separated ink-dark fingers, a small diamond tail, and a long S neck; perched, a tall one-pair biped wrapped in wings that cross below the tail.",
       "morphology": {
-        "torso": { "length": 0.32, "girthFront": 0.1, "girthMid": 0.09, "girthRear": 0.07, "depthRatio": 1.1, "hump": 0, "backSlope": 0.3 },
-        "neck": { "length": 0.2, "radius": 0.045, "pitchDeg": 40 },
-        "head": { "length": 0.16, "width": 0.08, "height": 0.08, "snoutLength": 0.1, "snoutTaper": 0.9, "jaw": "beaked", "ears": { "style": "feathered", "length": 0.08 }, "horns": { "style": "crest", "length": 0.1, "spread": 0.02 }, "eyeSize": 0.2, "eyeForward": 0.5 },
-        "tail": { "length": 0.45, "baseRadius": 0.04, "tipRadius": 0.01, "segments": 6, "style": "fan", "restCurve": -0.2 },
+        "torso": { "length": 0.36, "girthFront": 0.105, "girthMid": 0.09, "girthRear": 0.07, "depthRatio": 1.2, "hump": 0.018, "backSlope": 0.24 },
+        "neck": { "length": 0.2, "radius": 0.042, "pitchDeg": 48 },
+        "head": { "length": 0.2, "width": 0.082, "height": 0.078, "snoutLength": 0.12, "snoutTaper": 0.92, "jaw": "beaked", "ears": { "style": "frill", "length": 0.065 }, "horns": { "style": "crest", "length": 0.09, "spread": 0.035 }, "eyeSize": 0.18, "eyeForward": 0.58 },
+        "tail": { "length": 0.5, "baseRadius": 0.035, "tipRadius": 0.012, "segments": 7, "style": "fan", "restCurve": -0.3 },
         "legs": {
           "pairs": 1,
           "front": null,
-          "hind": { "upper": 0.16, "lower": 0.18, "foot": 0.08, "radiusTop": 0.04, "radiusBottom": 0.018, "stanceWidth": 0.12, "digitigrade": true, "footStyle": "talon" }
+          "hind": { "upper": 0.19, "lower": 0.19, "foot": 0.095, "radiusTop": 0.036, "radiusBottom": 0.016, "stanceWidth": 0.13, "digitigrade": true, "footStyle": "talon" }
         },
-        "wings": { "span": 3.2, "chord": 0.38, "style": "feathered", "foldedLength": 0.55, "fingers": 6 },
+        "wings": { "span": 3.35, "chord": 0.42, "style": "feathered", "foldedLength": 0.66, "fingers": 7 },
         "dorsal": { "style": "none", "height": 0, "coverage": 0, "count": 0 }
       },
-      "material": { "base": "#e9e4d8", "belly": "#ffffff", "accent": "#33415c", "pattern": "bands", "patternColor": "#2c3550", "patternScale": 3, "roughness": 0.7, "sheen": 0.5, "dorsalColor": "#d8d2c4", "hornColor": "#f2c46b", "eye": "#120c08", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
-      "juvenile": { "headScale": 1.3, "legScale": 1.2, "tailScale": 0.6, "coat": "#cfc8b8" },
-      "maleVariant": { "scale": 1.0, "hornScale": 1.3 },
-      "behaviorExpression": { "soar": "provisional" },
-      "vocal": { "call": "ピィー", "alarm": "キャッ" }
+      "material": { "base": "#a9a99d", "belly": "#d9d5c6", "accent": "#9b634c", "pattern": "bands", "patternColor": "#3c4849", "patternScale": 3.4, "roughness": 0.78, "sheen": 0.38, "dorsalColor": "#596466", "hornColor": "#b6a46e", "eye": "#b86935", "emissive": null, "emissiveIntensity": 0, "emissiveWhere": "none" },
+      "juvenile": { "headScale": 1.36, "legScale": 0.82, "tailScale": 0.55, "coat": "#b9b5a8" },
+      "maleVariant": { "scale": 1.02, "hornScale": 1.38 },
+      "behaviorExpression": {
+        "greet": "Both lower crests, sidestep along the perch, and preen one stroke at the partner's shoulder; acceptance ends in mirrored wing-folds.",
+        "groom": "The beak zips each primary from base to tip; a full wing is offered only after the partner settles its crest.",
+        "play": "Juveniles release twigs into the updraft, bank after them, and pull away just before capture; landing is noisy and deliberately overbalanced.",
+        "warn": "Faces the intruder, fans the diamond tail, spreads only the dark primary fingers, and clacks the beak without leaving the perch.",
+        "court": "A high spiral becomes a silent paired descent; the male rolls to show the pale belly and rust underwing bar before both return to the crag.",
+        "nurse": "Parent braces tall over the nest, shades the chick with one half-open wing, and transfers small food pieces beak to beak.",
+        "vigilance": "Perched body remains still while the S neck makes precise angular scans; one wing loosens when wind strengthens.",
+        "alarm": "Crest and neck frill flatten, wings snap half-open, and a two-note cry sends nearby birds off the rock.",
+        "flee": "Drops below the perch before opening the wings, trading height for immediate speed and banking behind the crag.",
+        "feed": "Lands upwind, approaches in two-foot hops, opens wings as a privacy screen, and tears small pieces with backward head jerks.",
+        "soar": "Enters the steam column with one deep wingbeat; primaries spread, tail makes tiny corrections, and the body traces widening circles.",
+        "glide": "Neck retracts between the shoulders, wings lock in a shallow M, and one tip drops to turn without flapping.",
+        "perch": "Feet reach together, wings flare against forward motion, then fold in two distinct layers while the tail remains fanned for balance.",
+        "sleep": "Balances on one leg with the other drawn into belly feathers; head turns backward beneath the crossed wing tips."
+      },
+      "vocal": { "call": "フィーヨォ", "alarm": "カァ・キッ" }
     }
   },
   "ui": {
-    "accent": "#d7b56f", "accentSoft": "#f1d59a", "ink": "#0b1211", "paper": "#e9ede4", "danger": "#d9876e", "calm": "#9dbc83",
+    "accent": "#b89a61",
+    "accentSoft": "#d7c69a",
+    "ink": "#18211f",
+    "paper": "#e2e0d3",
+    "danger": "#a95d4e",
+    "calm": "#789184",
     "displayFont": "\"Yu Mincho\", \"Hiragino Mincho ProN\", serif",
     "bodyFont": "\"Hiragino Kaku Gothic ProN\", \"Yu Gothic\", system-ui, sans-serif"
   }
