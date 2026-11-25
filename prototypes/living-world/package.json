@@ -13,6 +13,8 @@
     "test:watch": "vitest",
     "validate:data": "tsx scripts/validate-data.ts",
     "terrain:preview": "tsx scripts/terrain-preview.ts",
+    "simulate": "tsx scripts/simulate.ts",
+    "bench": "tsx scripts/bench.ts",
     "shot": "node scripts/screenshot.mjs"
   },
   "dependencies": {
