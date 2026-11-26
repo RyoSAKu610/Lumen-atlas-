@@ -109,6 +109,17 @@ describe('terrain-aware water routing', () => {
 
     for (const agent of sim.agents.filter((item) => item.alive)) {
       const profile = profiles.get(agent.speciesId)!;
+      if (profile.locomotion.flight) {
+        const landing = nearestAccessibleDrinkSpot(
+          sim.terrain,
+          drinkSpots,
+          agent.pos.x,
+          agent.pos.z,
+          Math.min(profile.locomotion.maxSlopeDeg, 40),
+        );
+        expect(landing, `no safe aerial landing bank for ${agent.speciesId} #${agent.id}`).not.toBeNull();
+        continue;
+      }
       const route = findDrinkRoute(
         sim.terrain,
         drinkSpots,
@@ -144,4 +155,15 @@ describe('terrain-aware water routing', () => {
     expect(walkLength).toBeGreaterThanOrEqual(route!.distance - 1);
     expect(walkLength).toBeLessThan(240);
   });
+  it('provides a controlled landing speed for an aerial approach', () => {
+    const distance = 60;
+    const altitude = 24;
+    const effectiveSink = 0.8 * 1.6;
+    const remainingDescent = altitude / effectiveSink;
+    const matchedSpeed = distance / remainingDescent;
+    expect(matchedSpeed).toBeCloseTo(3.2, 1);
+    expect(Math.min(5, matchedSpeed)).toBeCloseTo(3.2, 1);
+    expect(4 / remainingDescent).toBeLessThan(matchedSpeed);
+  });
+
 });
