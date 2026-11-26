@@ -222,6 +222,19 @@ describe('behaviour', () => {
     expect(drinker).toBeTruthy();
     const group = adults.filter((agent) => agent.groupId === drinker.groupId);
     expect(group.length).toBeGreaterThanOrEqual(3);
+    const far = farthestClearing(sim);
+
+    // Isolate the test from predator perception and unrelated crowding; keep
+    // only same-herd companions behind the thirsty adult.
+    for (const other of sim.agents) {
+      if (other.id === drinker.id || group.some((member) => member.id === other.id)) continue;
+      place(sim, other, far.x, far.z);
+      calm(other);
+      other.behavior = 'idle';
+      other.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+      other.memory.lastThreatId = null;
+      other.memory.lastThreatPos = null;
+    }
 
     // This lower western shelf is a reproducible, walkable start with a
     // multi-waypoint route to the river bank. Put the rest of the herd behind
@@ -234,6 +247,8 @@ describe('behaviour', () => {
       calm(followers[i]);
       followers[i].behavior = 'idle';
       followers[i].intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+      followers[i].memory.lastThreatId = null;
+      followers[i].memory.lastThreatPos = null;
     }
     calm(drinker);
     drinker.needs.thirst = 1;
@@ -250,7 +265,21 @@ describe('behaviour', () => {
     // full multi-waypoint path and reach the actual bank.
     step(sim, 1200);
     const after = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
-    expect(after).toBeLessThan(before - 15);
+    const diagnostic = JSON.stringify({
+      before,
+      after,
+      pos: drinker.pos,
+      target: drinker.intent.target,
+      behavior: drinker.behavior,
+      intent: drinker.intent.behavior,
+      speed: drinker.speed,
+      heading: drinker.heading,
+      distanceTravelled: drinker.stats.distance,
+      thirst: drinker.needs.thirst,
+      fear: drinker.needs.fear,
+      events: sim.recentEvents(80).filter((event) => event.actors.includes(drinker.id)).map((event) => ({type:event.type,data:event.data})),
+    });
+    expect(after, diagnostic).toBeLessThan(before - 15);
   });
 
   it('lets a critically thirsty herd adult abandon defense and seek water', () => {
