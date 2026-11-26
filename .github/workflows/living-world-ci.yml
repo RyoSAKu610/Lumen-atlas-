@@ -3,10 +3,13 @@ on:
   pull_request:
     paths: ['prototypes/living-world/**', '.github/workflows/living-world-ci.yml']
   push:
-    branches: [main]
+    branches: [main, 'cursor/living-world-vertical-slice-9dda']
     paths: ['prototypes/living-world/**', '.github/workflows/living-world-ci.yml']
 permissions:
   contents: read
+concurrency:
+  group: living-world-ci-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   test:
     runs-on: ubuntu-latest
