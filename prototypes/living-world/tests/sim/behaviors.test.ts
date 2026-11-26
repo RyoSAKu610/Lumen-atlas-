@@ -176,6 +176,21 @@ describe('behaviour', () => {
     expect(sim.getRelationships(winner.id).get(loser.id)?.dominance).toBeGreaterThan(
       sim.getRelationships(loser.id).get(winner.id)?.dominance ?? 0,
     );
+
+    // Resolve is not the end of the encounter: both animals complete cooldown / separation,
+    // after which the loser chooses distance while the winner remains alert at the boundary.
+    let released = false;
+    for (let i = 0; i < 160; i++) {
+      sim.step();
+      if (!sim.interactions.some((interaction) => [challenger.id, rival.id].includes(interaction.initiator) && [challenger.id, rival.id].includes(interaction.responder))) {
+        released = true;
+        break;
+      }
+    }
+    expect(released).toBe(true);
+    expect(loser.behavior).toBe('flee');
+    expect(loser.memory.lastThreatId).toBe(winner.id);
+    expect(winner.behavior).toBe('vigilance');
   });
 
   it('hunts an isolated kit, fails a chase, and aborts against the herd', () => {
