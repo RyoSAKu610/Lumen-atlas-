@@ -51,11 +51,23 @@ for (const agent of sim.agents) {
 console.log('\npopulation');
 for (const [id, row] of population) console.log(`  ${id}: ${row.alive} alive, ${row.dead} dead`);
 
+const journal = sim.recentEvents(2000);
+
+const mortality = new Map<string, number>();
+for (const event of journal) {
+  if (event.type !== 'agent.died') continue;
+  const key = `${String(event.data.species ?? 'unknown')} / ${String(event.data.stage ?? 'unknown')} / ${String(event.data.cause ?? 'unknown')}`;
+  mortality.set(key, (mortality.get(key) ?? 0) + 1);
+}
+console.log('\nmortality by species / life stage / cause');
+for (const [key, n] of [...mortality.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
+  console.log(`  ${n.toString().padStart(3)}  ${key}`);
+}
+console.log(`  births recorded: ${journal.filter((event) => event.type === 'agent.born').length}`);
+
 console.log('\nevents');
 const types = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 for (const [type, n] of types) console.log(`  ${n.toString().padStart(5)}  ${type}`);
-
-const journal = sim.recentEvents(2000);
 const lines = [...journal].sort((a, b) => b.importance - a.importance || a.seq - b.seq).slice(0, 8);
 console.log('\njournal');
 for (const event of lines) console.log(formatEvent(event));
