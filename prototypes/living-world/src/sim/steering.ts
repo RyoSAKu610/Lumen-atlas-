@@ -168,12 +168,13 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   }
   if (agent.posture !== 'airborne' && agent.behavior !== 'soar' && agent.behavior !== 'glide') {
     const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
-    // Route waypoints have already been validated with the same body-radius
-    // clearance and segment checks. Re-applying the local obstacle repulsion
-    // field while following that route can cancel a perfectly valid waypoint
-    // target and pin a large animal beside a rock. Keep that field for free
-    // roaming; route followers trust their verified corridor.
-    if (!followingWaterRoute) {
+    const onValidatedWaterCorridor = followingWaterRoute && (rt.waterPathIndex ?? 0) > 0;
+    // The first waypoint is a connector from the real current location into
+    // the navigation lattice; a rock may block its straight sightline, so
+    // retain local obstacle avoidance until that connector is reached. The
+    // remaining edges were explicitly checked by the route graph and should
+    // not receive a competing repulsion vector that pushes animals off-path.
+    if (!onValidatedWaterCorridor) {
       const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
       for (const o of obs) {
         const dx = agent.pos.x - o.x;
