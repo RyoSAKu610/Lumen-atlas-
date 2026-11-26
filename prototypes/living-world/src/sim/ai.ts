@@ -644,29 +644,51 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
   } else if (behavior === 'graze' || behavior === 'forage') {
     target = forageTarget(state, agent);
   } else if (behavior === 'drink') {
-    const route = findDrinkRoute(
-      state.terrain,
-      state.drinkSpots,
-      { x: agent.pos.x, z: agent.pos.z },
-      sp.locomotion.maxSlopeDeg,
-      sp.body.radius * agent.scale,
-    );
-    if (route) {
-      target = route.target;
-      agent.memory.water = route.target;
-      rt.waterPath = route.waypoints;
-      rt.waterPathIndex = 0;
-    } else {
-      const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
+    if (sp.locomotion.flight) {
+      // Flyers travel directly to a safe bank, then make a controlled descent.
+      const bankSlope = Math.min(sp.locomotion.maxSlopeDeg, 40);
+      const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, bankSlope);
       const remembered = agent.memory.water;
       target = nearest ?? (
-        remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
+        remembered && state.terrain.isWalkable(remembered.x, remembered.z, bankSlope, 0.35)
           ? remembered
           : null
       );
-      rt.waterPath = [];
+      rt.waterPath = target ? [target] : [];
       rt.waterPathIndex = 0;
-      if (target) agent.memory.water = target;
+      if (target) {
+        agent.memory.water = target;
+        const distance = distXZ(agent.pos.x, agent.pos.z, target.x, target.z);
+        if (rt.altitude > 0.35 || distance > sp.locomotion.flight.takeoffDistance * 1.5) {
+          agent.posture = 'airborne';
+          agent.flightMode = rt.altitude < 2.2 ? 'takeoff' : 'flap';
+        }
+      }
+    } else {
+      const route = findDrinkRoute(
+        state.terrain,
+        state.drinkSpots,
+        { x: agent.pos.x, z: agent.pos.z },
+        sp.locomotion.maxSlopeDeg,
+        sp.body.radius * agent.scale,
+      );
+      if (route) {
+        target = route.target;
+        agent.memory.water = route.target;
+        rt.waterPath = route.waypoints;
+        rt.waterPathIndex = 0;
+      } else {
+        const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
+        const remembered = agent.memory.water;
+        target = nearest ?? (
+          remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
+            ? remembered
+            : null
+        );
+        rt.waterPath = [];
+        rt.waterPathIndex = 0;
+        if (target) agent.memory.water = target;
+      }
     }
   } else if (behavior === 'bathe') {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
