@@ -278,7 +278,7 @@ describe('behaviour', () => {
     for (let tick = 0; tick < 1200; tick++) {
       sim.step();
       const liveTarget = drinker.intent.target;
-      if (!liveTarget || drinker.behavior !== 'drink' || drinker.speed >= 0.4) continue;
+      if (!liveTarget || String(drinker.behavior) !== 'drink' || drinker.speed >= 0.4) continue;
       const atTarget = Math.hypot(drinker.pos.x - liveTarget.x, drinker.pos.z - liveTarget.z) <= 1.8;
       const matchesBank = banksForTest.some((spot) =>
         Math.hypot(spot.x - liveTarget.x, spot.z - liveTarget.z) < 0.05,
