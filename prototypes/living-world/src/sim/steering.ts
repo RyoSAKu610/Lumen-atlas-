@@ -190,7 +190,9 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   }
   const moved = distXZ(agent.pos.x, agent.pos.z, clamped.x, clamped.z);
   const targetProgress = dist - distXZ(clamped.x, clamped.z, tx, tz);
-  const dynamicTarget = ['flee', 'chase', 'stalk', 'follow', 'soar', 'glide'].includes(agent.behavior);
+  const dynamicTarget =
+    agent.behavior === 'flee' || agent.behavior === 'chase' || agent.behavior === 'stalk' ||
+    agent.behavior === 'follow' || agent.behavior === 'soar' || agent.behavior === 'glide';
   const madeProgress = dynamicTarget ? moved > 0.05 : targetProgress > Math.max(0.006, agent.speed * dt * 0.08);
   if (desired > 0.3 && !madeProgress && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
     if (rt.stuck < 0) {
