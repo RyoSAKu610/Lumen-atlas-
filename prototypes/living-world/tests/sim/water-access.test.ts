@@ -166,4 +166,22 @@ describe('terrain-aware water routing', () => {
     expect(4 / remainingDescent).toBeLessThan(matchedSpeed);
   });
 
+  it('can recover a giant herbivore that has been pushed near the outer valley rim', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
+    const giant = data.species.find((species) => species.id === 'giant_grazer')!;
+    const route = findDrinkRoute(
+      sim.terrain,
+      generateDrinkSpots(sim.terrain),
+      { x: -113, z: -184.9 },
+      giant.locomotion.maxSlopeDeg,
+      giant.body.radius,
+    );
+    expect(route).not.toBeNull();
+    expect(route!.waypoints.length).toBeGreaterThan(0);
+    expect(route!.distance).toBeLessThan(100);
+    for (const point of route!.waypoints) {
+      expect(sim.terrain.isWalkable(point.x, point.z, giant.locomotion.maxSlopeDeg, 0.35)).toBe(true);
+    }
+  });
+
 });
