@@ -76,7 +76,25 @@ export function killAgent(state: SimState, agent: AgentState, cause: CauseOfDeat
     'agent.died',
     [agent.id],
     { x: agent.pos.x, z: agent.pos.z },
-    { species: agent.speciesId, cause, stage: agent.lifeStage },
+    {
+      species: agent.speciesId,
+      cause,
+      stage: agent.lifeStage,
+      behavior: agent.behavior,
+      decision: agent.decision?.chosen ?? null,
+      thirst: round3(agent.needs.thirst),
+      hunger: round3(agent.needs.hunger),
+      fatigue: round3(agent.needs.fatigue),
+      health: round3(agent.needs.health),
+      fear: round3(agent.needs.fear),
+      waterX: agent.memory.water?.x ?? null,
+      waterZ: agent.memory.water?.z ?? null,
+      targetX: agent.intent.target?.x ?? null,
+      targetZ: agent.intent.target?.z ?? null,
+      homeId: agent.homeId,
+      threatX: agent.memory.lastThreatPos?.x ?? null,
+      threatZ: agent.memory.lastThreatPos?.z ?? null,
+    },
     cause === 'predation' ? 0.95 : 0.85,
   );
 }
@@ -260,4 +278,8 @@ export function removeSpentCarcasses(state: SimState): void {
     for (const row of state.relationships.values()) row.delete(id);
   }
   state.agents = state.agents.filter((a) => !gone.has(a.id));
+}
+
+function round3(value: number): number {
+  return Math.round(value * 1000) / 1000;
 }
