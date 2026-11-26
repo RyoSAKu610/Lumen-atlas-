@@ -294,8 +294,10 @@ function nearestReachableCell(
 ): number {
   const approximateI = Math.round((start.x + nav.half) / nav.step);
   const approximateJ = Math.round((start.z + nav.half) / nav.step);
-  let best = -1;
-  let bestScore = Number.POSITIVE_INFINITY;
+  let bestVisible = -1;
+  let bestVisibleScore = Number.POSITIVE_INFINITY;
+  let bestReachable = -1;
+  let bestReachableScore = Number.POSITIVE_INFINITY;
   for (let ring = 0; ring <= rings; ring++) {
     for (let dj = -ring; dj <= ring; dj++) {
       for (let di = -ring; di <= ring; di++) {
@@ -306,18 +308,25 @@ function nearestReachableCell(
         const index = j * nav.width + i;
         if (!nav.walkable[index] || !Number.isFinite(nav.distance[index])) continue;
         const point = cellPoint(nav, index);
-        if (!clearSegment(terrain, start, point, maxSlopeDeg, clearance)) continue;
         const direct = Math.hypot(point.x - start.x, point.z - start.z);
         const score = direct + nav.distance[index] * 0.12;
-        if (score < bestScore) {
-          best = index;
-          bestScore = score;
+        if (score < bestReachableScore) {
+          bestReachable = index;
+          bestReachableScore = score;
+        }
+        // Prefer a visible connector, but do not discard the entire route
+        // graph merely because a nearby rock blocks a straight line. The
+        // steering layer can use its local obstacle avoidance until this
+        // first connector waypoint is reached, then follow validated edges.
+        if (clearSegment(terrain, start, point, maxSlopeDeg, clearance) && score < bestVisibleScore) {
+          bestVisible = index;
+          bestVisibleScore = score;
         }
       }
     }
-    if (best >= 0) break;
+    if (bestVisible >= 0) break;
   }
-  return best;
+  return bestVisible >= 0 ? bestVisible : bestReachable;
 }
 
 function nearestGridCell(
