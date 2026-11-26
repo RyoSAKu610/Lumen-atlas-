@@ -68,6 +68,7 @@ console.log(`  births recorded: ${journal.filter((event) => event.type === 'agen
 if (args.includes('--diagnose-water')) {
   console.log('\nwater access diagnostics (kit_forager)');
   
+  const kitProfile = data.species.find((sp) => sp.id === 'kit_forager');
   const drinkCandidates: Array<{ x: number; z: number }> = [];
   let lastX = Infinity;
   let lastZ = Infinity;
@@ -106,7 +107,6 @@ if (args.includes('--diagnose-water')) {
     console.log(`  nearest for #${agent.id}: ${nearest.join(' | ')}`);
   }
 
-  const kitProfile = data.species.find((sp) => sp.id === 'kit_forager');
   for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
     const water = agent.memory.water;
     const target = agent.intent.target;
