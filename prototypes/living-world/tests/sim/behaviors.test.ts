@@ -125,6 +125,11 @@ describe('behaviour', () => {
 
   it('resolves a countered territorial warning into a deterministic, recoverable contest', () => {
     const sim = Simulation.create(bundle, { seed: 31 });
+    const profile = sim.species.get('ridge_stalker')!;
+    profile.utilityWeights.warn = 4;
+    profile.utilityWeights.patrol = 0;
+    profile.social.aggression = 1;
+    profile.social.boldness = 1;
     const pair = sim.agents.filter((agent) => agent.alive && agent.speciesId === 'ridge_stalker');
     const [challenger, rival] = pair;
     expect(challenger && rival).toBeTruthy();
