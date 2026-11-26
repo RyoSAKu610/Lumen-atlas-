@@ -161,18 +161,23 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   }
   if (agent.posture !== 'airborne' && agent.behavior !== 'soar' && agent.behavior !== 'glide') {
     const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
-    const bodyClearance = followingWaterRoute ? myR * 0.52 : myR * 0.55;
-    const extraMargin = followingWaterRoute ? 0.15 : 0.8;
-    const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
-    for (const o of obs) {
-      const dx = agent.pos.x - o.x;
-      const dz = agent.pos.z - o.z;
-      const d = Math.hypot(dx, dz) || 0.001;
-      const need = o.radius + bodyClearance;
-      if (d < need + extraMargin) {
-        const push = (need + extraMargin - d) / (need + extraMargin);
-        sx += (dx / d) * push * 1.5;
-        sz += (dz / d) * push * 1.5;
+    // Route waypoints have already been validated with the same body-radius
+    // clearance and segment checks. Re-applying the local obstacle repulsion
+    // field while following that route can cancel a perfectly valid waypoint
+    // target and pin a large animal beside a rock. Keep that field for free
+    // roaming; route followers trust their verified corridor.
+    if (!followingWaterRoute) {
+      const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
+      for (const o of obs) {
+        const dx = agent.pos.x - o.x;
+        const dz = agent.pos.z - o.z;
+        const d = Math.hypot(dx, dz) || 0.001;
+        const need = o.radius + myR * 0.55;
+        if (d < need + 0.8) {
+          const push = (need + 0.8 - d) / (need + 0.8);
+          sx += (dx / d) * push * 1.5;
+          sz += (dz / d) * push * 1.5;
+        }
       }
     }
   }
@@ -235,6 +240,8 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     agent.behavior === 'flee' || agent.behavior === 'chase' || agent.behavior === 'stalk' ||
     agent.behavior === 'follow' || agent.behavior === 'soar' || agent.behavior === 'glide';
   const madeProgress = dynamicTarget ? moved > 0.05 : targetProgress > Math.max(0.006, agent.speed * dt * 0.08);
+  const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
+  const stuckThreshold = followingWaterRoute ? 4.5 : 1.5;
   if (desired > 0.3 && !madeProgress && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
     if (rt.stuck < 0) {
       // Detour window expires whether or not the first alternate step succeeds.
@@ -243,7 +250,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
       // Count lack of goal progress, not merely lack of body movement. This
       // catches tiny oscillations beside an obstacle that used to reset stuck.
       rt.stuck += dt;
-      if (rt.stuck > 1.5) {
+      if (rt.stuck > stuckThreshold) {
         agent.heading = wrapAngle(agent.heading + 1.15);
         // Negative stuck time marks a short escape window. During it, local
         // collision resolution may take a safe sideways step even if that step
