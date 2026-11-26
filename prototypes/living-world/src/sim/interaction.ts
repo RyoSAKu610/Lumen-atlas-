@@ -179,7 +179,13 @@ function enter(state: SimState, inter: InteractionState, phase: InteractionPhase
   if (phase === 'resolve') {
     const outcome = settle(state, inter, a, b);
     inter.outcome = outcome;
-    emit(state, 'interaction.resolved', [a.id, b.id], midpoint(a, b), { kind: inter.kind, outcome }, outcome === 'bonded' ? 0.8 : 0.6);
+    const resultData: Record<string, string | number | boolean | null> = { kind: inter.kind, outcome };
+    if (inter.winnerId != null && inter.loserId != null) {
+      resultData.winner = inter.winnerId;
+      resultData.loser = inter.loserId;
+      resultData.injury = inter.injury ?? 0;
+    }
+    emit(state, 'interaction.resolved', [a.id, b.id], midpoint(a, b), resultData, outcome === 'bonded' ? 0.8 : outcome === 'escalated' ? 0.82 : 0.6);
   }
   syncRefs(state, inter, a, b);
 }
@@ -248,10 +254,7 @@ function settle(state: SimState, inter: InteractionState, a: AgentState, b: Agen
   } else if (outcome === 'rejected' || outcome === 'escalated') {
     ab.trust = Math.max(0, ab.trust - 0.04);
     ba.trust = Math.max(0, ba.trust - 0.04);
-    if (outcome === 'escalated') {
-      ab.rivalry = Math.min(1, ab.rivalry + 0.16);
-      ba.rivalry = Math.min(1, ba.rivalry + 0.16);
-    }
+    if (outcome === 'escalated') resolveTerritorialContest(state, inter, a, b, ab, ba);
   } else if (outcome === 'retreated') {
     ba.fear = Math.min(1, ba.fear + 0.12);
     ab.dominance = Math.min(1, ab.dominance + 0.08);
@@ -276,6 +279,69 @@ function settle(state: SimState, inter: InteractionState, a: AgentState, b: Agen
     emit(state, 'courtship.bonded', [female.id, male.id], midpoint(a, b), { species: female.speciesId, mate: male.id }, 0.85);
   }
   return outcome;
+}
+
+/**
+ * A countered warning becomes a short, non-lethal dominance contest.
+ * The result uses anatomy-independent biological factors (condition, size, confidence)
+ * plus the seeded ecology stream, so the same world seed produces the same winner.
+ * This is a contest resolver, not a detailed combat / damage model.
+ */
+function resolveTerritorialContest(
+  state: SimState,
+  inter: InteractionState,
+  a: AgentState,
+  b: AgentState,
+  ab: ReturnType<typeof ensureRel>,
+  ba: ReturnType<typeof ensureRel>,
+): void {
+  const score = (agent: AgentState): number => {
+    const sp = speciesOf(state, agent);
+    const mass = Math.log2(Math.max(1, sp.body.massKg));
+    const condition = 0.55 * agent.needs.stamina + 0.45 * agent.needs.health;
+    const confidence = 0.55 * sp.social.boldness + 0.45 * sp.social.aggression;
+    const size = Math.min(1, mass / 14);
+    const jitter = 0.94 + state.rngEcology.next() * 0.12;
+    return (0.52 * condition + 0.33 * confidence + 0.15 * size) * jitter;
+  };
+  const aScore = score(a);
+  const bScore = score(b);
+  // Exact ties are broken by persistent id, not iteration order.
+  const winner = Math.abs(aScore - bScore) < 1e-8 ? (a.id < b.id ? a : b) : aScore > bScore ? a : b;
+  const loser = winner.id === a.id ? b : a;
+  const winnerToLoser = ensureRel(state, winner.id, loser.id);
+  const loserToWinner = ensureRel(state, loser.id, winner.id);
+  const margin = Math.min(1, Math.abs(aScore - bScore));
+  const injury = Math.min(0.085, 0.025 + margin * 0.06);
+
+  inter.winnerId = winner.id;
+  inter.loserId = loser.id;
+  inter.injury = injury;
+
+  // A scuffle costs both animals energy; the loser receives a small, recoverable injury.
+  winner.needs.stamina = Math.max(0, winner.needs.stamina - 0.16);
+  winner.needs.fatigue = Math.min(1, winner.needs.fatigue + 0.08);
+  loser.needs.stamina = Math.max(0, loser.needs.stamina - 0.32);
+  loser.needs.fatigue = Math.min(1, loser.needs.fatigue + 0.16);
+  loser.needs.health = Math.max(0.52, loser.needs.health - injury);
+  loser.needs.fear = Math.min(1, loser.needs.fear + 0.22);
+  winner.needs.fear = Math.min(1, winner.needs.fear + 0.04);
+
+  winnerToLoser.dominance = Math.min(1, winnerToLoser.dominance + 0.2);
+  loserToWinner.dominance = Math.max(-1, loserToWinner.dominance - 0.2);
+  winnerToLoser.rivalry = Math.min(1, winnerToLoser.rivalry + 0.08);
+  loserToWinner.rivalry = Math.min(1, loserToWinner.rivalry + 0.12);
+  winnerToLoser.lastSeen = loserToWinner.lastSeen = state.env.time;
+  loser.memory.lastThreatAt = state.env.time;
+  loser.memory.lastThreatId = winner.id;
+  loser.memory.lastThreatPos = { x: winner.pos.x, z: winner.pos.z };
+  // Make the outcome visible to the AI in the next decision pass.
+  const loserRuntime = state.runtime.get(loser.id);
+  const winnerRuntime = state.runtime.get(winner.id);
+  if (loserRuntime) loserRuntime.nextDecisionAt = state.physTime;
+  if (winnerRuntime) winnerRuntime.nextDecisionAt = state.physTime;
+  void ab;
+  void ba;
 }
 
 function bond(state: SimState, a: AgentState, b: AgentState): boolean {
