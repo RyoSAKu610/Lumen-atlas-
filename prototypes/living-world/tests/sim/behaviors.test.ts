@@ -215,6 +215,7 @@ describe('behaviour', () => {
 
   it('lets a thirsty herd member leave formation temporarily and follow its water route', () => {
     const sim = Simulation.create(bundle, { seed: 20261126 });
+    const banksForTest = generateDrinkSpots(sim.terrain);
     const adults = sim.agents.filter((agent) =>
       agent.alive && agent.speciesId === 'giant_grazer' && agent.lifeStage === 'adult',
     );
@@ -268,14 +269,34 @@ describe('behaviour', () => {
     expect(initialNav?.waterPathIndex, JSON.stringify(initialNav)).toBeGreaterThan(0);
     const target = { ...drinker.intent.target! };
     const before = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
-    // The first segment bends around a rocky / wet corridor, so direct
-    // distance can briefly rise; give the individual time to traverse the
-    // full multi-waypoint path and reach the actual bank.
-    step(sim, 1200);
-    const after = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
+    // Do not inspect only the final location: after drinking, the animal is
+    // expected to leave the bank and resume normal life. Capture the actual
+    // moment it reaches a valid drink bank and thirst begins to fall.
+    let drankAtBank = false;
+    let firstBankState: unknown = null;
+    for (let tick = 0; tick < 1200; tick++) {
+      sim.step();
+      const liveTarget = drinker.intent.target;
+      if (!liveTarget || drinker.behavior !== 'drink' || drinker.speed >= 0.4) continue;
+      const atTarget = Math.hypot(drinker.pos.x - liveTarget.x, drinker.pos.z - liveTarget.z) <= 1.8;
+      const matchesBank = banksForTest.some((spot) =>
+        Math.hypot(spot.x - liveTarget.x, spot.z - liveTarget.z) < 0.05,
+      );
+      if (atTarget && matchesBank && drinker.needs.thirst < 0.95) {
+        drankAtBank = true;
+        firstBankState = {
+          tick,
+          pos: { ...drinker.pos },
+          target: liveTarget,
+          thirst: drinker.needs.thirst,
+          speed: drinker.speed,
+          runtime: sim.getAgentRuntimeDebug(drinker.id),
+        };
+        break;
+      }
+    }
     const diagnostic = JSON.stringify({
       before,
-      after,
       pos: drinker.pos,
       target: drinker.intent.target,
       behavior: drinker.behavior,
@@ -286,9 +307,10 @@ describe('behaviour', () => {
       runtime: sim.getAgentRuntimeDebug(drinker.id),
       thirst: drinker.needs.thirst,
       fear: drinker.needs.fear,
+      firstBankState,
       events: sim.recentEvents(80).filter((event) => event.actors.includes(drinker.id)).map((event) => ({type:event.type,data:event.data})),
     });
-    expect(after, diagnostic).toBeLessThan(before - 15);
+    expect(drankAtBank, diagnostic).toBe(true);
   });
 
   it('lets a critically thirsty herd adult abandon defense and seek water', () => {
