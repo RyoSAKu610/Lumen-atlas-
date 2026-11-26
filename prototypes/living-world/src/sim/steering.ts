@@ -159,14 +159,17 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     }
   }
   if (agent.posture !== 'airborne' && agent.behavior !== 'soar' && agent.behavior !== 'glide') {
+    const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
+    const bodyClearance = followingWaterRoute ? myR * 0.52 : myR * 0.55;
+    const extraMargin = followingWaterRoute ? 0.15 : 0.8;
     const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
     for (const o of obs) {
       const dx = agent.pos.x - o.x;
       const dz = agent.pos.z - o.z;
       const d = Math.hypot(dx, dz) || 0.001;
-      const need = o.radius + myR * 0.55;
-      if (d < need + 0.8) {
-        const push = (need + 0.8 - d) / (need + 0.8);
+      const need = o.radius + bodyClearance;
+      if (d < need + extraMargin) {
+        const push = (need + extraMargin - d) / (need + extraMargin);
         sx += (dx / d) * push * 1.5;
         sz += (dz / d) * push * 1.5;
       }
