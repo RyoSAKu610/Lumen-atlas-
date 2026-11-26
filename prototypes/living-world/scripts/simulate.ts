@@ -7,6 +7,8 @@ import { dirname } from 'node:path';
 import { loadGameDataOrThrow } from '../src/data/load';
 import { Simulation } from '../src/sim/Simulation';
 import { generateDrinkSpots, nearestAccessibleDrinkSpot } from '../src/sim/spatial';
+import { deathsByCause, mortalityBySpeciesAndCause } from '../src/sim/death-ledger';
+import { findDrinkRoute } from '../src/sim/water-navigation';
 import type { SimEvent } from '../src/sim/types';
 
 const args = process.argv.slice(2);
@@ -60,7 +62,7 @@ for (const event of journal) {
   const key = `${String(event.data.species ?? 'unknown')} / ${String(event.data.stage ?? 'unknown')} / ${String(event.data.cause ?? 'unknown')}`;
   mortality.set(key, (mortality.get(key) ?? 0) + 1);
 }
-console.log('\nmortality by species / life stage / cause');
+console.log('\nmortality by species / life stage / cause (event ledger)');
 for (const [key, n] of [...mortality.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))) {
   console.log(`  ${n.toString().padStart(3)}  ${key}`);
 }
@@ -71,6 +73,27 @@ if (args.includes('--diagnose-water')) {
   const drinkSpots = generateDrinkSpots(sim.terrain);
   console.log(`drink candidates: ${drinkSpots.length}; river samples: ${sim.terrain.riverSamples.length}`);
   const profiles = new Map(data.species.map((profile) => [profile.id, profile]));
+  const dehydrationEvents = deathsByCause(journal, 'dehydration');
+  for (const event of dehydrationEvents) {
+    const id = event.actors[0] ?? -1;
+    const species = String(event.data.species ?? 'unknown');
+    const profile = profiles.get(species);
+    const pos = event.pos;
+    if (!pos || !profile) continue;
+    const nearest = nearestAccessibleDrinkSpot(sim.terrain, drinkSpots, pos.x, pos.z, profile.locomotion.maxSlopeDeg);
+    const route = profile.locomotion.flight || !nearest
+      ? null
+      : findDrinkRoute(sim.terrain, drinkSpots, pos, profile.locomotion.maxSlopeDeg, profile.body.radius);
+    const nearestDistance = nearest ? Math.hypot(nearest.x - pos.x, nearest.z - pos.z) : null;
+    const water = event.data.waterX == null || event.data.waterZ == null
+      ? null
+      : { x: Number(event.data.waterX), z: Number(event.data.waterZ) };
+    const rememberedDistance = water ? Math.hypot(water.x - pos.x, water.z - pos.z) : null;
+    const slopeDeg = sim.terrain.slopeAt(pos.x, pos.z) * (180 / Math.PI);
+    console.log(
+      `  DEATH #${id} ${species} at=(${pos.x.toFixed(1)},${pos.z.toFixed(1)}) slope=${slopeDeg.toFixed(1)}° thirst=${Number(event.data.thirst ?? 0).toFixed(3)} behavior=${String(event.data.behavior ?? '—')} decision=${String(event.data.decision ?? '—')} water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})/${rememberedDistance?.toFixed(1)}m` : 'none'} nearest=${nearestDistance?.toFixed(1) ?? '—'}m route=${route ? `${route.distance.toFixed(1)}m/${route.waypoints.length}wp` : 'unreachable'} home=${String(event.data.homeId ?? 'none')} threat=(${String(event.data.threatX ?? '—')},${String(event.data.threatZ ?? '—')})`,
+    );
+  }
   const watch = sim.agents
     .filter((agent) => (!agent.alive && agent.causeOfDeath === 'dehydration') || (agent.alive && agent.needs.thirst > 0.65))
     .sort((a, b) => a.speciesId.localeCompare(b.speciesId) || a.id - b.id);
@@ -96,11 +119,16 @@ if (args.includes('--diagnose-water')) {
   }
 }
 if (args.includes('--assert-water-survival')) {
-  const dehydrationDeaths = sim.agents.filter((agent) => !agent.alive && agent.causeOfDeath === 'dehydration');
+  // Use the event ledger, not sim.agents: consumed carcasses and old dead
+  // AgentState records may be pruned before the end of a multi-day run.
+  const dehydrationDeaths = deathsByCause(journal, 'dehydration');
   const bySpecies = new Map<string, number>();
-  for (const agent of dehydrationDeaths) bySpecies.set(agent.speciesId, (bySpecies.get(agent.speciesId) ?? 0) + 1);
+  for (const event of dehydrationDeaths) {
+    const species = String(event.data.species ?? 'unknown');
+    bySpecies.set(species, (bySpecies.get(species) ?? 0) + 1);
+  }
   const breakdown = [...bySpecies.entries()].map(([species, count]) => `${species}=${count}`).join(', ') || 'none';
-  console.log(`\nwater-survival gate: dehydration deaths=${dehydrationDeaths.length} (${breakdown})`);
+  console.log(`\nwater-survival gate (death event ledger): dehydration deaths=${dehydrationDeaths.length} (${breakdown})`);
   if (dehydrationDeaths.length > 0) {
     throw new Error(`Water-survival regression: dehydration deaths detected: ${breakdown}`);
   }
