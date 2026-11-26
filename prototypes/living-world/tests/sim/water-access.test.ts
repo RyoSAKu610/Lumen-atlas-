@@ -189,6 +189,38 @@ describe('terrain-aware water routing', () => {
     }
   });
 
+  it('routes giant grazers from the spring basin even when the direct bank sightline is blocked', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
+    const giant = data.species.find((profile) => profile.id === 'giant_grazer')!;
+    const spots = generateDrinkSpots(sim.terrain);
+    for (const start of [
+      { x: -14.6, z: 11.5 },
+      { x: -21.1, z: 7.5 },
+      { x: -17.4, z: 17.7 },
+      { x: -24.9, z: 13.1 },
+      { x: -21.4, z: 11.8 },
+    ]) {
+      const route = findDrinkRoute(sim.terrain, spots, start, giant.locomotion.maxSlopeDeg, giant.body.radius);
+      expect(route, `giant has no route from (${start.x},${start.z})`).not.toBeNull();
+      expect(route!.waypoints.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('routes a small forager from the southern wetland without retaining an unreachable straight-line target', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
+    const kit = data.species.find((profile) => profile.id === 'kit_forager')!;
+    const spots = generateDrinkSpots(sim.terrain);
+    for (const start of [
+      { x: 113.5, z: 74.1 },
+      { x: 112.0, z: 75.3 },
+      { x: 115.1, z: 75.2 },
+    ]) {
+      const route = findDrinkRoute(sim.terrain, spots, start, kit.locomotion.maxSlopeDeg, kit.body.radius);
+      expect(route, `kit has no route from (${start.x},${start.z})`).not.toBeNull();
+      expect(route!.waypoints.length).toBeGreaterThan(0);
+    }
+  });
+
   it('prefers a longer walkable bank route over an inaccessible straight-line bank', () => {
     const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
     const profile = data.species.find((species) => species.id === 'kit_forager')!;
