@@ -261,7 +261,7 @@ describe('behaviour', () => {
     drinker.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
 
     sim.step();
-    expect(drinker.behavior).toBe('drink');
+    expect(String(drinker.behavior)).toBe('drink');
     expect(drinker.intent.target).not.toBeNull();
     const initialNav = sim.getAgentRuntimeDebug(drinker.id);
     expect(initialNav?.waterPath.length).toBeGreaterThan(1);
