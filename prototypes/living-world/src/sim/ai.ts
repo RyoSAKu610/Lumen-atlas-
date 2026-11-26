@@ -441,9 +441,27 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       };
     }
     case 'defend': {
-      const can = sp.antiPredator.herdDefense && agent.lifeStage !== 'juvenile' && fear > 0.22 ? 1 : 0;
+      // Defensive cohesion is important, but a herd member at physiological
+      // limits must yield the line and seek water / food. Otherwise adults can
+      // keep re-selecting defend while dehydrating in front of a predator.
+      const lifeCritical =
+        agent.needs.thirst >= 0.82 ||
+        agent.needs.hunger >= 0.96 ||
+        agent.needs.health <= 0.28 ||
+        agent.needs.stamina <= 0.12;
+      const can =
+        sp.antiPredator.herdDefense &&
+        agent.lifeStage !== 'juvenile' &&
+        fear > 0.22 &&
+        !lifeCritical
+          ? 1
+          : 0;
       return {
-        considerations: [c('duty', can, can), c('fear', fear, fear)],
+        considerations: [
+          c('duty', can, can),
+          c('fear', fear, fear),
+          c('physical_condition', lifeCritical ? 0 : 1, lifeCritical ? 0 : 1),
+        ],
         activity: 1,
         targetAgent: agent.memory.lastThreatId,
       };
