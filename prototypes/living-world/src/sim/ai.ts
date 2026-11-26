@@ -3,6 +3,7 @@ import type { AgentState, Consideration, DecisionOption } from './types';
 import type { SpeciesProfile } from '../data/schema';
 import { familiarity, rtOf, sampleVeg, speciesOf, type AgentRuntime, type SimState } from './internal';
 import { nearestDrink } from './spatial';
+import { findDrinkRoute } from './water-navigation';
 import { clamp, clamp01, distXZ } from './math';
 
 interface Built {
@@ -95,8 +96,10 @@ function complete(state: SimState, agent: AgentState, rt: AgentRuntime): boolean
     case 'graze':
     case 'forage':
       return agent.needs.hunger < 0.2 || state.physTime >= rt.behaviorUntil;
-    case 'drink':
-      return agent.needs.thirst < 0.12 || state.physTime >= rt.behaviorUntil;
+    case 'drink': {
+      const atWater = target !== null && distXZ(agent.pos.x, agent.pos.z, target.x, target.z) < 1.8;
+      return agent.needs.thirst < 0.12 || (state.physTime >= rt.behaviorUntil && !atWater);
+    }
     case 'bathe':
       return agent.needs.cold < 0.14 || state.physTime >= rt.behaviorUntil;
     case 'sleep':
@@ -613,6 +616,10 @@ const POSTURE: Record<BehaviorId, Posture> = {
 function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, best: Cand): void {
   const rt = rtOf(state, agent.id);
   const behavior = best.behavior;
+  if (behavior !== 'drink') {
+    rt.waterPath = [];
+    rt.waterPathIndex = 0;
+  }
   agent.behavior = behavior;
   agent.behaviorStartedAt = state.env.time;
   agent.posture = POSTURE[behavior];
@@ -637,14 +644,30 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
   } else if (behavior === 'graze' || behavior === 'forage') {
     target = forageTarget(state, agent);
   } else if (behavior === 'drink') {
-    const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
-    const remembered = agent.memory.water;
-    target = nearest ?? (
-      remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
-        ? remembered
-        : null
+    const route = findDrinkRoute(
+      state.terrain,
+      state.drinkSpots,
+      { x: agent.pos.x, z: agent.pos.z },
+      sp.locomotion.maxSlopeDeg,
+      sp.body.radius * agent.scale,
     );
-    if (target) agent.memory.water = target;
+    if (route) {
+      target = route.target;
+      agent.memory.water = route.target;
+      rt.waterPath = route.waypoints;
+      rt.waterPathIndex = 0;
+    } else {
+      const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
+      const remembered = agent.memory.water;
+      target = nearest ?? (
+        remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
+          ? remembered
+          : null
+      );
+      rt.waterPath = [];
+      rt.waterPathIndex = 0;
+      if (target) agent.memory.water = target;
+    }
   } else if (behavior === 'bathe') {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
     if (spring) {
