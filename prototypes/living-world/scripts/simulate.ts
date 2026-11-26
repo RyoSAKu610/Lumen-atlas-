@@ -110,6 +110,8 @@ if (args.includes('--diagnose-water')) {
   for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
     const water = agent.memory.water;
     const target = agent.intent.target;
+    const home = agent.homeId ? sim.terrain.getLandmark(agent.homeId) : undefined;
+    const homeDistance = home ? Math.hypot(agent.pos.x - home.x, agent.pos.z - home.z) : null;
     const waterDistance = water ? Math.hypot(agent.pos.x - water.x, agent.pos.z - water.z) : null;
     const targetDistance = target ? Math.hypot(agent.pos.x - target.x, agent.pos.z - target.z) : null;
     const waterWalkable = water && kitProfile
