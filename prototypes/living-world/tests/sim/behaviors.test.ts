@@ -278,6 +278,7 @@ describe('behaviour', () => {
       speed: drinker.speed,
       heading: drinker.heading,
       distanceTravelled: drinker.stats.distance,
+      runtime: sim.getAgentRuntimeDebug(drinker.id),
       thirst: drinker.needs.thirst,
       fear: drinker.needs.fear,
       events: sim.recentEvents(80).filter((event) => event.actors.includes(drinker.id)).map((event) => ({type:event.type,data:event.data})),
