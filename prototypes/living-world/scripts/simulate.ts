@@ -123,6 +123,16 @@ if (args.includes('--diagnose-water')) {
   }
 }
 
+if (args.includes('--assert-water-survival')) {
+  const kit = sim.agents.filter((agent) => agent.speciesId === 'kit_forager');
+  const alive = kit.filter((agent) => agent.alive).length;
+  const dehydrationDeaths = kit.filter((agent) => !agent.alive && agent.causeOfDeath === 'dehydration').length;
+  console.log(`\nwater-survival gate: kit_forager alive=${alive}, dehydration deaths=${dehydrationDeaths}`);
+  if (alive < 1 || dehydrationDeaths > 0) {
+    throw new Error('Water-survival regression: the seeded kit_forager population collapsed or died from dehydration.');
+  }
+}
+
 console.log('\nevents');
 const types = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 for (const [type, n] of types) console.log(`  ${n.toString().padStart(5)}  ${type}`);
