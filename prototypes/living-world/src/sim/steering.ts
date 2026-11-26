@@ -268,6 +268,10 @@ function desiredSpeed(state: SimState, agent: AgentState, dist: number): number 
     case 'graze':
     case 'forage':
     case 'drink':
+      speed = L.flight && agent.posture === 'airborne'
+        ? L.flight.minSpeed
+        : dist > 1.5 ? L.walkSpeed * 0.85 : 0;
+      break;
     case 'bathe':
     case 'feed':
     case 'vigilance':
@@ -422,7 +426,16 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
   if (flight && (agent.behavior === 'soar' || agent.behavior === 'glide' || agent.posture === 'airborne' || (agent.behavior === 'perch' && rt.altitude > 0.4))) {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
     const overThermal = spring != null && distXZ(agent.pos.x, agent.pos.z, spring.x, spring.z) < spring.radius * 3.2;
-    const landing = agent.behavior === 'perch' || agent.behavior === 'sleep' || agent.behavior === 'rest' || agent.behavior === 'drink';
+    const targetDistance = agent.intent.target
+      ? distXZ(agent.pos.x, agent.pos.z, agent.intent.target.x, agent.intent.target.z)
+      : 0;
+    const drinkLandingDistance =
+      (rt.altitude * flight.minSpeed) / Math.max(0.1, flight.sinkRate * 1.6) + flight.takeoffDistance * 1.5;
+    const landing =
+      agent.behavior === 'perch' ||
+      agent.behavior === 'sleep' ||
+      agent.behavior === 'rest' ||
+      (agent.behavior === 'drink' && targetDistance <= Math.max(flight.takeoffDistance * 1.5, drinkLandingDistance));
     let mode: FlightMode;
     if (landing) {
       mode = 'landing';
@@ -463,9 +476,15 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
         emit(state, 'flight.soaring', [agent.id], { x: agent.pos.x, z: agent.pos.z }, { altitude: Math.round(rt.altitude) }, 0.35);
       }
       if (rt.altitude < 2) rt.soarAnnounced = false;
-      const min = mode === 'takeoff' ? flight.minSpeed * 0.3 : flight.minSpeed;
-      if (agent.speed < min) agent.speed = min;
-      if (agent.speed > flight.cruiseSpeed * 1.15) agent.speed = flight.cruiseSpeed;
+      if (mode === 'landing' && agent.behavior === 'drink') {
+        const remainingDescent = rt.altitude / Math.max(0.1, flight.sinkRate * 1.6);
+        const matchedSpeed = targetDistance / Math.max(0.1, remainingDescent);
+        agent.speed = Math.min(agent.speed, matchedSpeed);
+      } else {
+        const min = mode === 'takeoff' ? flight.minSpeed * 0.3 : flight.minSpeed;
+        if (agent.speed < min) agent.speed = min;
+        if (agent.speed > flight.cruiseSpeed * 1.15) agent.speed = flight.cruiseSpeed;
+      }
     }
     agent.pos.y = (Number.isFinite(ground) ? ground : 0) + rt.altitude;
     return;
