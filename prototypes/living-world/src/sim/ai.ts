@@ -201,7 +201,7 @@ function nearestOf(agent: AgentState, list: readonly AgentState[], pred: (o: Age
  * species are allowed to range more widely.
  */
 export function homeRangeRadius(sp: SpeciesProfile): number {
-  if (sp.social.model === 'family') return 78;
+  if (sp.social.model === 'family') return 90;
   if (sp.social.model === 'herd') return 170;
   if (sp.social.model === 'loose_flock') return 260;
   return Number.POSITIVE_INFINITY;
@@ -209,7 +209,7 @@ export function homeRangeRadius(sp: SpeciesProfile): number {
 
 export function homeRangePressure(distance: number, radius: number): number {
   if (!Number.isFinite(radius) || radius <= 0 || !Number.isFinite(distance)) return 0;
-  return clamp01((distance - radius * 0.55) / (radius * 0.45));
+  return clamp01((distance - radius * 0.75) / (radius * 0.25));
 }
 
 /** Keep exploration goals inside the animal's home range; if already outside, send it home. */
@@ -477,7 +477,16 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       const range = homeRangeRadius(sp);
       const away = homeRangePressure(d, range);
       const night = nightFactor(state);
-      const urgency = Math.max(away, night);
+      const familiarCompanionNearby = agent.needs.social > 0.3 && nearby.some((other) =>
+        other.alive &&
+        other.speciesId === agent.speciesId &&
+        distXZ(agent.pos.x, agent.pos.z, other.pos.x, other.pos.z) < 12 &&
+        familiarity(state, agent.id, other.id) >= 0.34,
+      );
+      // A family member temporarily defers returning home when a familiar
+      // companion is close and social need is high. Nightfall still gathers
+      // the group back to its den.
+      const urgency = familiarCompanionNearby ? night : Math.max(away, night);
       return {
         considerations: [
           c('home_range', urgency, 0.25 + 0.75 * urgency),
