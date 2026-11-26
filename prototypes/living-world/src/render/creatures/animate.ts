@@ -441,13 +441,47 @@ function socialOf(agent: AgentState, ix: InteractionState | undefined, amp: numb
     s.reach = 0.55 * amp;
     s.earFlatten = -0.25 * amp;
   } else if (k === 'warn') {
-    s.earFlatten = amp;
-    s.maneLift = amp;
-    s.tailHook = amp;
-    s.tailFan = amp;
-    s.crest = amp;
-    s.splay = amp;
-    s.jaw = 0.18 * amp;
+    const initiator = agent.id === ix.initiator;
+    const countered = ix.response === 'counter';
+    const winner = ix.winnerId === agent.id;
+    const loser = ix.loserId === agent.id;
+    if (initiator) {
+      // The challenger owns the display: lift the mantle, show the horns and hold ground.
+      s.earFlatten = 0.72 * amp;
+      s.maneLift = amp;
+      s.tailHook = 0.82 * amp;
+      s.tailFan = 0.7 * amp;
+      s.crest = amp;
+      s.splay = 0.62 * amp;
+      s.jaw = 0.2 * amp;
+      s.widen = 0.48 * amp;
+      s.reach = (countered ? 0.42 : 0.22) * amp;
+    } else {
+      // The responder does not mirror the threat display: it assesses, braces, then yields or counters.
+      s.earFlatten = (countered ? 0.5 : 0.9) * amp;
+      s.widen = (countered ? 0.95 : 0.28) * amp;
+      s.tuck = (countered ? 0.08 : 0.38) * amp;
+      s.tailHook = (countered ? 0.28 : 0.8) * amp;
+      s.jaw = (countered ? 0.12 : 0.04) * amp;
+      s.crest = countered ? 0.82 * amp : 0.18 * amp;
+    }
+    if (ix.phase === 'contact' && countered) {
+      // A short opposed brace / feint rather than a looping wrestling animation.
+      s.widen = Math.max(s.widen, 0.9 * amp);
+      s.reach = initiator ? 0.48 * amp : 0.22 * amp;
+      s.tuck = initiator ? 0.04 * amp : 0.2 * amp;
+    }
+    if (ix.phase === 'resolve' || ix.phase === 'cooldown' || ix.phase === 'separate') {
+      if (winner) {
+        s.maneLift = amp * 0.65;
+        s.tailHook = amp * 0.35;
+        s.widen = amp * 0.45;
+      } else if (loser || ix.outcome === 'retreated') {
+        s.tuck = amp * 0.55;
+        s.earFlatten = amp;
+        s.tailHook = amp * 0.85;
+      }
+    }
   } else if (k === 'court') {
     s.crest = amp;
     s.tailFan = 0.8 * amp;
