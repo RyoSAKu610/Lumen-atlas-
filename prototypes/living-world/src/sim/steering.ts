@@ -400,8 +400,11 @@ function occupiable(state: SimState, agent: AgentState, x: number, z: number): b
     }
   }
   const maxWater = agent.behavior === 'bathe' ? 3 : sp.locomotion.canSwim ? 1.55 : 0.45;
-  const slope = sp.locomotion.maxSlopeDeg + (agent.behavior === 'flee' ? 8 : 0);
-  return walkable(terrain, x, z, slope, maxWater);
+  // A panic sprint does not give an animal new climbing anatomy. The previous
+  // blanket +8° flee allowance let small prey enter slopes they could not
+  // traverse after the threat passed, stranding them far from water. Fleeing
+  // changes speed / destination, never the species' physical slope envelope.
+  return walkable(terrain, x, z, sp.locomotion.maxSlopeDeg, maxWater);
 }
 
 function walkable(terrain: Terrain, x: number, z: number, maxSlopeDeg: number, maxWater: number): boolean {
