@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { INTERACTION_PHASES } from '../../src/sim/ids';
 import { Simulation } from '../../src/sim/Simulation';
+import { generateDrinkSpots } from '../../src/sim/spatial';
 import type { AgentState, SimEvent } from '../../src/sim/types';
 import { bundle, farthestClearing, place, step } from './helpers';
 
