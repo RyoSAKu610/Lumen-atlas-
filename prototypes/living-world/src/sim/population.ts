@@ -429,15 +429,41 @@ function findStand(state: SimState, x: number, z: number, spread: number, slope:
     const pz = z + Math.cos(ang) * rad;
     if (terrain.isWalkable(px, pz, slope, 0.45)) return { x: px, z: pz };
   }
-  for (let r = 2; r < spread + 46; r += 3) {
-    for (let k = 0; k < 10; k++) {
-      const ang = (k / 10) * Math.PI * 2 + r * 0.17;
+  // A region anchor can sit inside a steep cliff / inaccessible ridge. Expand
+  // the deterministic ring search across the playable terrain instead of
+  // silently returning the clamped anchor (which may violate this species'
+  // slope limit and permanently strand the individual).
+  for (let r = 2; r < terrain.size * 0.72; r += 3) {
+    for (let k = 0; k < 16; k++) {
+      const ang = (k / 16) * Math.PI * 2 + r * 0.17;
       const px = x + Math.sin(ang) * r;
       const pz = z + Math.cos(ang) * r;
       if (terrain.isWalkable(px, pz, slope, 0.45)) return { x: px, z: pz };
     }
   }
-  return terrain.clampToBounds(x, z, 4);
+
+  // Last-resort full-grid search. This path is only used when all local /
+  // radial samples failed and is intentionally deterministic for seeded
+  // population initialization.
+  let best: { x: number; z: number } | null = null;
+  let bestDistance = Infinity;
+  const stride = 2;
+  for (let j = 0; j < terrain.res; j += stride) {
+    const pz = -terrain.half + j * terrain.cell;
+    for (let i = 0; i < terrain.res; i += stride) {
+      const px = -terrain.half + i * terrain.cell;
+      if (!terrain.isWalkable(px, pz, slope, 0.45)) continue;
+      const d2 = (px - x) ** 2 + (pz - z) ** 2;
+      if (d2 < bestDistance) {
+        bestDistance = d2;
+        best = { x: px, z: pz };
+      }
+    }
+  }
+  if (!best) {
+    throw new Error(`No valid spawn surface for slope limit ${slope}° near (${x.toFixed(1)}, ${z.toFixed(1)})`);
+  }
+  return best;
 }
 
 function placeOpposite(
