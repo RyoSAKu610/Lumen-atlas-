@@ -123,6 +123,56 @@ describe('behaviour', () => {
     expect(b!.interaction).toBeNull();
   });
 
+  it('resolves a countered territorial warning into a deterministic, recoverable contest', () => {
+    const sim = Simulation.create(bundle, { seed: 31 });
+    const pair = sim.agents.filter((agent) => agent.alive && agent.speciesId === 'ridge_stalker');
+    const [challenger, rival] = pair;
+    expect(challenger && rival).toBeTruthy();
+    expect(challenger.groupId).not.toBe(rival.groupId);
+
+    const spot = farthestClearing(sim);
+    place(sim, challenger, spot.x, spot.z);
+    place(sim, rival, spot.x + 2.4, spot.z + 0.2);
+    calm(challenger);
+    calm(rival);
+    challenger.territory = { x: spot.x, z: spot.z, radius: 32 };
+    challenger.behavior = 'warn';
+    challenger.intent = { behavior: 'warn', target: { x: rival.pos.x, z: rival.pos.z }, targetAgent: rival.id, place: null };
+    rival.behavior = 'idle';
+    rival.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+
+    const events: SimEvent[] = [];
+    sim.onEvent((event) => {
+      if (event.type === 'interaction.resolved' && event.data.kind === 'warn') events.push(event);
+    });
+    for (let i = 0; i < 350 && events.length === 0; i++) sim.step();
+
+    expect(events.length).toBeGreaterThan(0);
+    const resolved = events[0];
+    expect(resolved.data.outcome).toBe('escalated');
+    const winnerId = resolved.data.winner;
+    const loserId = resolved.data.loser;
+    const injury = resolved.data.injury;
+    expect(typeof winnerId).toBe('number');
+    expect(typeof loserId).toBe('number');
+    expect([challenger.id, rival.id]).toContain(winnerId);
+    expect([challenger.id, rival.id]).toContain(loserId);
+    expect(winnerId).not.toBe(loserId);
+    expect(typeof injury).toBe('number');
+    expect(injury as number).toBeGreaterThan(0);
+    expect(injury as number).toBeLessThanOrEqual(0.085);
+
+    const winner = sim.getAgent(winnerId as number)!;
+    const loser = sim.getAgent(loserId as number)!;
+    expect(loser.needs.health).toBeLessThan(1);
+    expect(loser.needs.health).toBeGreaterThanOrEqual(0.52);
+    expect(winner.needs.stamina).toBeLessThan(1);
+    expect(loser.needs.fear).toBeGreaterThan(0);
+    expect(sim.getRelationships(winner.id).get(loser.id)?.dominance).toBeGreaterThan(
+      sim.getRelationships(loser.id).get(winner.id)?.dominance ?? 0,
+    );
+  });
+
   it('hunts an isolated kit, fails a chase, and aborts against the herd', () => {
     const success = runHunt('success');
     expect(success.events.some((e) => e.type === 'hunt.stalk_started')).toBe(true);
