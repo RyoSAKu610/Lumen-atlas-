@@ -16,6 +16,9 @@ export interface DrinkRoute {
 
 interface WaterNavigation {
   step: number;
+  walkableCount: number;
+  seedCount: number;
+  reachableCount: number;
   maxSlopeDeg: number;
   width: number;
   half: number;
@@ -40,6 +43,69 @@ const navigationCache = new WeakMap<Terrain, Map<string, WaterNavigation>>();
  * multi-source Dijkstra field is built once per terrain / locomotion profile;
  * every later request is a short lookup and path reconstruction.
  */
+export interface DrinkNavigationDebug {
+  step: number;
+  width: number;
+  walkableCells: number;
+  drinkBankSeeds: number;
+  reachableCells: number;
+  nearestWalkableGridDistance: number | null;
+  nearestReachableGridDistance: number | null;
+  nearestDrinkSpotDistance: number | null;
+  startSlopeDeg: number;
+  maxSlopeDeg: number;
+  safeRouteSlopeDeg: number;
+}
+
+/** Read-only path-graph metrics used by long-run ecological regression diagnostics. */
+export function debugDrinkNavigation(
+  terrain: Terrain,
+  spots: readonly DrinkSpot[],
+  start: DrinkSpot,
+  maxSlopeDeg: number,
+  bodyRadius: number,
+): DrinkNavigationDebug {
+  const clearance = Math.max(0.25, Math.min(2.2, bodyRadius * 0.52));
+  const nav = getNavigation(terrain, spots, maxSlopeDeg, clearance);
+  let nearestWalkable = Infinity;
+  let nearestReachable = Infinity;
+  const i0 = Math.round((start.x + nav.half) / nav.step);
+  const j0 = Math.round((start.z + nav.half) / nav.step);
+  const limit = Math.ceil(terrain.size / nav.step);
+  for (let radius = 0; radius <= limit; radius++) {
+    for (let dj = -radius; dj <= radius; dj++) {
+      for (let di = -radius; di <= radius; di++) {
+        if (Math.max(Math.abs(di), Math.abs(dj)) !== radius) continue;
+        const i = i0 + di;
+        const j = j0 + dj;
+        if (i < 0 || j < 0 || i >= nav.width || j >= nav.width) continue;
+        const index = j * nav.width + i;
+        if (!nav.walkable[index] && !Number.isFinite(nav.distance[index])) continue;
+        const point = cellPoint(nav, index);
+        const distance = Math.hypot(point.x - start.x, point.z - start.z);
+        if (nav.walkable[index]) nearestWalkable = Math.min(nearestWalkable, distance);
+        if (Number.isFinite(nav.distance[index])) nearestReachable = Math.min(nearestReachable, distance);
+      }
+    }
+    if (Number.isFinite(nearestReachable) && Number.isFinite(nearestWalkable)) break;
+  }
+  let nearestDrink = Infinity;
+  for (const spot of spots) nearestDrink = Math.min(nearestDrink, Math.hypot(spot.x - start.x, spot.z - start.z));
+  return {
+    step: nav.step,
+    width: nav.width,
+    walkableCells: nav.walkableCount,
+    drinkBankSeeds: nav.seedCount,
+    reachableCells: nav.reachableCount,
+    nearestWalkableGridDistance: Number.isFinite(nearestWalkable) ? nearestWalkable : null,
+    nearestReachableGridDistance: Number.isFinite(nearestReachable) ? nearestReachable : null,
+    nearestDrinkSpotDistance: Number.isFinite(nearestDrink) ? nearestDrink : null,
+    startSlopeDeg: terrain.slopeAt(start.x, start.z) * 180 / Math.PI,
+    maxSlopeDeg,
+    safeRouteSlopeDeg: nav.maxSlopeDeg,
+  };
+}
+
 export function findDrinkRoute(
   terrain: Terrain,
   spots: readonly DrinkSpot[],
@@ -112,6 +178,7 @@ function getNavigation(
   const count = width * width;
   const half = terrain.half;
   const walkable = new Uint8Array(count);
+  let walkableCount = 0;
   const distance = new Float32Array(count);
   distance.fill(Number.POSITIVE_INFINITY);
   const next = new Int32Array(count);
@@ -133,7 +200,10 @@ function getNavigation(
   };
 
   for (let index = 0; index < count; index++) {
-    if (clearAt(pointAt(index))) walkable[index] = 1;
+    if (clearAt(pointAt(index))) {
+      walkable[index] = 1;
+      walkableCount++;
+    }
   }
 
   const targets: DrinkSpot[] = [];
@@ -154,6 +224,7 @@ function getNavigation(
     }
   }
 
+  const seedCount = seeds.length;
   const heap = new MinHeap();
   for (const seed of seeds) heap.push(seed, distance[seed]);
   const directions = [
@@ -191,8 +262,15 @@ function getNavigation(
     }
   }
 
+  let reachableCount = 0;
+  for (let index = 0; index < count; index++) {
+    if (Number.isFinite(distance[index])) reachableCount++;
+  }
   const result: WaterNavigation = {
     step,
+    walkableCount,
+    seedCount,
+    reachableCount,
     maxSlopeDeg: roundedSlope,
     width,
     half,
