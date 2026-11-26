@@ -194,6 +194,43 @@ function nearestOf(agent: AgentState, list: readonly AgentState[], pred: (o: Age
   return best;
 }
 
+/**
+ * Family groups maintain a compact home range around their den. The radius is
+ * intentionally species-model driven rather than a per-creature hard-coded
+ * target: the small Reedbrush Kit stays close to its den, while herd and flock
+ * species are allowed to range more widely.
+ */
+export function homeRangeRadius(sp: SpeciesProfile): number {
+  if (sp.social.model === 'family') return 78;
+  if (sp.social.model === 'herd') return 170;
+  if (sp.social.model === 'loose_flock') return 260;
+  return Number.POSITIVE_INFINITY;
+}
+
+export function homeRangePressure(distance: number, radius: number): number {
+  if (!Number.isFinite(radius) || radius <= 0 || !Number.isFinite(distance)) return 0;
+  return clamp01((distance - radius * 0.55) / (radius * 0.45));
+}
+
+/** Keep exploration goals inside the animal's home range; if already outside, send it home. */
+export function constrainHomeRangeTarget(
+  home: { x: number; z: number },
+  origin: { x: number; z: number },
+  target: { x: number; z: number },
+  radius: number,
+): { x: number; z: number } {
+  if (!Number.isFinite(radius) || radius <= 0) return target;
+  const originDistance = distXZ(origin.x, origin.z, home.x, home.z);
+  if (originDistance > radius) return { x: home.x, z: home.z };
+  const dx = target.x - home.x;
+  const dz = target.z - home.z;
+  const targetDistance = Math.hypot(dx, dz);
+  const limit = radius * 0.92;
+  if (targetDistance <= limit || targetDistance < 1e-6) return target;
+  const scale = limit / targetDistance;
+  return { x: home.x + dx * scale, z: home.z + dz * scale };
+}
+
 function nightFactor(state: SimState): number {
   switch (state.env.dayPhase) {
     case 'night':
@@ -215,16 +252,22 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
   switch (behavior) {
     case 'idle':
       return { considerations: [c('baseline', 1, 1), c('calm', calm, 0.35 + 0.65 * calm)], activity: phaseAct * 0.22, targetAgent: null };
-    case 'wander':
+    case 'wander': {
+      const home = agent.homeId ? state.terrain.getLandmark(agent.homeId) : undefined;
+      const range = home ? homeRangeRadius(sp) : Number.POSITIVE_INFINITY;
+      const distance = home ? distXZ(agent.pos.x, agent.pos.z, home.x, home.z) : 0;
+      const rangePressure = home ? homeRangePressure(distance, range) : 0;
       return {
         considerations: [
           c('curiosity', agent.needs.curiosity, 0.2 + 0.8 * agent.needs.curiosity),
           c('rested', agent.needs.fatigue, 1 - agent.needs.fatigue * 0.75),
           c('calm', fear, calm),
+          c('home_range', rangePressure, 1 - rangePressure),
         ],
         activity: phaseAct,
         targetAgent: null,
       };
+    }
     case 'graze': {
       if (sp.diet.vegetation < 0.35) return zero(behavior);
       return {
@@ -431,11 +474,16 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       const home = agent.homeId ? state.terrain.getLandmark(agent.homeId) : undefined;
       if (!home) return zero(behavior);
       const d = distXZ(agent.pos.x, agent.pos.z, home.x, home.z);
-      const away = clamp01(d / 28);
+      const range = homeRangeRadius(sp);
+      const away = homeRangePressure(d, range);
       const night = nightFactor(state);
+      const urgency = Math.max(away, night);
       return {
-        considerations: [c('dusk', night, night), c('distance', away, 0.3 + 0.7 * away)],
-        activity: 0.85,
+        considerations: [
+          c('home_range', urgency, 0.25 + 0.75 * urgency),
+          c('calm', fear, 0.55 + 0.45 * calm),
+        ],
+        activity: 0.85 + 0.15 * urgency,
         targetAgent: null,
       };
     }
@@ -611,9 +659,14 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       if (pal) target = { x: pal.pos.x, z: pal.pos.z };
     }
     if (!target) {
-      const ang = agent.heading + 0.7 + (agent.id % 8) * 0.35;
-      const dist = 8 + (agent.id % 5) * 2.5;
-      target = { x: agent.pos.x + Math.sin(ang) * dist, z: agent.pos.z + Math.cos(ang) * dist };
+      const angle = agent.heading + 0.7 + (agent.id % 8) * 0.35;
+      const distance = 8 + (agent.id % 5) * 2.5;
+      target = { x: agent.pos.x + Math.sin(angle) * distance, z: agent.pos.z + Math.cos(angle) * distance };
+    }
+    const home = agent.homeId ? state.terrain.getLandmark(agent.homeId) : undefined;
+    if (home) {
+      target = constrainHomeRangeTarget(home, agent.pos, target, homeRangeRadius(sp));
+      if (distXZ(target.x, target.z, home.x, home.z) < 1.5) place = home.id;
     }
   } else if (behavior === 'stalk' && targetAgent != null) {
     const prey = state.agentById.get(targetAgent);
