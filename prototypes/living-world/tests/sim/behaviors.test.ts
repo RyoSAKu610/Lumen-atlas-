@@ -213,6 +213,43 @@ describe('behaviour', () => {
     expect(herd.prey.alive).toBe(true);
   });
 
+  it('lets a thirsty herd member leave formation temporarily and follow its water route', () => {
+    const sim = Simulation.create(bundle, { seed: 20261126 });
+    const adults = sim.agents.filter((agent) =>
+      agent.alive && agent.speciesId === 'giant_grazer' && agent.lifeStage === 'adult',
+    );
+    const drinker = adults[0];
+    expect(drinker).toBeTruthy();
+    const group = adults.filter((agent) => agent.groupId === drinker.groupId);
+    expect(group.length).toBeGreaterThanOrEqual(3);
+
+    // This lower western shelf is a reproducible, walkable start with a
+    // multi-waypoint route to the river bank. Put the rest of the herd behind
+    // the thirsty adult so group-centroid pull would otherwise point it away
+    // from the route.
+    place(sim, drinker, -132.7, -68.3);
+    const followers = group.filter((agent) => agent.id !== drinker.id);
+    for (let i = 0; i < followers.length; i++) {
+      place(sim, followers[i], -138 - (i % 2) * 1.5, -64 + Math.floor(i / 2) * 1.3);
+      calm(followers[i]);
+      followers[i].behavior = 'idle';
+      followers[i].intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+    }
+    calm(drinker);
+    drinker.needs.thirst = 1;
+    drinker.behavior = 'idle';
+    drinker.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+
+    sim.step();
+    expect(drinker.behavior).toBe('drink');
+    expect(drinker.intent.target).not.toBeNull();
+    const target = { ...drinker.intent.target! };
+    const before = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
+    step(sim, 250);
+    const after = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
+    expect(after).toBeLessThan(before - 5);
+  });
+
   it('lets a critically thirsty herd adult abandon defense and seek water', () => {
     const sim = Simulation.create(bundle, { seed: 82 });
     const giant = sim.agents.find((agent) =>
