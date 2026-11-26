@@ -245,9 +245,12 @@ describe('behaviour', () => {
     expect(drinker.intent.target).not.toBeNull();
     const target = { ...drinker.intent.target! };
     const before = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
-    step(sim, 250);
+    // The first segment bends around a rocky / wet corridor, so direct
+    // distance can briefly rise; give the individual time to traverse the
+    // full multi-waypoint path and reach the actual bank.
+    step(sim, 1200);
     const after = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
-    expect(after).toBeLessThan(before - 5);
+    expect(after).toBeLessThan(before - 15);
   });
 
   it('lets a critically thirsty herd adult abandon defense and seek water', () => {
