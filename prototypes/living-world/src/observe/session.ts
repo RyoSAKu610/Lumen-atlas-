@@ -6,7 +6,6 @@ import { DocumentaryCamera, type CameraAgent, type CameraWorld } from '../observ
 import { formatClock, narrateEvent, nicknameFor, speciesName } from '../observe/narrate';
 import type { CreatureLayer, EnvironmentLayer, QualityLevel, RenderContext } from '../render/contracts';
 import type { Season, Weather } from '../sim/ids';
-import { Terrain } from '../sim/terrain';
 import type { AgentId, CatchUpReport, SimConfig, SimulationView, WorldSnapshot } from '../sim/types';
 import { offlineGameSeconds, readWorldSnapshot, WORLD_STORAGE_FORMAT_VERSION, writeWorldSnapshot, type SnapshotStorage } from '../sim/persistence';
 import { mountShell } from '../ui/shell';
@@ -92,16 +91,8 @@ export async function runObservation(root: HTMLElement, modules: ObservationModu
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(42, viewportAspect(shell.viewport), 0.15, 2500);
   const quality = (params.get('quality') as QualityLevel | null) ?? 'medium';
-  const seed = Number(params.get('seed') ?? 20261124);
-  const terrain = Terrain.build(data.region, seed, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
-  const species = new Map(data.species.map((profile) => [profile.id, profile]));
-  const ctx: RenderContext = { renderer, scene, camera, terrain, region: data.region, art: data.art, species, quality };
-
-  const environment = modules.createEnvironmentLayer();
-  const creatures = modules.createCreatureLayer();
-  await environment.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
-  await creatures.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
-
+  const requestedSeed = Number(params.get('seed') ?? 20261126);
+  const seed = Number.isFinite(requestedSeed) ? Math.trunc(requestedSeed) : 20261126;
   const simData = { region: data.region, species: data.species };
   const storageKey = `living-atlas:${data.region.id}:snapshot:v${WORLD_STORAGE_FORMAT_VERSION}`;
   let storage: SnapshotStorage | null = null;
@@ -148,6 +139,17 @@ export async function runObservation(root: HTMLElement, modules: ObservationModu
   } else if (stored.status === 'corrupt' || stored.status === 'unavailable') {
     shell.pushJournal({ time: '—', text: stored.message });
   }
+
+  // The simulation owns the canonical terrain. Rendering and AI therefore share the
+  // exact same seeded height / water field, including after a saved-world restore.
+  const terrain = sim.terrain;
+  const species = new Map(data.species.map((profile) => [profile.id, profile]));
+  const ctx: RenderContext = { renderer, scene, camera, terrain, region: data.region, art: data.art, species, quality };
+
+  const environment = modules.createEnvironmentLayer();
+  const creatures = modules.createCreatureLayer();
+  await environment.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
+  await creatures.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
   const director = new DocumentaryCamera(camera, data.shots);
   const sources = {
     narration: data.narration,
