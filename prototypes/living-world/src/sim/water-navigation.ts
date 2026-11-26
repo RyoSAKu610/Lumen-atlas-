@@ -16,6 +16,7 @@ export interface DrinkRoute {
 
 interface WaterNavigation {
   step: number;
+  maxSlopeDeg: number;
   width: number;
   half: number;
   walkable: Uint8Array;
@@ -52,7 +53,7 @@ export function findDrinkRoute(
   // ordinary free movement retains a wider avoidance envelope.
   const clearance = Math.max(0.25, Math.min(2.2, bodyRadius * 0.52));
   const nav = getNavigation(terrain, spots, maxSlopeDeg, clearance);
-  const startIndex = nearestReachableCell(nav, terrain, start, maxSlopeDeg, clearance, 18);
+  const startIndex = nearestReachableCell(nav, terrain, start, nav.maxSlopeDeg, clearance, 28);
   if (startIndex < 0 || !Number.isFinite(nav.distance[startIndex]) || nav.targetIndex[startIndex] < 0) return null;
 
   const target = nav.targets[nav.targetIndex[startIndex]];
@@ -88,7 +89,10 @@ function getNavigation(
     byProfile = new Map();
     navigationCache.set(terrain, byProfile);
   }
-  const roundedSlope = Math.round(maxSlopeDeg);
+  // Reserve a small safety margin below each species' hard climbing limit.
+  // Route cells on the exact physical limit are highly sensitive to heightfield
+  // interpolation and can trap a small animal after one steering correction.
+  const roundedSlope = Math.max(5, Math.floor((maxSlopeDeg - 1.5) * 2) / 2);
   const roundedClearance = Math.round(clearance * 2) / 2;
   const first = spots[0];
   const last = spots[spots.length - 1];
@@ -96,7 +100,10 @@ function getNavigation(
   const cached = byProfile.get(key);
   if (cached) return cached;
 
-  const step = Math.max(terrain.cell * 2, 2.5);
+  // A ~3 m lattice skipped narrow valley shelves and safe gaps between steep
+  // faces. Use a finer lattice so small-bodied fauna can retain connected
+  // corridors without inventing a route through water or cliffs.
+  const step = Math.max(terrain.cell, 1.75);
   const width = Math.ceil(terrain.size / step) + 1;
   const count = width * width;
   const half = terrain.half;
@@ -180,7 +187,17 @@ function getNavigation(
     }
   }
 
-  const result: WaterNavigation = { step, width, half, walkable, distance, next, targetIndex, targets };
+  const result: WaterNavigation = {
+    step,
+    maxSlopeDeg: roundedSlope,
+    width,
+    half,
+    walkable,
+    distance,
+    next,
+    targetIndex,
+    targets,
+  };
   byProfile.set(key, result);
   return result;
 }
