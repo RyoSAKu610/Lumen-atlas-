@@ -67,6 +67,45 @@ console.log(`  births recorded: ${journal.filter((event) => event.type === 'agen
 
 if (args.includes('--diagnose-water')) {
   console.log('\nwater access diagnostics (kit_forager)');
+  
+  const drinkCandidates: Array<{ x: number; z: number }> = [];
+  let lastX = Infinity;
+  let lastZ = Infinity;
+  for (const sample of sim.terrain.riverSamples) {
+    if (Math.hypot(sample.x - lastX, sample.z - lastZ) < 16) continue;
+    const ox = Math.cos(sample.flowDir) * (sample.halfWidth + 1.4);
+    const oz = -Math.sin(sample.flowDir) * (sample.halfWidth + 1.4);
+    for (const point of [
+      { x: sample.x + ox, z: sample.z + oz },
+      { x: sample.x - ox, z: sample.z - oz },
+    ]) {
+      if (sim.terrain.inBounds(point.x, point.z, 4)) drinkCandidates.push(point);
+    }
+    lastX = sample.x;
+    lastZ = sample.z;
+  }
+  for (const pool of sim.terrain.pools) {
+    if (pool.kind === 'hot_spring' && pool.temperatureC > 36) continue;
+    for (let k = 0; k < 6; k++) {
+      const angle = (k / 6) * Math.PI * 2;
+      const point = { x: pool.x + Math.cos(angle) * (pool.radius + 1.3), z: pool.z + Math.sin(angle) * (pool.radius + 1.3) };
+      if (sim.terrain.inBounds(point.x, point.z, 4)) drinkCandidates.push(point);
+    }
+  }
+  console.log(`drink candidates: ${drinkCandidates.length}; river samples: ${sim.terrain.riverSamples.length}`);
+  for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
+    const nearest = drinkCandidates
+      .map((point) => ({ ...point, distance: Math.hypot(agent.pos.x - point.x, agent.pos.z - point.z) }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3)
+      .map((point) => {
+        const walkable = kitProfile ? sim.terrain.isWalkable(point.x, point.z, kitProfile.locomotion.maxSlopeDeg, 0.6) : false;
+        const surface = sim.terrain.waterSurfaceAt(point.x, point.z);
+        return `(${point.x.toFixed(1)},${point.z.toFixed(1)}) d=${point.distance.toFixed(1)} walk=${walkable} water=${surface === null ? 'dry' : 'wet'}`;
+      });
+    console.log(`  nearest for #${agent.id}: ${nearest.join(' | ')}`);
+  }
+
   const kitProfile = data.species.find((sp) => sp.id === 'kit_forager');
   for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
     const water = agent.memory.water;
