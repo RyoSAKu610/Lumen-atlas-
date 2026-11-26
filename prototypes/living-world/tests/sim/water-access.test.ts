@@ -72,8 +72,15 @@ describe('water memory integration', () => {
     const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
     const kit = sim.agents.find((agent) => agent.speciesId === 'kit_forager' && agent.lifeStage === 'adult');
     expect(kit).toBeDefined();
-    const position = { x: -120.7, z: -100.6 };
-    place(sim, kit!, position.x, position.z);
+    const localSpot = nearestAccessibleDrinkSpot(
+      sim.terrain,
+      generateDrinkSpots(sim.terrain),
+      -120.7,
+      -100.6,
+      data.species.find((species) => species.id === 'kit_forager')!.locomotion.maxSlopeDeg,
+    );
+    expect(localSpot).not.toBeNull();
+    place(sim, kit!, localSpot!.x, localSpot!.z);
     kit!.speed = 0;
     kit!.needs.thirst = 0.85;
     kit!.memory.water = { x: -24.4, z: -17.1 };
@@ -87,5 +94,6 @@ describe('water memory integration', () => {
     );
     expect(remainingDistance).toBeLessThan(30);
     expect(kit!.causeOfDeath).toBeNull();
+    expect(kit!.needs.thirst).toBeLessThan(0.85);
   });
 });
