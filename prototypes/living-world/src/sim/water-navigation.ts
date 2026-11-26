@@ -49,7 +49,7 @@ export function findDrinkRoute(
   if (spots.length === 0 || !Number.isFinite(start.x) || !Number.isFinite(start.z)) return null;
   const clearance = Math.max(0.25, Math.min(2.2, bodyRadius * 0.52));
   const nav = getNavigation(terrain, spots, maxSlopeDeg, clearance);
-  const startIndex = nearestReachableCell(nav, terrain, start, maxSlopeDeg, clearance, 6);
+  const startIndex = nearestReachableCell(nav, terrain, start, maxSlopeDeg, clearance, 18);
   if (startIndex < 0 || !Number.isFinite(nav.distance[startIndex]) || nav.targetIndex[startIndex] < 0) return null;
 
   const target = nav.targets[nav.targetIndex[startIndex]];
