@@ -101,6 +101,51 @@ describe('water memory integration', () => {
 });
 
 
+describe('water consumption validation', () => {
+  it('does not reduce thirst while stationary away from a valid drink bank', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 91 });
+    const agent = sim.agents.find((item) => item.alive && item.speciesId === 'giant_grazer')!;
+    const profile = sim.species.get(agent.speciesId)!;
+    const banks = generateDrinkSpots(sim.terrain);
+    const bank = banks.find((spot) => sim.terrain.isWalkable(
+      spot.x, spot.z, profile.locomotion.maxSlopeDeg, 0.35,
+    ))!;
+    expect(bank).toBeDefined();
+
+    let remote: { x: number; z: number } | null = null;
+    for (let x = -150; x <= 150 && !remote; x += 6) {
+      for (let z = -150; z <= 150; z += 6) {
+        if (!sim.terrain.isWalkable(x, z, profile.locomotion.maxSlopeDeg, 0.35)) continue;
+        const nearest = Math.min(...banks.map((spot) => Math.hypot(spot.x - x, spot.z - z)));
+        if (nearest > 18) {
+          remote = { x, z };
+          break;
+        }
+      }
+    }
+    expect(remote).not.toBeNull();
+    place(sim, agent, remote!.x, remote!.z);
+    agent.behavior = 'drink';
+    agent.intent = { behavior: 'drink', target: bank, targetAgent: null, place: null };
+    agent.speed = 0;
+    agent.needs.thirst = 0.65;
+    const beforeRemote = agent.needs.thirst;
+    sim.step();
+    expect(agent.needs.thirst).toBeGreaterThan(beforeRemote);
+
+    // The same stationary individual only recovers once physically at the
+    // generated bank that matches its drink intent.
+    place(sim, agent, bank.x, bank.z);
+    agent.behavior = 'drink';
+    agent.intent = { behavior: 'drink', target: bank, targetAgent: null, place: null };
+    agent.speed = 0;
+    agent.needs.thirst = 0.65;
+    const beforeAtBank = agent.needs.thirst;
+    sim.step();
+    expect(agent.needs.thirst).toBeLessThan(beforeAtBank);
+  });
+});
+
 describe('terrain-aware water routing', () => {
   it('finds a walkable route to water for every seeded starting individual', () => {
     const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
