@@ -261,6 +261,11 @@ describe('behaviour', () => {
     sim.step();
     expect(drinker.behavior).toBe('drink');
     expect(drinker.intent.target).not.toBeNull();
+    const initialNav = sim.getAgentRuntimeDebug(drinker.id);
+    expect(initialNav?.waterPath.length).toBeGreaterThan(1);
+    // The first point is about 1.5 m away: beyond the 1.35 m old arrival
+    // threshold but inside the 1.5 m walk-stop threshold. It must be skipped.
+    expect(initialNav?.waterPathIndex, JSON.stringify(initialNav)).toBeGreaterThan(0);
     const target = { ...drinker.intent.target! };
     const before = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
     // The first segment bends around a rocky / wet corridor, so direct
