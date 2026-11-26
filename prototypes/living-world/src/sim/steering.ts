@@ -5,6 +5,7 @@ import { rtOf, speciesOf, type SimState } from './internal';
 import { emit } from './journal';
 import { angDiff, clamp, distXZ, wrapAngle } from './math';
 import { findDrinkRoute } from './water-navigation';
+import { constrainHomeRangeTarget, homeRangeRadius } from './ai';
 
 const obsScratch: Obstacle[] = [];
 
@@ -83,11 +84,20 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
       tx = mother.pos.x;
       tz = mother.pos.z;
     } else {
-      const dx = agent.pos.x - t.x;
-      const dz = agent.pos.z - t.z;
-      const d = Math.hypot(dx, dz) || 1;
-      tx = agent.pos.x + (dx / d) * 26;
-      tz = agent.pos.z + (dz / d) * 26;
+      const destination = fleeDestination(
+        { x: agent.pos.x, z: agent.pos.z },
+        t,
+        agent.territory
+          ? { x: agent.territory.x, z: agent.territory.z }
+          : agent.homeId
+            ? state.terrain.getLandmark(agent.homeId) ?? null
+            : null,
+        agent.territory
+          ? Math.max(agent.territory.radius * 1.45, sp.social.territoryRadius * 1.2)
+          : homeRangeRadius(sp),
+      );
+      tx = destination.x;
+      tz = destination.z;
     }
   } else if ((agent.behavior === 'chase' || agent.behavior === 'stalk') && agent.intent.targetAgent != null) {
     const prey = state.agentById.get(agent.intent.targetAgent);
@@ -501,4 +511,26 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
     agent.pos.y = ground;
   }
   if (!Number.isFinite(agent.pos.y)) agent.pos.y = agent.prevPos.y;
+}
+
+/**
+ * A fleeing animal should gain distance from danger without running out of its
+ * ecological home range. Repeatedly adding a 26 m escape vector used to push
+ * herds to the world boundary, where they could become trapped far from water.
+ */
+export function fleeDestination(
+  origin: { x: number; z: number },
+  threat: { x: number; z: number },
+  home: { x: number; z: number } | null,
+  radius: number,
+  escapeDistance = 26,
+): { x: number; z: number } {
+  const dx = origin.x - threat.x;
+  const dz = origin.z - threat.z;
+  const d = Math.hypot(dx, dz) || 1;
+  const proposed = {
+    x: origin.x + (dx / d) * Math.max(1, escapeDistance),
+    z: origin.z + (dz / d) * Math.max(1, escapeDistance),
+  };
+  return home ? constrainHomeRangeTarget(home, origin, proposed, radius) : proposed;
 }
