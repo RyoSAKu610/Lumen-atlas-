@@ -61,7 +61,14 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     }
     const path = rt.waterPath ?? [];
     let index = Math.min(rt.waterPathIndex ?? 0, Math.max(0, path.length - 1));
-    while (index < path.length - 1 && distXZ(agent.pos.x, agent.pos.z, path[index].x, path[index].z) < 1.35) index++;
+    // desiredSpeed() stops walking at <= 1.5 m. The previous 1.35 m
+    // waypoint threshold left a dead zone (1.35–1.5 m) where the creature
+    // neither moved nor advanced to the next waypoint.
+    const waypointReachDistance = 1.9;
+    while (
+      index < path.length - 1 &&
+      distXZ(agent.pos.x, agent.pos.z, path[index].x, path[index].z) < waypointReachDistance
+    ) index++;
     rt.waterPathIndex = index;
     if (path[index]) {
       tx = path[index].x;
