@@ -119,6 +119,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   const cohesive =
     (model === 'herd' || model === 'family' || model === 'loose_flock') &&
     agent.behavior !== 'flee' &&
+    agent.behavior !== 'drink' &&
     agent.behavior !== 'bathe' &&
     agent.behavior !== 'chase' &&
     agent.behavior !== 'stalk' &&
