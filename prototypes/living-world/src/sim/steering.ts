@@ -138,6 +138,14 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   tx += sx * 2.4;
   tz += sz * 2.4;
 
+  // Keep autonomous destinations inside the navigable interior. The outer
+  // terrain rim is generated for landscape framing and can contain steep,
+  // effectively one-way slopes; fleeing all the way to the map edge trapped
+  // individuals far from resources.
+  const safeTarget = state.terrain.clampToBounds(tx, tz, 14);
+  tx = safeTarget.x;
+  tz = safeTarget.z;
+
   const airborne = agent.posture === 'airborne' || agent.behavior === 'soar' || agent.behavior === 'glide';
   const dx = tx - agent.pos.x;
   const dz = tz - agent.pos.z;
@@ -147,14 +155,20 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     desired = Math.min(desired, sp.locomotion.walkSpeed);
   }
   if (dist > 0.2) {
-    const want = Math.atan2(dx, dz);
-    const diff = angDiff(agent.heading, want);
-    const speedForTurn = Math.max(agent.speed, sp.locomotion.walkSpeed * 0.45);
-    const maxTurn = sp.locomotion.turnRate * dt * (0.6 + 0.8 * (sp.locomotion.walkSpeed / speedForTurn));
-    const turn = clamp(diff, -maxTurn, maxTurn);
-    agent.heading = wrapAngle(agent.heading + turn);
-    if (airborne) agent.bank = clamp((-turn / Math.max(dt, 1e-3)) * 0.11, -0.75, 0.75);
-    else agent.bank *= 0.86;
+    // During a short stuck escape, preserve the detour heading instead of
+    // immediately steering back into the same blocked line to the goal.
+    if (rt.stuck >= 0) {
+      const want = Math.atan2(dx, dz);
+      const diff = angDiff(agent.heading, want);
+      const speedForTurn = Math.max(agent.speed, sp.locomotion.walkSpeed * 0.45);
+      const maxTurn = sp.locomotion.turnRate * dt * (0.6 + 0.8 * (sp.locomotion.walkSpeed / speedForTurn));
+      const turn = clamp(diff, -maxTurn, maxTurn);
+      agent.heading = wrapAngle(agent.heading + turn);
+      if (airborne) agent.bank = clamp((-turn / Math.max(dt, 1e-3)) * 0.11, -0.75, 0.75);
+      else agent.bank *= 0.86;
+    } else {
+      agent.bank *= 0.86;
+    }
   } else agent.bank *= 0.9;
 
   const accel = sp.locomotion.acceleration * dt;
@@ -169,19 +183,37 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     nz = stepped.z;
     if (stepped.heading != null) agent.heading = stepped.heading;
   }
-  const clamped = state.terrain.clampToBounds(nx, nz, 3);
+  const clamped = state.terrain.clampToBounds(nx, nz, 14);
   if (clamped.x !== nx || clamped.z !== nz) {
     const inward = Math.atan2(-clamped.x, -clamped.z);
     agent.heading = wrapAngle(agent.heading + clamp(angDiff(agent.heading, inward), -0.4, 0.4));
   }
   const moved = distXZ(agent.pos.x, agent.pos.z, clamped.x, clamped.z);
-  if (desired > 0.3 && moved < 0.015 * Math.max(1, dt) && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
-    rt.stuck += dt;
-    if (rt.stuck > 1.5) {
-      agent.heading = wrapAngle(agent.heading + 1.15);
-      rt.stuck = 0;
+  const targetProgress = dist - distXZ(clamped.x, clamped.z, tx, tz);
+  const dynamicTarget =
+    agent.behavior === 'flee' || agent.behavior === 'chase' || agent.behavior === 'stalk' ||
+    agent.behavior === 'follow' || agent.behavior === 'soar' || agent.behavior === 'glide';
+  const madeProgress = dynamicTarget ? moved > 0.05 : targetProgress > Math.max(0.006, agent.speed * dt * 0.08);
+  if (desired > 0.3 && !madeProgress && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
+    if (rt.stuck < 0) {
+      // Detour window expires whether or not the first alternate step succeeds.
+      rt.stuck = Math.min(0, rt.stuck + dt);
+    } else {
+      // Count lack of goal progress, not merely lack of body movement. This
+      // catches tiny oscillations beside an obstacle that used to reset stuck.
+      rt.stuck += dt;
+      if (rt.stuck > 1.5) {
+        agent.heading = wrapAngle(agent.heading + 1.15);
+        // Negative stuck time marks a short escape window. During it, local
+        // collision resolution may take a safe sideways step even if that step
+        // temporarily increases distance to the final target.
+        rt.stuck = -2.0;
+      }
     }
-  } else if (moved > 0.05) rt.stuck = 0;
+  } else if (madeProgress) {
+    if (rt.stuck < 0) rt.stuck = Math.min(0, rt.stuck + dt);
+    else rt.stuck = 0;
+  }
 
   agent.pos.x = clamped.x;
   agent.pos.z = clamped.z;
@@ -262,7 +294,11 @@ function resolveStep(
   let bestX = agent.pos.x;
   let bestZ = agent.pos.z;
   let bestH: number | null = null;
-  let bestD = distXZ(agent.pos.x, agent.pos.z, tx, tz);
+  const currentDistance = distXZ(agent.pos.x, agent.pos.z, tx, tz);
+  let bestD = currentDistance;
+  const rt = rtOf(state, agent.id);
+  const detouring = rt.stuck < 0;
+  let bestEscapeTurn = Infinity;
   const step = Math.max(0.35, agent.speed * 0.1);
   for (let k = 0; k < 8; k++) {
     const h = wrapAngle(agent.heading + (k - 3.5) * 0.45);
@@ -275,6 +311,19 @@ function resolveStep(
       bestX = sx;
       bestZ = sz;
       bestH = h;
+    } else if (detouring && d <= currentDistance + step * 1.1) {
+      // The greedy step may have to move around a rock / steep edge before it
+      // can reduce goal distance. Permit a tiny safe detour, preferring the
+      // heading with the smallest turn from the current escape direction.
+      const turn = Math.abs(angDiff(agent.heading, h));
+      if (turn < bestEscapeTurn) {
+        bestEscapeTurn = turn;
+        if (bestD >= currentDistance - 0.01) {
+          bestX = sx;
+          bestZ = sz;
+          bestH = h;
+        }
+      }
     }
   }
   return { x: bestX, z: bestZ, heading: bestH };
@@ -297,7 +346,7 @@ function occupiable(state: SimState, agent: AgentState, x: number, z: number): b
 }
 
 function walkable(terrain: Terrain, x: number, z: number, maxSlopeDeg: number, maxWater: number): boolean {
-  if (!terrain.inBounds(x, z, 3)) return false;
+  if (!terrain.inBounds(x, z, 14)) return false;
   if (terrain.waterDepthAt(x, z) > maxWater) return false;
   return slopeCos(terrain, x, z) >= Math.cos((maxSlopeDeg * Math.PI) / 180);
 }

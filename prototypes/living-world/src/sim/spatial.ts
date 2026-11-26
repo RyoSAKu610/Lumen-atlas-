@@ -3,6 +3,7 @@ import type { SpatialIndex, SimState } from './internal';
 import { speciesOf, rtOf } from './internal';
 import { wrapAngle } from './math';
 import { emit } from './journal';
+import type { Terrain } from './terrain';
 
 const CELL = 16;
 
@@ -166,9 +167,11 @@ export function updatePerception(state: SimState, physDt: number): void {
     if (state.terrain.forageAt(agent.pos.x, agent.pos.z) > 0.45) {
       agent.memory.food = { x: agent.pos.x, z: agent.pos.z };
     }
-    if (agent.needs.thirst > 0.35 && !agent.memory.water) {
-      const spot = nearestDrink(state, agent.pos.x, agent.pos.z);
-      if (spot) agent.memory.water = spot;
+    if (agent.needs.thirst > 0.35) {
+      const spot = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
+      if (shouldRefreshWaterMemory(state.terrain, agent.memory.water, spot, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg)) {
+        agent.memory.water = spot;
+      }
     }
   }
   void physDt;
@@ -198,45 +201,104 @@ function noteThreat(state: SimState, agent: AgentState, threat: AgentState, floo
   }
 }
 
-export function nearestDrink(state: SimState, x: number, z: number): { x: number; z: number } | null {
-  let best: { x: number; z: number } | null = null;
-  let bestD = Infinity;
-  for (const spot of state.drinkSpots) {
-    const d = (spot.x - x) * (spot.x - x) + (spot.z - z) * (spot.z - z);
-    if (d < bestD) {
-      bestD = d;
+export interface DrinkSpot {
+  x: number;
+  z: number;
+}
+
+/** Closest shore point that this species can safely stand on to drink. */
+export function nearestAccessibleDrinkSpot(
+  terrain: Terrain,
+  spots: readonly DrinkSpot[],
+  x: number,
+  z: number,
+  maxSlopeDeg: number,
+): DrinkSpot | null {
+  let best: DrinkSpot | null = null;
+  let bestD2 = Infinity;
+  for (const spot of spots) {
+    if (!terrain.inBounds(spot.x, spot.z, 14) || !terrain.isWalkable(spot.x, spot.z, maxSlopeDeg, 0.35)) continue;
+    const dx = spot.x - x;
+    const dz = spot.z - z;
+    const d2 = dx * dx + dz * dz;
+    if (d2 < bestD2) {
+      bestD2 = d2;
       best = spot;
     }
   }
   return best;
 }
 
-export function buildDrinkSpots(state: SimState): void {
-  const spots: Array<{ x: number; z: number }> = [];
+/** A stale water memory is replaced when it is unsafe or a meaningfully closer shore is known. */
+export function shouldRefreshWaterMemory(
+  terrain: Terrain,
+  current: DrinkSpot | null,
+  candidate: DrinkSpot | null,
+  x: number,
+  z: number,
+  maxSlopeDeg: number,
+  improvementMeters = 8,
+): boolean {
+  if (!candidate) return false;
+  if (!current || !terrain.inBounds(current.x, current.z, 14) || !terrain.isWalkable(current.x, current.z, maxSlopeDeg, 0.35)) return true;
+  const currentDistance = Math.hypot(current.x - x, current.z - z);
+  const candidateDistance = Math.hypot(candidate.x - x, candidate.z - z);
+  return candidateDistance + Math.max(0, improvementMeters) < currentDistance;
+}
+
+export function nearestDrink(
+  state: SimState,
+  x: number,
+  z: number,
+  maxSlopeDeg = 45,
+): DrinkSpot | null {
+  return nearestAccessibleDrinkSpot(state.terrain, state.drinkSpots, x, z, maxSlopeDeg);
+}
+
+/** Generate drinkable banks close enough for a creature's head / body reach. */
+export function generateDrinkSpots(terrain: Terrain): DrinkSpot[] {
+  const spots: DrinkSpot[] = [];
+  const add = (point: DrinkSpot) => {
+    if (!terrain.inBounds(point.x, point.z, 14)) return;
+    // Keep feet on a shallow, stable bank. Species-specific slope limits are
+    // applied again when a particular individual selects a point.
+    if (!terrain.isWalkable(point.x, point.z, 50, 0.35)) return;
+    spots.push(point);
+  };
+
   let lastX = Infinity;
   let lastZ = Infinity;
-  for (const s of state.terrain.riverSamples) {
-    if (Math.hypot(s.x - lastX, s.z - lastZ) < 16) continue;
-    const ox = Math.cos(s.flowDir) * (s.halfWidth + 1.4);
-    const oz = -Math.sin(s.flowDir) * (s.halfWidth + 1.4);
-    const a = { x: s.x + ox, z: s.z + oz };
-    const b = { x: s.x - ox, z: s.z - oz };
-    if (state.terrain.inBounds(a.x, a.z, 4)) spots.push(a);
-    if (state.terrain.inBounds(b.x, b.z, 4)) spots.push(b);
-    lastX = s.x;
-    lastZ = s.z;
+  for (const sample of terrain.riverSamples) {
+    if (Math.hypot(sample.x - lastX, sample.z - lastZ) < 16) continue;
+    // A point only 0.55 m beyond the channel edge is within the combined
+    // body-radius + head-reach of small species; the old 1.4 m offset was
+    // too far for the 0.9 m Reedbrush Kit to physically reach the water.
+    const offset = sample.halfWidth + 0.55;
+    const ox = Math.cos(sample.flowDir) * offset;
+    const oz = -Math.sin(sample.flowDir) * offset;
+    add({ x: sample.x + ox, z: sample.z + oz });
+    add({ x: sample.x - ox, z: sample.z - oz });
+    lastX = sample.x;
+    lastZ = sample.z;
   }
-  for (const pool of state.terrain.pools) {
+
+  for (const pool of terrain.pools) {
+    // Raw geothermal sources above 36°C are not generic drinking pools.
     if (pool.kind === 'hot_spring' && pool.temperatureC > 36) continue;
-    const n = 6;
+    const n = 8;
     for (let k = 0; k < n; k++) {
-      const ang = (k / n) * Math.PI * 2;
-      const x = pool.x + Math.cos(ang) * (pool.radius + 1.3);
-      const z = pool.z + Math.sin(ang) * (pool.radius + 1.3);
-      if (state.terrain.inBounds(x, z, 4)) spots.push({ x, z });
+      const angle = (k / n) * Math.PI * 2;
+      add({
+        x: pool.x + Math.cos(angle) * (pool.radius + 0.5),
+        z: pool.z + Math.sin(angle) * (pool.radius + 0.5),
+      });
     }
   }
-  state.drinkSpots = spots;
+  return spots;
+}
+
+export function buildDrinkSpots(state: SimState): void {
+  state.drinkSpots = generateDrinkSpots(state.terrain);
 }
 
 export function buildPlaces(state: SimState): void {

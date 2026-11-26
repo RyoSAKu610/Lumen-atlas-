@@ -6,6 +6,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { loadGameDataOrThrow } from '../src/data/load';
 import { Simulation } from '../src/sim/Simulation';
+import { generateDrinkSpots, nearestAccessibleDrinkSpot } from '../src/sim/spatial';
 import type { SimEvent } from '../src/sim/types';
 
 const args = process.argv.slice(2);
@@ -66,63 +67,44 @@ for (const [key, n] of [...mortality.entries()].sort((a, b) => b[1] - a[1] || a[
 console.log(`  births recorded: ${journal.filter((event) => event.type === 'agent.born').length}`);
 
 if (args.includes('--diagnose-water')) {
-  console.log('\nwater access diagnostics (kit_forager)');
-  
-  const kitProfile = data.species.find((sp) => sp.id === 'kit_forager');
-  const drinkCandidates: Array<{ x: number; z: number }> = [];
-  let lastX = Infinity;
-  let lastZ = Infinity;
-  for (const sample of sim.terrain.riverSamples) {
-    if (Math.hypot(sample.x - lastX, sample.z - lastZ) < 16) continue;
-    const ox = Math.cos(sample.flowDir) * (sample.halfWidth + 1.4);
-    const oz = -Math.sin(sample.flowDir) * (sample.halfWidth + 1.4);
-    for (const point of [
-      { x: sample.x + ox, z: sample.z + oz },
-      { x: sample.x - ox, z: sample.z - oz },
-    ]) {
-      if (sim.terrain.inBounds(point.x, point.z, 4)) drinkCandidates.push(point);
-    }
-    lastX = sample.x;
-    lastZ = sample.z;
-  }
-  for (const pool of sim.terrain.pools) {
-    if (pool.kind === 'hot_spring' && pool.temperatureC > 36) continue;
-    for (let k = 0; k < 6; k++) {
-      const angle = (k / 6) * Math.PI * 2;
-      const point = { x: pool.x + Math.cos(angle) * (pool.radius + 1.3), z: pool.z + Math.sin(angle) * (pool.radius + 1.3) };
-      if (sim.terrain.inBounds(point.x, point.z, 4)) drinkCandidates.push(point);
-    }
-  }
-  console.log(`drink candidates: ${drinkCandidates.length}; river samples: ${sim.terrain.riverSamples.length}`);
-  for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
-    const nearest = drinkCandidates
-      .map((point) => ({ ...point, distance: Math.hypot(agent.pos.x - point.x, agent.pos.z - point.z) }))
-      .sort((a, b) => a.distance - b.distance)
-      .slice(0, 3)
-      .map((point) => {
-        const walkable = kitProfile ? sim.terrain.isWalkable(point.x, point.z, kitProfile.locomotion.maxSlopeDeg, 0.6) : false;
-        const surface = sim.terrain.waterSurfaceAt(point.x, point.z);
-        return `(${point.x.toFixed(1)},${point.z.toFixed(1)}) d=${point.distance.toFixed(1)} walk=${walkable} water=${surface === null ? 'dry' : 'wet'}`;
-      });
-    console.log(`  nearest for #${agent.id}: ${nearest.join(' | ')}`);
-  }
-
-  for (const agent of sim.agents.filter((a) => a.speciesId === 'kit_forager').sort((a, b) => a.id - b.id)) {
+  console.log('\nwater access diagnostics (all species)');
+  const drinkSpots = generateDrinkSpots(sim.terrain);
+  console.log(`drink candidates: ${drinkSpots.length}; river samples: ${sim.terrain.riverSamples.length}`);
+  const profiles = new Map(data.species.map((profile) => [profile.id, profile]));
+  const watch = sim.agents
+    .filter((agent) => (!agent.alive && agent.causeOfDeath === 'dehydration') || (agent.alive && agent.needs.thirst > 0.65))
+    .sort((a, b) => a.speciesId.localeCompare(b.speciesId) || a.id - b.id);
+  for (const agent of watch) {
+    const profile = profiles.get(agent.speciesId);
     const water = agent.memory.water;
     const target = agent.intent.target;
+    const home = agent.homeId ? sim.terrain.getLandmark(agent.homeId) : undefined;
+    const homeDistance = home ? Math.hypot(agent.pos.x - home.x, agent.pos.z - home.z) : null;
     const waterDistance = water ? Math.hypot(agent.pos.x - water.x, agent.pos.z - water.z) : null;
     const targetDistance = target ? Math.hypot(agent.pos.x - target.x, agent.pos.z - target.z) : null;
-    const waterWalkable = water && kitProfile
-      ? sim.terrain.isWalkable(water.x, water.z, kitProfile.locomotion.maxSlopeDeg, 0.6)
+    const waterWalkable = water && profile
+      ? sim.terrain.inBounds(water.x, water.z, 14) && sim.terrain.isWalkable(water.x, water.z, profile.locomotion.maxSlopeDeg, 0.35)
       : null;
-    const waterDepth = water ? sim.terrain.waterDepthAt(water.x, water.z) : null;
-    const waterSurface = water ? sim.terrain.waterSurfaceAt(water.x, water.z) !== null : null;
+    const nearest = profile
+      ? nearestAccessibleDrinkSpot(sim.terrain, drinkSpots, agent.pos.x, agent.pos.z, profile.locomotion.maxSlopeDeg)
+      : null;
+    const nearestDistance = nearest ? Math.hypot(agent.pos.x - nearest.x, agent.pos.z - nearest.z) : null;
+    const top = agent.decision?.options.slice(0, 3).map((option) => `${option.behavior}:${option.score.toFixed(2)}`).join(',') ?? '—';
     console.log(
-      `  #${agent.id} ${agent.alive ? 'alive' : agent.causeOfDeath ?? 'dead'} stage=${agent.lifeStage} thirst=${agent.needs.thirst.toFixed(3)} behavior=${agent.behavior} speed=${agent.speed.toFixed(2)} pos=(${agent.pos.x.toFixed(1)},${agent.pos.z.toFixed(1)}) water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})` : 'none'} waterDist=${waterDistance?.toFixed(1) ?? '—'} walkable=${waterWalkable ?? '—'} depth=${waterDepth?.toFixed(2) ?? '—'} hasSurface=${waterSurface ?? '—'} targetDist=${targetDistance?.toFixed(1) ?? '—'}`,
+      `  ${agent.speciesId} #${agent.id} ${agent.alive ? 'alive' : agent.causeOfDeath ?? 'dead'} stage=${agent.lifeStage} thirst=${agent.needs.thirst.toFixed(3)} fear=${agent.needs.fear.toFixed(3)} hunger=${agent.needs.hunger.toFixed(3)} fatigue=${agent.needs.fatigue.toFixed(3)} behavior=${agent.behavior} decision=${agent.decision?.chosen ?? '—'}(${agent.decision?.reason ?? '—'}) top=${top} speed=${agent.speed.toFixed(2)} pos=(${agent.pos.x.toFixed(1)},${agent.pos.z.toFixed(1)}) water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})` : 'none'} waterDist=${waterDistance?.toFixed(1) ?? '—'} waterWalkable=${waterWalkable ?? '—'} targetDist=${targetDistance?.toFixed(1) ?? '—'} nearestDrinkDist=${nearestDistance?.toFixed(1) ?? '—'} home=${agent.homeId ?? 'none'} homeDist=${homeDistance?.toFixed(1) ?? '—'} threat=${agent.memory.lastThreatPos ? `(${agent.memory.lastThreatPos.x.toFixed(1)},${agent.memory.lastThreatPos.z.toFixed(1)})` : '—'}`,
     );
   }
 }
-
+if (args.includes('--assert-water-survival')) {
+  const dehydrationDeaths = sim.agents.filter((agent) => !agent.alive && agent.causeOfDeath === 'dehydration');
+  const bySpecies = new Map<string, number>();
+  for (const agent of dehydrationDeaths) bySpecies.set(agent.speciesId, (bySpecies.get(agent.speciesId) ?? 0) + 1);
+  const breakdown = [...bySpecies.entries()].map(([species, count]) => `${species}=${count}`).join(', ') || 'none';
+  console.log(`\nwater-survival gate: dehydration deaths=${dehydrationDeaths.length} (${breakdown})`);
+  if (dehydrationDeaths.length > 0) {
+    throw new Error(`Water-survival regression: dehydration deaths detected: ${breakdown}`);
+  }
+}
 console.log('\nevents');
 const types = [...counts.entries()].sort((a, b) => b[1] - a[1]);
 for (const [type, n] of types) console.log(`  ${n.toString().padStart(5)}  ${type}`);

@@ -29,6 +29,9 @@ jobs:
       - run: npm run validate:data
       - run: npm run build
       - name: Multi-day seeded ecology smoke run
-        run: npm run simulate -- --days 3 --seed 20261126 --diagnose-water
+        run: npm run simulate -- --days 3 --seed 20261126 --diagnose-water --assert-water-survival
+      - name: One-week ecological resilience smoke run
+        run: npm run simulate -- --days 7 --seed 20261126 --diagnose-water --assert-water-survival
+
       - name: Population scaling benchmark
         run: npm run bench
