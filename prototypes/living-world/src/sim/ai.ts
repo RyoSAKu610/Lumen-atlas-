@@ -695,6 +695,15 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
         agent.memory.water = route.target;
         rt.waterPath = route.waypoints;
         rt.waterPathIndex = 0;
+        // A route can be tens or hundreds of metres; the old 14 s generic
+        // drink duration caused individuals to abandon a valid trip before
+        // the bank was reachable. Budget travel time from species walk speed,
+        // route length and a generous terrain / avoidance factor.
+        const cruise = Math.max(0.35, sp.locomotion.walkSpeed * 0.72);
+        rt.behaviorUntil = state.physTime + Math.max(
+          DURATIONS.drink ?? 14,
+          (route.distance / cruise) * 2.25 + 18,
+        );
       } else {
         const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
         const remembered = agent.memory.water;
