@@ -3,6 +3,7 @@ import { loadGameDataOrThrow } from '../../src/data/load';
 import { Simulation } from '../../src/sim/Simulation';
 import { Terrain } from '../../src/sim/terrain';
 import { generateDrinkSpots, nearestAccessibleDrinkSpot, shouldRefreshWaterMemory } from '../../src/sim/spatial';
+import { findDrinkRoute } from '../../src/sim/water-navigation';
 import { place } from './helpers';
 
 const data = loadGameDataOrThrow();
@@ -96,5 +97,51 @@ describe('water memory integration', () => {
     );
     expect(remainingDistance).toBeLessThan(30);
     expect(kit!.causeOfDeath).toBeNull();
+  });
+});
+
+
+describe('terrain-aware water routing', () => {
+  it('finds a walkable route to water for every seeded starting individual', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
+    const drinkSpots = generateDrinkSpots(sim.terrain);
+    const profiles = new Map(data.species.map((profile) => [profile.id, profile]));
+
+    for (const agent of sim.agents.filter((item) => item.alive)) {
+      const profile = profiles.get(agent.speciesId)!;
+      const route = findDrinkRoute(
+        sim.terrain,
+        drinkSpots,
+        { x: agent.pos.x, z: agent.pos.z },
+        profile.locomotion.maxSlopeDeg,
+        profile.body.radius * agent.scale,
+      );
+      expect(route, `no reachable water route for ${agent.speciesId} #${agent.id}`).not.toBeNull();
+      expect(route!.waypoints.length).toBeGreaterThan(0);
+      expect(route!.distance).toBeGreaterThanOrEqual(0);
+      expect(drinkSpots.some((spot) => Math.hypot(spot.x - route!.target.x, spot.z - route!.target.z) < 0.01)).toBe(true);
+      for (const point of route!.waypoints) {
+        expect(sim.terrain.inBounds(point.x, point.z, 14)).toBe(true);
+        expect(sim.terrain.isWalkable(point.x, point.z, profile.locomotion.maxSlopeDeg, 0.35)).toBe(true);
+      }
+    }
+  });
+
+  it('prefers a longer walkable bank route over an inaccessible straight-line bank', () => {
+    const sim = Simulation.create({ region: data.region, species: data.species }, { seed: 20261126 });
+    const profile = data.species.find((species) => species.id === 'kit_forager')!;
+    const drinkSpots = generateDrinkSpots(sim.terrain);
+    const start = { x: -120.7, z: -100.6 };
+    const route = findDrinkRoute(sim.terrain, drinkSpots, start, profile.locomotion.maxSlopeDeg, profile.body.radius);
+    expect(route).not.toBeNull();
+
+    let walkLength = 0;
+    let previous = start;
+    for (const point of route!.waypoints) {
+      walkLength += Math.hypot(point.x - previous.x, point.z - previous.z);
+      previous = point;
+    }
+    expect(walkLength).toBeGreaterThanOrEqual(route!.distance - 1);
+    expect(walkLength).toBeLessThan(240);
   });
 });
