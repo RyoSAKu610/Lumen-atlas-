@@ -254,7 +254,7 @@ function settle(state: SimState, inter: InteractionState, a: AgentState, b: Agen
   } else if (outcome === 'rejected' || outcome === 'escalated') {
     ab.trust = Math.max(0, ab.trust - 0.04);
     ba.trust = Math.max(0, ba.trust - 0.04);
-    if (outcome === 'escalated') resolveTerritorialContest(state, inter, a, b, ab, ba);
+    if (outcome === 'escalated') resolveTerritorialContest(state, inter, a, b);
   } else if (outcome === 'retreated') {
     ba.fear = Math.min(1, ba.fear + 0.12);
     ab.dominance = Math.min(1, ab.dominance + 0.08);
@@ -292,8 +292,6 @@ function resolveTerritorialContest(
   inter: InteractionState,
   a: AgentState,
   b: AgentState,
-  ab: ReturnType<typeof ensureRel>,
-  ba: ReturnType<typeof ensureRel>,
 ): void {
   const score = (agent: AgentState): number => {
     const sp = speciesOf(state, agent);
@@ -340,10 +338,8 @@ function resolveTerritorialContest(
   const winnerRuntime = state.runtime.get(winner.id);
   if (loserRuntime) loserRuntime.nextDecisionAt = state.physTime;
   if (winnerRuntime) winnerRuntime.nextDecisionAt = state.physTime;
-  void ab;
-  void ba;
 }
-
+ 
 function bond(state: SimState, a: AgentState, b: AgentState): boolean {
   if (a.sex === b.sex || a.lifeStage === 'juvenile' || b.lifeStage === 'juvenile') return false;
   if (a.needs.breeding < 0.55 || b.needs.breeding < 0.55) return false;
@@ -377,7 +373,26 @@ function release(state: SimState, inter: InteractionState, a: AgentState, b: Age
   for (const agent of [a, b]) {
     agent.interaction = null;
     if (!agent.alive) continue;
-    if (agent.behavior === 'interact') {
+    if (inter.kind === 'warn' && inter.outcome === 'escalated' && inter.winnerId != null && inter.loserId != null) {
+      if (agent.id === inter.loserId) {
+        const winner = state.agentById.get(inter.winnerId);
+        const dx = winner ? agent.pos.x - winner.pos.x : 0;
+        const dz = winner ? agent.pos.z - winner.pos.z : 1;
+        const length = Math.hypot(dx, dz) || 1;
+        agent.behavior = 'flee';
+        agent.posture = 'crouch';
+        agent.intent = {
+          behavior: 'flee',
+          target: { x: agent.pos.x + (dx / length) * 24, z: agent.pos.z + (dz / length) * 24 },
+          targetAgent: inter.winnerId,
+          place: null,
+        };
+      } else if (agent.id === inter.winnerId) {
+        agent.behavior = 'vigilance';
+        agent.posture = 'stand';
+        agent.intent = { behavior: 'vigilance', target: null, targetAgent: inter.loserId, place: null };
+      }
+    } else if (agent.behavior === 'interact') {
       agent.behavior = 'idle';
       agent.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
       agent.posture = 'stand';
@@ -385,7 +400,6 @@ function release(state: SimState, inter: InteractionState, a: AgentState, b: Age
     const rt = state.runtime.get(agent.id);
     if (rt) rt.nextDecisionAt = state.physTime;
   }
-  void inter;
 }
 
 function syncRefs(state: SimState, inter: InteractionState, a: AgentState, b: AgentState): void {
