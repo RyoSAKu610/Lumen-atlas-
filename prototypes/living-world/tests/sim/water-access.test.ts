@@ -154,6 +154,12 @@ describe('terrain-aware water routing', () => {
 
     for (const agent of sim.agents.filter((item) => item.alive)) {
       const profile = profiles.get(agent.speciesId)!;
+      if (!profile.locomotion.flight) {
+        expect(
+          sim.terrain.isWalkable(agent.pos.x, agent.pos.z, profile.locomotion.maxSlopeDeg, 0.45),
+          `spawned ${agent.speciesId} #${agent.id} on terrain steeper than its locomotion limit`,
+        ).toBe(true);
+      }
       if (profile.locomotion.flight) {
         const landing = nearestAccessibleDrinkSpot(
           sim.terrain,
