@@ -138,6 +138,14 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   tx += sx * 2.4;
   tz += sz * 2.4;
 
+  // Keep autonomous destinations inside the navigable interior. The outer
+  // terrain rim is generated for landscape framing and can contain steep,
+  // effectively one-way slopes; fleeing all the way to the map edge trapped
+  // individuals far from resources.
+  const safeTarget = state.terrain.clampToBounds(tx, tz, 14);
+  tx = safeTarget.x;
+  tz = safeTarget.z;
+
   const airborne = agent.posture === 'airborne' || agent.behavior === 'soar' || agent.behavior === 'glide';
   const dx = tx - agent.pos.x;
   const dz = tz - agent.pos.z;
@@ -175,17 +183,22 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     nz = stepped.z;
     if (stepped.heading != null) agent.heading = stepped.heading;
   }
-  const clamped = state.terrain.clampToBounds(nx, nz, 3);
+  const clamped = state.terrain.clampToBounds(nx, nz, 14);
   if (clamped.x !== nx || clamped.z !== nz) {
     const inward = Math.atan2(-clamped.x, -clamped.z);
     agent.heading = wrapAngle(agent.heading + clamp(angDiff(agent.heading, inward), -0.4, 0.4));
   }
   const moved = distXZ(agent.pos.x, agent.pos.z, clamped.x, clamped.z);
-  if (desired > 0.3 && moved < 0.015 * Math.max(1, dt) && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
+  const targetProgress = dist - distXZ(clamped.x, clamped.z, tx, tz);
+  const dynamicTarget = ['flee', 'chase', 'stalk', 'follow', 'soar', 'glide'].includes(agent.behavior);
+  const madeProgress = dynamicTarget ? moved > 0.05 : targetProgress > Math.max(0.006, agent.speed * dt * 0.08);
+  if (desired > 0.3 && !madeProgress && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
     if (rt.stuck < 0) {
       // Detour window expires whether or not the first alternate step succeeds.
       rt.stuck = Math.min(0, rt.stuck + dt);
     } else {
+      // Count lack of goal progress, not merely lack of body movement. This
+      // catches tiny oscillations beside an obstacle that used to reset stuck.
       rt.stuck += dt;
       if (rt.stuck > 1.5) {
         agent.heading = wrapAngle(agent.heading + 1.15);
@@ -195,7 +208,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
         rt.stuck = -2.0;
       }
     }
-  } else if (moved > 0.05) {
+  } else if (madeProgress) {
     if (rt.stuck < 0) rt.stuck = Math.min(0, rt.stuck + dt);
     else rt.stuck = 0;
   }
@@ -331,7 +344,7 @@ function occupiable(state: SimState, agent: AgentState, x: number, z: number): b
 }
 
 function walkable(terrain: Terrain, x: number, z: number, maxSlopeDeg: number, maxWater: number): boolean {
-  if (!terrain.inBounds(x, z, 3)) return false;
+  if (!terrain.inBounds(x, z, 14)) return false;
   if (terrain.waterDepthAt(x, z) > maxWater) return false;
   return slopeCos(terrain, x, z) >= Math.cos((maxSlopeDeg * Math.PI) / 180);
 }
