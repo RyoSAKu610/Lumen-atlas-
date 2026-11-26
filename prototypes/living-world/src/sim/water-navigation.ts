@@ -263,6 +263,8 @@ function cellPoint(nav: WaterNavigation, index: number): DrinkSpot {
   };
 }
 
+const segmentObstacleScratch: Array<{ x: number; z: number; radius: number }> = [];
+
 function clearSegment(
   terrain: Terrain,
   a: DrinkSpot,
@@ -272,13 +274,12 @@ function clearSegment(
 ): boolean {
   const d = Math.hypot(b.x - a.x, b.z - a.z);
   const samples = Math.max(1, Math.ceil(d / 1.25));
-  const obstacleScratch: Array<{ x: number; z: number; radius: number }> = [];
   for (let k = 1; k < samples; k++) {
     const t = k / samples;
     const point = { x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t };
     if (!terrain.isWalkable(point.x, point.z, maxSlopeDeg, 0.35)) return false;
-    terrain.obstaclesNear(point.x, point.z, clearance + 0.2, obstacleScratch);
-    if (obstacleScratch.some((obstacle) =>
+    terrain.obstaclesNear(point.x, point.z, clearance + 0.2, segmentObstacleScratch);
+    if (segmentObstacleScratch.some((obstacle) =>
       Math.hypot(obstacle.x - point.x, obstacle.z - point.z) < obstacle.radius + clearance + 0.15,
     )) return false;
   }
