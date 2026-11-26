@@ -53,7 +53,11 @@ export function findDrinkRoute(
   // ordinary free movement retains a wider avoidance envelope.
   const clearance = Math.max(0.25, Math.min(2.2, bodyRadius * 0.52));
   const nav = getNavigation(terrain, spots, maxSlopeDeg, clearance);
-  const startIndex = nearestReachableCell(nav, terrain, start, nav.maxSlopeDeg, clearance, 28);
+  // The current cell may legitimately sit near the species' hard limit
+  // (e.g. a juvenile giant on a 27.8° slope with a 28° limit). Allow the short
+  // connector out of that position at the true species limit; all cells and
+  // the rest of the route remain inside the safer nav slope envelope.
+  const startIndex = nearestReachableCell(nav, terrain, start, maxSlopeDeg, clearance, 28);
   if (startIndex < 0 || !Number.isFinite(nav.distance[startIndex]) || nav.targetIndex[startIndex] < 0) return null;
 
   const target = nav.targets[nav.targetIndex[startIndex]];
