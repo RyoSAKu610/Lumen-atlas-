@@ -580,7 +580,13 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
   } else if (behavior === 'graze' || behavior === 'forage') {
     target = forageTarget(state, agent);
   } else if (behavior === 'drink') {
-    target = agent.memory.water ?? nearestDrink(state, agent.pos.x, agent.pos.z);
+    const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
+    const remembered = agent.memory.water;
+    target = nearest ?? (
+      remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
+        ? remembered
+        : null
+    );
     if (target) agent.memory.water = target;
   } else if (behavior === 'bathe') {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
