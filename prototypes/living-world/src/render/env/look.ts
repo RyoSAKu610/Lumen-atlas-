@@ -69,6 +69,30 @@ function grade(out: THREE.Color, saturation: number, tint: THREE.Color, tintAmt:
   if (tintAmt > 0) out.lerp(tint, tintAmt);
 }
 
+/**
+ * Weather affects direct sunlight and diffuse sky illumination differently.
+ * Dense cloud / rain should suppress the hard key light, while the sky still
+ * wraps creature forms with broad ambient fill. Applying the same multiplier
+ * to both terms made dark-coated species disappear in dawn rain and storms.
+ */
+export interface WeatherLightFactors {
+  direct: number;
+  ambient: number;
+}
+
+export function weatherLightFactors(lightMultiplier: number, intensity: number): WeatherLightFactors {
+  if (!Number.isFinite(lightMultiplier) || !Number.isFinite(intensity)) return { direct: 1, ambient: 1 };
+  const k = THREE.MathUtils.clamp(intensity, 0, 1);
+  const directTarget = THREE.MathUtils.clamp(lightMultiplier, 0, 1.5);
+  // Diffuse skylight is still present under cloud cover; preserve a floor so
+  // shadow-side anatomy remains legible without flattening the direct lighting.
+  const ambientTarget = directTarget >= 1 ? directTarget : Math.max(0.72, Math.sqrt(directTarget));
+  return {
+    direct: THREE.MathUtils.lerp(1, directTarget, k),
+    ambient: THREE.MathUtils.lerp(1, ambientTarget, k),
+  };
+}
+
 export function applyWeather(look: ResolvedLighting, art: ArtDirection, weather: Weather, intensity: number): void {
   const w = art.weather[weather];
   const k = THREE.MathUtils.clamp(intensity, 0, 1);
@@ -82,9 +106,9 @@ export function applyWeather(look: ResolvedLighting, art: ArtDirection, weather:
   grade(look.skyHorizon, sat, tmpA, tintAmt);
   grade(look.sunGlow, sat, tmpA, tintAmt * 0.45);
   grade(look.fogColor, sat, tmpA, Math.min(0.55, tintAmt + 0.12 * k));
-  const light = THREE.MathUtils.lerp(1, w.lightMultiplier, k);
-  look.sunIntensity *= light;
-  look.hemiIntensity *= light;
+  const light = weatherLightFactors(w.lightMultiplier, k);
+  look.sunIntensity *= light.direct;
+  look.hemiIntensity *= light.ambient;
   look.fogDensity *= THREE.MathUtils.lerp(1, w.fogMultiplier, k);
   look.starsOpacity *= THREE.MathUtils.lerp(1, 1 - w.cloudCover, k);
 }

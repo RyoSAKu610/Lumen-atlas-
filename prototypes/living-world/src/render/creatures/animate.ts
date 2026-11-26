@@ -23,6 +23,7 @@ import type { CreatureDebugFlags, FrameState } from '../contracts';
 import type { LegTemplate, SpeciesTemplate } from './build';
 import { AXIS_UP, aimBone, clamp, damp, lerp, limbPole, smoothstep, solveTwoBone, wrapAngle } from './ik';
 import type { CoatMaterial } from './materials';
+import { animationDeltaSeconds } from './timing';
 
 export interface LegRuntime {
   spec: LegTemplate;
@@ -575,7 +576,7 @@ export function updateCreature(
   debug: CreatureDebugFlags,
   distances: { detail: number; lod: number; hide: number },
 ): void {
-  const dt = Math.min(0.05, Math.max(0, frame.dt)) * clamp(frame.timeScale, 0, 4);
+  const dt = animationDeltaSeconds(frame.dt, frame.timeScale);
   inst.animTime += dt;
   applyVariant(inst, agent);
   const alpha = clamp(frame.alpha, 0, 1);
