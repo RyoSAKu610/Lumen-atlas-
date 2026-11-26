@@ -24,7 +24,7 @@
 | `ridge_stalker` | 暮裂（くれさき） | Duskcleft Stalker | 2.6 m | 1.05 m | 160 kg | Apex predator |
 | `thermal_glider` | 湯輪翔（ゆわとび） | Vaporwheel Glider | 1.4 m body | 0.7 m | 9 kg | Aerial scavenger |
 
-The glider's 3.35 m wingspan is the correct visual scale reference while in flight. Do not compare only body length.
+The glider's `wings.span` value is a body-length ratio in the procedural rig builder: 3.35 × 1.4 m = **4.69 m actual wingspan**. The 0.42 chord ratio becomes 0.588 m. Use 4.69 m as the true flight scale reference; do not label the raw ratio as metres.
 
 ---
 
