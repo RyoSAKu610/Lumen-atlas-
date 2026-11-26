@@ -47,7 +47,9 @@ export function findDrinkRoute(
   bodyRadius: number,
 ): DrinkRoute | null {
   if (spots.length === 0 || !Number.isFinite(start.x) || !Number.isFinite(start.z)) return null;
-  const clearance = Math.max(0.25, Math.min(2.2, bodyRadius * 0.52));
+  // Match steering.ts obstacle avoidance: obstacle radius + bodyRadius*0.55
+  // + 0.8 m, with an additional 0.15 m route-validation margin.
+  const clearance = Math.max(1.0, Math.min(3.0, bodyRadius * 0.55 + 0.8));
   const nav = getNavigation(terrain, spots, maxSlopeDeg, clearance);
   const startIndex = nearestReachableCell(nav, terrain, start, maxSlopeDeg, clearance, 18);
   if (startIndex < 0 || !Number.isFinite(nav.distance[startIndex]) || nav.targetIndex[startIndex] < 0) return null;
