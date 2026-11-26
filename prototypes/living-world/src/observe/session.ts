@@ -7,13 +7,16 @@ import { formatClock, narrateEvent, nicknameFor, speciesName } from '../observe/
 import type { CreatureLayer, EnvironmentLayer, QualityLevel, RenderContext } from '../render/contracts';
 import type { Season, Weather } from '../sim/ids';
 import { Terrain } from '../sim/terrain';
-import type { AgentId, SimConfig, SimulationView } from '../sim/types';
+import type { AgentId, CatchUpReport, SimConfig, SimulationView, WorldSnapshot } from '../sim/types';
+import { offlineGameSeconds, readWorldSnapshot, WORLD_STORAGE_FORMAT_VERSION, writeWorldSnapshot, type SnapshotStorage } from '../sim/persistence';
 import { mountShell } from '../ui/shell';
 
 export interface SimHandle extends SimulationView {
   step(): void;
   advance(realSeconds: number, speed: number, maxSteps?: number): { steps: number; alpha: number };
   setOverrides(overrides: { season?: Season | null; weather?: Weather | null }): void;
+  snapshot(savedAtWallClockMs?: number): WorldSnapshot;
+  catchUp(gameSeconds: number, onProgress?: (fraction: number, label: string) => void): CatchUpReport;
 }
 
 export interface ObservationModules {
@@ -22,12 +25,20 @@ export interface ObservationModules {
     config?: Partial<SimConfig>,
     onProgress?: (fraction: number, label: string) => void,
   ): SimHandle;
+  restoreSimulation(
+    snapshot: WorldSnapshot,
+    data: { region: RegionLayout; species: SpeciesProfile[] },
+    onProgress?: (fraction: number, label: string) => void,
+  ): SimHandle;
   createEnvironmentLayer(): EnvironmentLayer;
   createCreatureLayer(): CreatureLayer;
 }
 
 interface SimModule {
-  Simulation: { create: ObservationModules['createSimulation'] };
+  Simulation: {
+    create: ObservationModules['createSimulation'];
+    restore: ObservationModules['restoreSimulation'];
+  };
   DEFAULT_SIM_CONFIG: SimConfig;
 }
 
@@ -51,9 +62,10 @@ export async function bindLivingWorld(): Promise<ObservationModules | null> {
   const sim = (await simLoad()) as SimModule;
   const env = (await envLoad()) as LayerModule;
   const creatures = (await creatureLoad()) as LayerModule;
-  if (!sim.Simulation?.create || !env.createEnvironmentLayer || !creatures.createCreatureLayer) return null;
+  if (!sim.Simulation?.create || !sim.Simulation?.restore || !env.createEnvironmentLayer || !creatures.createCreatureLayer) return null;
   return {
     createSimulation: sim.Simulation.create,
+    restoreSimulation: sim.Simulation.restore,
     createEnvironmentLayer: env.createEnvironmentLayer,
     createCreatureLayer: creatures.createCreatureLayer,
   };
@@ -90,11 +102,52 @@ export async function runObservation(root: HTMLElement, modules: ObservationModu
   await environment.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
   await creatures.init(ctx, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
 
-  const sim = modules.createSimulation(
-    { region: data.region, species: data.species },
-    { seed, startHour: Number(params.get('hour') ?? 6) },
-    (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`),
-  );
+  const simData = { region: data.region, species: data.species };
+  const storageKey = `living-atlas:${data.region.id}:snapshot:v${WORLD_STORAGE_FORMAT_VERSION}`;
+  let storage: SnapshotStorage | null = null;
+  try {
+    storage = window.localStorage;
+  } catch {
+    // Private browsing / storage policy may deny access; the simulation remains playable in memory.
+  }
+  const stored = readWorldSnapshot(storage, storageKey);
+  let sim: SimHandle;
+  let restored = false;
+  let catchUpReport: CatchUpReport | null = null;
+  if (stored.snapshot) {
+    try {
+      sim = modules.restoreSimulation(stored.snapshot, simData, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
+      const elapsedGameSeconds = offlineGameSeconds(stored.snapshot.savedAtWallClockMs, Date.now(), sim.config.clockScale);
+      if (elapsedGameSeconds >= 1) {
+        catchUpReport = sim.catchUp(elapsedGameSeconds, (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`));
+      }
+      restored = true;
+    } catch (error) {
+      try { storage?.removeItem(storageKey); } catch { /* storage may be unavailable */ }
+      console.warn('[LIVING ATLAS] Saved world could not be restored; starting a fresh world.', error);
+      shell.pushJournal({ time: '—', text: '保存記録を復元できなかったため、新しい谷を用意します。' });
+      sim = modules.createSimulation(
+        simData,
+        { seed, startHour: Number(params.get('hour') ?? 6) },
+        (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`),
+      );
+    }
+  } else {
+    sim = modules.createSimulation(
+      simData,
+      { seed, startHour: Number(params.get('hour') ?? 6) },
+      (fraction, label) => shell.setStatus(`${label} ${Math.round(fraction * 100)}%`),
+    );
+  }
+  if (restored) {
+    shell.pushJournal({ time: formatClock(sim.env.timeOfDay), text: '前回の世界を復元しました。個体の記憶と関係、植生、資源の状態を引き継いでいます。' });
+    if (catchUpReport && catchUpReport.requestedGameSeconds > 0) {
+      const note = catchUpReport.truncated ? '長い不在期間のため、オフライン進行は上限まで近似計算しました。' : '観察していない時間の生態変化を近似計算しました。';
+      shell.pushJournal({ time: formatClock(sim.env.timeOfDay), text: `${note} 出生 ${catchUpReport.births}、死亡 ${catchUpReport.deaths}、記録 ${catchUpReport.events}件。` });
+    }
+  } else if (stored.status === 'corrupt' || stored.status === 'unavailable') {
+    shell.pushJournal({ time: '—', text: stored.message });
+  }
   const director = new DocumentaryCamera(camera, data.shots);
   const sources = {
     narration: data.narration,
@@ -109,6 +162,26 @@ export async function runObservation(root: HTMLElement, modules: ObservationModu
   let hudAt = 0;
   shell.setStatus(null);
   (window as Window & { __LA_READY?: boolean }).__LA_READY = true;
+
+  const saveWorld = (quiet = true): void => {
+    if (!storage) return;
+    const result = writeWorldSnapshot(storage, storageKey, sim.snapshot(Date.now()));
+    if (!result.saved) {
+      console.warn(`[LIVING ATLAS] ${result.message}`);
+      if (!quiet) shell.setStatus(result.message);
+    }
+  };
+  // Snapshot often enough to survive tab closes without writing on every animation frame.
+  const autosaveTimer = window.setInterval(() => saveWorld(true), 15_000);
+  const onPageHide = () => saveWorld(true);
+  const onVisibilityChange = () => {
+    if (document.visibilityState === 'hidden') saveWorld(true);
+  };
+  window.addEventListener('pagehide', onPageHide);
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  // Persist the restored / newly seeded state immediately, after any offline catch-up.
+  saveWorld(true);
+
   shell.onSpeed((value) => {
     speed = value;
   });
@@ -234,7 +307,11 @@ export async function runObservation(root: HTMLElement, modules: ObservationModu
   }
 
   return () => {
+    saveWorld(true);
     stopped = true;
+    window.clearInterval(autosaveTimer);
+    window.removeEventListener('pagehide', onPageHide);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
     unsubscribe();
     window.removeEventListener('resize', onResize);
     renderer.domElement.removeEventListener('pointerdown', onPointer);
