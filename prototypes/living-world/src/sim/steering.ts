@@ -4,6 +4,7 @@ import type { FlightMode } from './ids';
 import { rtOf, speciesOf, type SimState } from './internal';
 import { emit } from './journal';
 import { angDiff, clamp, distXZ, wrapAngle } from './math';
+import { findDrinkRoute } from './water-navigation';
 
 const obsScratch: Obstacle[] = [];
 
@@ -40,6 +41,32 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   const rt = rtOf(state, agent.id);
   let tx = agent.intent.target?.x ?? agent.pos.x;
   let tz = agent.intent.target?.z ?? agent.pos.z;
+
+  if (agent.behavior === 'drink') {
+    if ((!rt.waterPath || rt.waterPath.length === 0) && agent.intent.target) {
+      const route = findDrinkRoute(
+        state.terrain,
+        state.drinkSpots,
+        { x: agent.pos.x, z: agent.pos.z },
+        sp.locomotion.maxSlopeDeg,
+        sp.body.radius * agent.scale,
+      );
+      if (route) {
+        rt.waterPath = route.waypoints;
+        rt.waterPathIndex = 0;
+        agent.intent.target = route.target;
+        agent.memory.water = route.target;
+      }
+    }
+    const path = rt.waterPath ?? [];
+    let index = Math.min(rt.waterPathIndex ?? 0, Math.max(0, path.length - 1));
+    while (index < path.length - 1 && distXZ(agent.pos.x, agent.pos.z, path[index].x, path[index].z) < 1.35) index++;
+    rt.waterPathIndex = index;
+    if (path[index]) {
+      tx = path[index].x;
+      tz = path[index].z;
+    }
+  }
 
   if (agent.behavior === 'follow' && agent.motherId != null) {
     const mother = state.agentById.get(agent.motherId);
