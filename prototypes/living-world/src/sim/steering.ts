@@ -43,7 +43,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   let tz = agent.intent.target?.z ?? agent.pos.z;
 
   if (agent.behavior === 'drink') {
-    if ((!rt.waterPath || rt.waterPath.length === 0) && agent.intent.target) {
+    if (rt.waterPath === undefined && agent.intent.target) {
       const route = findDrinkRoute(
         state.terrain,
         state.drinkSpots,
