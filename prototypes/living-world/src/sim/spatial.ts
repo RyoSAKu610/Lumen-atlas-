@@ -217,7 +217,7 @@ export function nearestAccessibleDrinkSpot(
   let best: DrinkSpot | null = null;
   let bestD2 = Infinity;
   for (const spot of spots) {
-    if (!terrain.isWalkable(spot.x, spot.z, maxSlopeDeg, 0.35)) continue;
+    if (!terrain.inBounds(spot.x, spot.z, 14) || !terrain.isWalkable(spot.x, spot.z, maxSlopeDeg, 0.35)) continue;
     const dx = spot.x - x;
     const dz = spot.z - z;
     const d2 = dx * dx + dz * dz;
@@ -240,7 +240,7 @@ export function shouldRefreshWaterMemory(
   improvementMeters = 8,
 ): boolean {
   if (!candidate) return false;
-  if (!current || !terrain.isWalkable(current.x, current.z, maxSlopeDeg, 0.35)) return true;
+  if (!current || !terrain.inBounds(current.x, current.z, 14) || !terrain.isWalkable(current.x, current.z, maxSlopeDeg, 0.35)) return true;
   const currentDistance = Math.hypot(current.x - x, current.z - z);
   const candidateDistance = Math.hypot(candidate.x - x, candidate.z - z);
   return candidateDistance + Math.max(0, improvementMeters) < currentDistance;
@@ -259,7 +259,7 @@ export function nearestDrink(
 export function generateDrinkSpots(terrain: Terrain): DrinkSpot[] {
   const spots: DrinkSpot[] = [];
   const add = (point: DrinkSpot) => {
-    if (!terrain.inBounds(point.x, point.z, 4)) return;
+    if (!terrain.inBounds(point.x, point.z, 14)) return;
     // Keep feet on a shallow, stable bank. Species-specific slope limits are
     // applied again when a particular individual selects a point.
     if (!terrain.isWalkable(point.x, point.z, 50, 0.35)) return;
