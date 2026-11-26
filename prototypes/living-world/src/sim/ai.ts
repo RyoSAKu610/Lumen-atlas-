@@ -477,16 +477,16 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       const range = homeRangeRadius(sp);
       const away = homeRangePressure(d, range);
       const night = nightFactor(state);
-      const familiarCompanionNearby = agent.needs.social > 0.3 && nearby.some((other) =>
+      const socialEncounterNearby = agent.needs.social > 0.3 && nearby.some((other) =>
         other.alive &&
         other.speciesId === agent.speciesId &&
-        distXZ(agent.pos.x, agent.pos.z, other.pos.x, other.pos.z) < 12 &&
-        familiarity(state, agent.id, other.id) >= 0.34,
+        distXZ(agent.pos.x, agent.pos.z, other.pos.x, other.pos.z) < 12,
       );
-      // A family member temporarily defers returning home when a familiar
-      // companion is close and social need is high. Nightfall still gathers
-      // the group back to its den.
-      const urgency = familiarCompanionNearby ? night : Math.max(away, night);
+      // A family member temporarily defers returning home to assess nearby
+      // conspecific encounters, including strangers. Consent / familiarity
+      // still determines whether contact is accepted. Nightfall gathers the
+      // group back to its den after the encounter resolves.
+      const urgency = socialEncounterNearby ? night : Math.max(away, night);
       return {
         considerations: [
           c('home_range', urgency, 0.25 + 0.75 * urgency),
