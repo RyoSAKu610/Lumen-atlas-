@@ -8,7 +8,7 @@ import { loadGameDataOrThrow } from '../src/data/load';
 import { Simulation } from '../src/sim/Simulation';
 import { generateDrinkSpots, nearestAccessibleDrinkSpot } from '../src/sim/spatial';
 import { deathsByCause, mortalityBySpeciesAndCause } from '../src/sim/death-ledger';
-import { findDrinkRoute } from '../src/sim/water-navigation';
+import { debugDrinkNavigation, findDrinkRoute } from '../src/sim/water-navigation';
 import type { SimEvent } from '../src/sim/types';
 
 const args = process.argv.slice(2);
@@ -84,6 +84,9 @@ if (args.includes('--diagnose-water')) {
     const route = profile.locomotion.flight || !nearest
       ? null
       : findDrinkRoute(sim.terrain, drinkSpots, pos, profile.locomotion.maxSlopeDeg, profile.body.radius);
+    const navDebug = !profile.locomotion.flight
+      ? debugDrinkNavigation(sim.terrain, drinkSpots, pos, profile.locomotion.maxSlopeDeg, profile.body.radius)
+      : null;
     const nearestDistance = nearest ? Math.hypot(nearest.x - pos.x, nearest.z - pos.z) : null;
     const water = event.data.waterX == null || event.data.waterZ == null
       ? null
@@ -91,7 +94,7 @@ if (args.includes('--diagnose-water')) {
     const rememberedDistance = water ? Math.hypot(water.x - pos.x, water.z - pos.z) : null;
     const slopeDeg = sim.terrain.slopeAt(pos.x, pos.z) * (180 / Math.PI);
     console.log(
-      `  DEATH #${id} ${species} at=(${pos.x.toFixed(1)},${pos.z.toFixed(1)}) slope=${slopeDeg.toFixed(1)}° thirst=${Number(event.data.thirst ?? 0).toFixed(3)} behavior=${String(event.data.behavior ?? '—')}/${String(event.data.intentBehavior ?? '—')} decision=${String(event.data.decision ?? '—')} speed=${Number(event.data.speed ?? 0).toFixed(2)} stuck=${Number(event.data.stuckSeconds ?? 0).toFixed(1)}s path=${String(event.data.waterPathIndex ?? '—')}/${String(event.data.waterPathLength ?? '—')} next=${event.data.nextWaterX ?? '—'},${event.data.nextWaterZ ?? '—'} water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})/${rememberedDistance?.toFixed(1)}m` : 'none'} nearest=${nearestDistance?.toFixed(1) ?? '—'}m route=${route ? `${route.distance.toFixed(1)}m/${route.waypoints.length}wp` : 'unreachable'} home=${String(event.data.homeId ?? 'none')} threat=(${String(event.data.threatX ?? '—')},${String(event.data.threatZ ?? '—')})`,
+      `  DEATH #${id} ${species} at=(${pos.x.toFixed(1)},${pos.z.toFixed(1)}) slope=${slopeDeg.toFixed(1)}° thirst=${Number(event.data.thirst ?? 0).toFixed(3)} behavior=${String(event.data.behavior ?? '—')}/${String(event.data.intentBehavior ?? '—')} decision=${String(event.data.decision ?? '—')} speed=${Number(event.data.speed ?? 0).toFixed(2)} stuck=${Number(event.data.stuckSeconds ?? 0).toFixed(1)}s path=${String(event.data.waterPathIndex ?? '—')}/${String(event.data.waterPathLength ?? '—')} next=${event.data.nextWaterX ?? '—'},${event.data.nextWaterZ ?? '—'} water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})/${rememberedDistance?.toFixed(1)}m` : 'none'} nearest=${nearestDistance?.toFixed(1) ?? '—'}m route=${route ? `${route.distance.toFixed(1)}m/${route.waypoints.length}wp` : 'unreachable'} nav=${navDebug ? `${navDebug.step.toFixed(2)}m cells=${navDebug.walkableCells} seeds=${navDebug.drinkBankSeeds} reach=${navDebug.reachableCells} startGrid=${navDebug.nearestWalkableGridDistance?.toFixed(1) ?? '—'} routeGrid=${navDebug.nearestReachableGridDistance?.toFixed(1) ?? '—'} safeSlope=${navDebug.safeRouteSlopeDeg}°` : 'flight'} home=${String(event.data.homeId ?? 'none')} threat=(${String(event.data.threatX ?? '—')},${String(event.data.threatZ ?? '—')})`,
     );
   }
   const watch = sim.agents
