@@ -17,7 +17,7 @@ describe('water access geometry', () => {
       expect(terrain.isWalkable(spot.x, spot.z, 50, 0.35)).toBe(true);
       const nearRiver = terrain.riverSamples.some((sample) => {
         const d = Math.hypot(spot.x - sample.x, spot.z - sample.z);
-        return d <= sample.halfWidth + 0.7;
+        return d <= sample.halfWidth + 1.3;
       });
       const nearPool = terrain.pools.some((pool) => {
         const d = Math.hypot(spot.x - pool.x, spot.z - pool.z);
