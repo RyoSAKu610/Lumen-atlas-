@@ -269,15 +269,20 @@ export function generateDrinkSpots(terrain: Terrain): DrinkSpot[] {
   let lastX = Infinity;
   let lastZ = Infinity;
   for (const sample of terrain.riverSamples) {
-    if (Math.hypot(sample.x - lastX, sample.z - lastZ) < 16) continue;
-    // A point only 0.55 m beyond the channel edge is within the combined
-    // body-radius + head-reach of small species; the old 1.4 m offset was
-    // too far for the 0.9 m Reedbrush Kit to physically reach the water.
-    const offset = sample.halfWidth + 0.55;
-    const ox = Math.cos(sample.flowDir) * offset;
-    const oz = -Math.sin(sample.flowDir) * offset;
-    add({ x: sample.x + ox, z: sample.z + oz });
-    add({ x: sample.x - ox, z: sample.z - oz });
+    // Sample more densely around bends and valley pinch points. Multiple
+    // nearby banks let different body sizes / slope envelopes choose the
+    // reachable side without forcing every animal to the same crossing.
+    if (Math.hypot(sample.x - lastX, sample.z - lastZ) < 8) continue;
+    const nearOffset = sample.halfWidth + 0.55;
+    const outerOffset = sample.halfWidth + 1.2;
+    const oxNear = Math.cos(sample.flowDir) * nearOffset;
+    const ozNear = -Math.sin(sample.flowDir) * nearOffset;
+    const oxOuter = Math.cos(sample.flowDir) * outerOffset;
+    const ozOuter = -Math.sin(sample.flowDir) * outerOffset;
+    add({ x: sample.x + oxNear, z: sample.z + ozNear });
+    add({ x: sample.x - oxNear, z: sample.z - ozNear });
+    add({ x: sample.x + oxOuter, z: sample.z + ozOuter });
+    add({ x: sample.x - oxOuter, z: sample.z - ozOuter });
     lastX = sample.x;
     lastZ = sample.z;
   }

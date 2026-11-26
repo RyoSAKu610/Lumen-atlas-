@@ -181,6 +181,29 @@ export class Simulation implements SimulationView {
     return this.state.agentById.get(id);
   }
 
+  /**
+   * Read-only locomotion / navigation diagnostics for QA and observation tools.
+   * Transient route state is intentionally not persisted; it is rebuilt from
+   * the agent's intent after a save is restored.
+   */
+  getAgentRuntimeDebug(id: AgentId): {
+    stuck: number;
+    behaviorUntil: number;
+    waterPathIndex: number | null;
+    waterPath: ReadonlyArray<{ x: number; z: number }>;
+    nextDecisionAt: number;
+  } | null {
+    const runtime = this.state.runtime.get(id);
+    if (!runtime) return null;
+    return {
+      stuck: runtime.stuck,
+      behaviorUntil: runtime.behaviorUntil,
+      waterPathIndex: runtime.waterPathIndex ?? null,
+      waterPath: (runtime.waterPath ?? []).map((point) => ({ ...point })),
+      nextDecisionAt: runtime.nextDecisionAt,
+    };
+  }
+
   getRelationships(id: AgentId): ReadonlyMap<AgentId, Readonly<Relationship>> {
     return this.state.relationships.get(id) ?? EMPTY_RELATIONSHIPS;
   }

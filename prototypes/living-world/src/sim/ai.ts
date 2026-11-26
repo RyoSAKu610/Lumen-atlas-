@@ -3,6 +3,7 @@ import type { AgentState, Consideration, DecisionOption } from './types';
 import type { SpeciesProfile } from '../data/schema';
 import { familiarity, rtOf, sampleVeg, speciesOf, type AgentRuntime, type SimState } from './internal';
 import { nearestDrink } from './spatial';
+import { findDrinkRoute } from './water-navigation';
 import { clamp, clamp01, distXZ } from './math';
 
 interface Built {
@@ -95,8 +96,10 @@ function complete(state: SimState, agent: AgentState, rt: AgentRuntime): boolean
     case 'graze':
     case 'forage':
       return agent.needs.hunger < 0.2 || state.physTime >= rt.behaviorUntil;
-    case 'drink':
-      return agent.needs.thirst < 0.12 || state.physTime >= rt.behaviorUntil;
+    case 'drink': {
+      const atWater = target !== null && distXZ(agent.pos.x, agent.pos.z, target.x, target.z) < 1.8;
+      return agent.needs.thirst < 0.12 || (state.physTime >= rt.behaviorUntil && !atWater);
+    }
     case 'bathe':
       return agent.needs.cold < 0.14 || state.physTime >= rt.behaviorUntil;
     case 'sleep':
@@ -438,9 +441,27 @@ function scoreBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
       };
     }
     case 'defend': {
-      const can = sp.antiPredator.herdDefense && agent.lifeStage !== 'juvenile' && fear > 0.22 ? 1 : 0;
+      // Defensive cohesion is important, but a herd member at physiological
+      // limits must yield the line and seek water / food. Otherwise adults can
+      // keep re-selecting defend while dehydrating in front of a predator.
+      const lifeCritical =
+        agent.needs.thirst >= 0.82 ||
+        agent.needs.hunger >= 0.96 ||
+        agent.needs.health <= 0.28 ||
+        agent.needs.stamina <= 0.12;
+      const can =
+        sp.antiPredator.herdDefense &&
+        agent.lifeStage !== 'juvenile' &&
+        fear > 0.22 &&
+        !lifeCritical
+          ? 1
+          : 0;
       return {
-        considerations: [c('duty', can, can), c('fear', fear, fear)],
+        considerations: [
+          c('duty', can, can),
+          c('fear', fear, fear),
+          c('physical_condition', lifeCritical ? 0 : 1, lifeCritical ? 0 : 1),
+        ],
         activity: 1,
         targetAgent: agent.memory.lastThreatId,
       };
@@ -613,6 +634,10 @@ const POSTURE: Record<BehaviorId, Posture> = {
 function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, best: Cand): void {
   const rt = rtOf(state, agent.id);
   const behavior = best.behavior;
+  if (behavior !== 'drink') {
+    rt.waterPath = [];
+    rt.waterPathIndex = 0;
+  }
   agent.behavior = behavior;
   agent.behaviorStartedAt = state.env.time;
   agent.posture = POSTURE[behavior];
@@ -637,14 +662,60 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
   } else if (behavior === 'graze' || behavior === 'forage') {
     target = forageTarget(state, agent);
   } else if (behavior === 'drink') {
-    const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
-    const remembered = agent.memory.water;
-    target = nearest ?? (
-      remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
-        ? remembered
-        : null
-    );
-    if (target) agent.memory.water = target;
+    if (sp.locomotion.flight) {
+      // Flyers travel directly to a safe bank, then make a controlled descent.
+      const bankSlope = Math.min(sp.locomotion.maxSlopeDeg, 40);
+      const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, bankSlope);
+      const remembered = agent.memory.water;
+      target = nearest ?? (
+        remembered && state.terrain.isWalkable(remembered.x, remembered.z, bankSlope, 0.35)
+          ? remembered
+          : null
+      );
+      rt.waterPath = target ? [target] : [];
+      rt.waterPathIndex = 0;
+      if (target) {
+        agent.memory.water = target;
+        const distance = distXZ(agent.pos.x, agent.pos.z, target.x, target.z);
+        if (rt.altitude > 0.35 || distance > sp.locomotion.flight.takeoffDistance * 1.5) {
+          agent.posture = 'airborne';
+          agent.flightMode = rt.altitude < 2.2 ? 'takeoff' : 'flap';
+        }
+      }
+    } else {
+      const route = findDrinkRoute(
+        state.terrain,
+        state.drinkSpots,
+        { x: agent.pos.x, z: agent.pos.z },
+        sp.locomotion.maxSlopeDeg,
+        sp.body.radius * agent.scale,
+      );
+      if (route) {
+        target = route.target;
+        agent.memory.water = route.target;
+        rt.waterPath = route.waypoints;
+        rt.waterPathIndex = 0;
+        // A route can be tens or hundreds of metres; the old 14 s generic
+        // drink duration caused individuals to abandon a valid trip before
+        // the bank was reachable. Budget travel time from species walk speed,
+        // route length and a generous terrain / avoidance factor.
+        const cruise = Math.max(0.35, sp.locomotion.walkSpeed * 0.72);
+        rt.behaviorUntil = state.physTime + Math.max(
+          DURATIONS.drink ?? 14,
+          (route.distance / cruise) * 2.25 + 18,
+        );
+      } else {
+        // Never send a ground creature toward a bank unless a validated
+        // route exists. A straight-line nearest spot may lie across a cliff,
+        // deep channel or disconnected slope island; retaining it as memory
+        // caused juveniles to walk into terrain they could not traverse.
+        target = null;
+        agent.memory.water = null;
+        rt.waterPath = [];
+        rt.waterPathIndex = 0;
+        rt.behaviorUntil = state.physTime + 2.5;
+      }
+    }
   } else if (behavior === 'bathe') {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
     if (spring) {

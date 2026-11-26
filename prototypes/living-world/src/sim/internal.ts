@@ -40,6 +40,9 @@ export interface AgentRuntime {
   scavenged: number[];
   /** Physical seconds spent unable to make progress. */
   stuck: number;
+  /** Derived, transient route to a safe drink bank; rebuilt after restore if needed. */
+  waterPath?: Array<{ x: number; z: number }>;
+  waterPathIndex?: number;
   /** Physical time before another urgent re-evaluation. */
   nextUrgentAt: number;
   /** Orbit phase for soaring (rad). */

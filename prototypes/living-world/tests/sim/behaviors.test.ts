@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { INTERACTION_PHASES } from '../../src/sim/ids';
 import { Simulation } from '../../src/sim/Simulation';
+import { generateDrinkSpots } from '../../src/sim/spatial';
 import type { AgentState, SimEvent } from '../../src/sim/types';
 import { bundle, farthestClearing, place, step } from './helpers';
 
@@ -211,6 +212,128 @@ describe('behaviour', () => {
     expect(herd.events.some((e) => e.type === 'herd.defense')).toBe(true);
     expect(herd.events.some((e) => e.type === 'hunt.aborted')).toBe(true);
     expect(herd.prey.alive).toBe(true);
+  });
+
+  it('lets a thirsty herd member leave formation temporarily and follow its water route', () => {
+    const sim = Simulation.create(bundle, { seed: 20261126 });
+    const banksForTest = generateDrinkSpots(sim.terrain);
+    const adults = sim.agents.filter((agent) =>
+      agent.alive && agent.speciesId === 'giant_grazer' && agent.lifeStage === 'adult',
+    );
+    const drinker = adults[0];
+    expect(drinker).toBeTruthy();
+    const group = adults.filter((agent) => agent.groupId === drinker.groupId);
+    expect(group.length).toBeGreaterThanOrEqual(3);
+    const far = farthestClearing(sim);
+
+    // Isolate the test from predator perception and unrelated crowding; keep
+    // only same-herd companions behind the thirsty adult.
+    for (const other of sim.agents) {
+      if (other.id === drinker.id || group.some((member) => member.id === other.id)) continue;
+      place(sim, other, far.x, far.z);
+      calm(other);
+      other.needs.social = 0.01;
+      other.behavior = 'idle';
+      other.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+      other.memory.lastThreatId = null;
+      other.memory.lastThreatPos = null;
+    }
+
+    // This lower western shelf is a reproducible, walkable start with a
+    // multi-waypoint route to the river bank. Put the rest of the herd behind
+    // the thirsty adult so group-centroid pull would otherwise point it away
+    // from the route.
+    place(sim, drinker, -132.7, -68.3);
+    const followers = group.filter((agent) => agent.id !== drinker.id);
+    for (let i = 0; i < followers.length; i++) {
+      place(sim, followers[i], -138 - (i % 2) * 1.5, -64 + Math.floor(i / 2) * 1.3);
+      calm(followers[i]);
+      followers[i].needs.social = 0.01;
+      followers[i].behavior = 'idle';
+      followers[i].intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+      followers[i].memory.lastThreatId = null;
+      followers[i].memory.lastThreatPos = null;
+    }
+    calm(drinker);
+    drinker.needs.social = 0.01;
+    drinker.needs.thirst = 1;
+    drinker.behavior = 'idle';
+    drinker.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+
+    sim.step();
+    expect(String(drinker.behavior)).toBe('drink');
+    expect(drinker.intent.target).not.toBeNull();
+    const initialNav = sim.getAgentRuntimeDebug(drinker.id);
+    expect(initialNav?.waterPath.length).toBeGreaterThan(1);
+    // The first point is about 1.5 m away: beyond the 1.35 m old arrival
+    // threshold but inside the 1.5 m walk-stop threshold. It must be skipped.
+    expect(initialNav?.waterPathIndex, JSON.stringify(initialNav)).toBeGreaterThan(0);
+    const target = { ...drinker.intent.target! };
+    const before = Math.hypot(drinker.pos.x - target.x, drinker.pos.z - target.z);
+    // Do not inspect only the final location: after drinking, the animal is
+    // expected to leave the bank and resume normal life. Capture the actual
+    // moment it reaches a valid drink bank and thirst begins to fall.
+    let drankAtBank = false;
+    let firstBankState: unknown = null;
+    for (let tick = 0; tick < 1200; tick++) {
+      sim.step();
+      const liveTarget = drinker.intent.target;
+      if (!liveTarget || String(drinker.behavior) !== 'drink' || drinker.speed >= 0.4) continue;
+      const atTarget = Math.hypot(drinker.pos.x - liveTarget.x, drinker.pos.z - liveTarget.z) <= 1.8;
+      const matchesBank = banksForTest.some((spot) =>
+        Math.hypot(spot.x - liveTarget.x, spot.z - liveTarget.z) < 0.05,
+      );
+      if (atTarget && matchesBank && drinker.needs.thirst < 0.95) {
+        drankAtBank = true;
+        firstBankState = {
+          tick,
+          pos: { ...drinker.pos },
+          target: liveTarget,
+          thirst: drinker.needs.thirst,
+          speed: drinker.speed,
+          runtime: sim.getAgentRuntimeDebug(drinker.id),
+        };
+        break;
+      }
+    }
+    const diagnostic = JSON.stringify({
+      before,
+      pos: drinker.pos,
+      target: drinker.intent.target,
+      behavior: drinker.behavior,
+      intent: drinker.intent.behavior,
+      speed: drinker.speed,
+      heading: drinker.heading,
+      distanceTravelled: drinker.stats.distance,
+      runtime: sim.getAgentRuntimeDebug(drinker.id),
+      thirst: drinker.needs.thirst,
+      fear: drinker.needs.fear,
+      firstBankState,
+      events: sim.recentEvents(80).filter((event) => event.actors.includes(drinker.id)).map((event) => ({type:event.type,data:event.data})),
+    });
+    expect(drankAtBank, diagnostic).toBe(true);
+  });
+
+  it('lets a critically thirsty herd adult abandon defense and seek water', () => {
+    const sim = Simulation.create(bundle, { seed: 82 });
+    const giant = sim.agents.find((agent) =>
+      agent.alive && agent.speciesId === 'giant_grazer' && agent.lifeStage === 'adult',
+    );
+    expect(giant).toBeTruthy();
+    const profile = sim.species.get('giant_grazer')!;
+    profile.utilityWeights.defend = 4;
+
+    calm(giant!);
+    giant!.behavior = 'idle';
+    giant!.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+    giant!.needs.thirst = 1;
+    giant!.needs.fear = 0.4;
+    giant!.memory.lastThreatPos = { x: giant!.pos.x + 12, z: giant!.pos.z };
+    giant!.memory.lastThreatId = sim.agents.find((agent) => agent.alive && agent.speciesId === 'ridge_stalker')?.id ?? null;
+
+    sim.step();
+    expect(giant!.decision?.chosen).toBe('drink');
+    expect(giant!.behavior).toBe('drink');
   });
 
   it('sends cold giants into a hot spring', () => {

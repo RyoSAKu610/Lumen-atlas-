@@ -37,7 +37,15 @@ export function updateNeeds(state: SimState, gameDt: number): void {
       agent.needs.hunger = Math.min(1, agent.needs.hunger + rates.hungerPerHour * extra * hours);
     }
 
-    const drinking = agent.behavior === 'drink' && agent.speed < 0.4;
+    // Moving slowly is not enough to count as drinking: a creature can be
+    // blocked beside a rock or stuck on a slope while still in the drink state.
+    // Only restore thirst at a generated safe bank that the individual has
+    // actually reached. This prevents "drinking the air" from masking a
+    // navigation failure.
+    const drinking =
+      agent.behavior === 'drink' &&
+      agent.speed < 0.4 &&
+      isAtDrinkBank(state, agent);
     if (drinking) agent.needs.thirst = Math.max(0, agent.needs.thirst - 4.2 * hours);
     else agent.needs.thirst = Math.min(1, agent.needs.thirst + rates.thirstPerHour * hours);
 
@@ -131,4 +139,16 @@ function nearKin(state: SimState, agent: AgentState): boolean {
     if (other.id === agent.motherId || agent.id === other.motherId) return true;
   }
   return false;
+}
+
+function isAtDrinkBank(state: SimState, agent: AgentState): boolean {
+  const target = agent.intent.target;
+  if (!target) return false;
+  const profile = speciesOf(state, agent);
+  const reach = Math.max(1.8, profile.body.radius * agent.scale * 0.9);
+  const d = Math.hypot(agent.pos.x - target.x, agent.pos.z - target.z);
+  if (d > reach) return false;
+  // Intent targets can be stale / manually authored. Require that the target
+  // still belongs to the safe, shallow bank catalogue built from this terrain.
+  return state.drinkSpots.some((spot) => Math.hypot(spot.x - target.x, spot.z - target.z) < 0.05);
 }

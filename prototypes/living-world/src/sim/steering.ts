@@ -4,6 +4,8 @@ import type { FlightMode } from './ids';
 import { rtOf, speciesOf, type SimState } from './internal';
 import { emit } from './journal';
 import { angDiff, clamp, distXZ, wrapAngle } from './math';
+import { findDrinkRoute } from './water-navigation';
+import { constrainHomeRangeTarget, homeRangeRadius } from './ai';
 
 const obsScratch: Obstacle[] = [];
 
@@ -41,6 +43,39 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   let tx = agent.intent.target?.x ?? agent.pos.x;
   let tz = agent.intent.target?.z ?? agent.pos.z;
 
+  if (agent.behavior === 'drink') {
+    if (rt.waterPath === undefined && agent.intent.target) {
+      const route = findDrinkRoute(
+        state.terrain,
+        state.drinkSpots,
+        { x: agent.pos.x, z: agent.pos.z },
+        sp.locomotion.maxSlopeDeg,
+        sp.body.radius * agent.scale,
+      );
+      if (route) {
+        rt.waterPath = route.waypoints;
+        rt.waterPathIndex = 0;
+        agent.intent.target = route.target;
+        agent.memory.water = route.target;
+      }
+    }
+    const path = rt.waterPath ?? [];
+    let index = Math.min(rt.waterPathIndex ?? 0, Math.max(0, path.length - 1));
+    // For route following, desiredSpeed() keeps walking until 0.65 m.
+    // Advance well before that to avoid stopping between path nodes, while
+    // keeping the threshold below the ~1.75 m navigation lattice spacing.
+    const waypointReachDistance = 1.2;
+    while (
+      index < path.length - 1 &&
+      distXZ(agent.pos.x, agent.pos.z, path[index].x, path[index].z) < waypointReachDistance
+    ) index++;
+    rt.waterPathIndex = index;
+    if (path[index]) {
+      tx = path[index].x;
+      tz = path[index].z;
+    }
+  }
+
   if (agent.behavior === 'follow' && agent.motherId != null) {
     const mother = state.agentById.get(agent.motherId);
     if (mother && mother.alive) {
@@ -56,11 +91,20 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
       tx = mother.pos.x;
       tz = mother.pos.z;
     } else {
-      const dx = agent.pos.x - t.x;
-      const dz = agent.pos.z - t.z;
-      const d = Math.hypot(dx, dz) || 1;
-      tx = agent.pos.x + (dx / d) * 26;
-      tz = agent.pos.z + (dz / d) * 26;
+      const destination = fleeDestination(
+        { x: agent.pos.x, z: agent.pos.z },
+        t,
+        agent.territory
+          ? { x: agent.territory.x, z: agent.territory.z }
+          : agent.homeId
+            ? state.terrain.getLandmark(agent.homeId) ?? null
+            : null,
+        agent.territory
+          ? Math.max(agent.territory.radius * 1.45, sp.social.territoryRadius * 1.2)
+          : homeRangeRadius(sp),
+      );
+      tx = destination.x;
+      tz = destination.z;
     }
   } else if ((agent.behavior === 'chase' || agent.behavior === 'stalk') && agent.intent.targetAgent != null) {
     const prey = state.agentById.get(agent.intent.targetAgent);
@@ -82,6 +126,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
   const cohesive =
     (model === 'herd' || model === 'family' || model === 'loose_flock') &&
     agent.behavior !== 'flee' &&
+    agent.behavior !== 'drink' &&
     agent.behavior !== 'bathe' &&
     agent.behavior !== 'chase' &&
     agent.behavior !== 'stalk' &&
@@ -122,16 +167,25 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     }
   }
   if (agent.posture !== 'airborne' && agent.behavior !== 'soar' && agent.behavior !== 'glide') {
-    const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
-    for (const o of obs) {
-      const dx = agent.pos.x - o.x;
-      const dz = agent.pos.z - o.z;
-      const d = Math.hypot(dx, dz) || 0.001;
-      const need = o.radius + myR * 0.55;
-      if (d < need + 0.8) {
-        const push = (need + 0.8 - d) / (need + 0.8);
-        sx += (dx / d) * push * 1.5;
-        sz += (dz / d) * push * 1.5;
+    const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
+    const onValidatedWaterCorridor = followingWaterRoute && (rt.waterPathIndex ?? 0) > 0;
+    // The first waypoint is a connector from the real current location into
+    // the navigation lattice; a rock may block its straight sightline, so
+    // retain local obstacle avoidance until that connector is reached. The
+    // remaining edges were explicitly checked by the route graph and should
+    // not receive a competing repulsion vector that pushes animals off-path.
+    if (!onValidatedWaterCorridor) {
+      const obs = state.terrain.obstaclesNear(agent.pos.x, agent.pos.z, myR + 2.2, obsScratch);
+      for (const o of obs) {
+        const dx = agent.pos.x - o.x;
+        const dz = agent.pos.z - o.z;
+        const d = Math.hypot(dx, dz) || 0.001;
+        const need = o.radius + myR * 0.55;
+        if (d < need + 0.8) {
+          const push = (need + 0.8 - d) / (need + 0.8);
+          sx += (dx / d) * push * 1.5;
+          sz += (dz / d) * push * 1.5;
+        }
       }
     }
   }
@@ -194,6 +248,8 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     agent.behavior === 'flee' || agent.behavior === 'chase' || agent.behavior === 'stalk' ||
     agent.behavior === 'follow' || agent.behavior === 'soar' || agent.behavior === 'glide';
   const madeProgress = dynamicTarget ? moved > 0.05 : targetProgress > Math.max(0.006, agent.speed * dt * 0.08);
+  const followingWaterRoute = agent.behavior === 'drink' && (rt.waterPath?.length ?? 0) > 0;
+  const stuckThreshold = followingWaterRoute ? 4.5 : 1.5;
   if (desired > 0.3 && !madeProgress && dt < 1.2 && agent.behavior !== 'sleep' && agent.behavior !== 'rest') {
     if (rt.stuck < 0) {
       // Detour window expires whether or not the first alternate step succeeds.
@@ -202,7 +258,7 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
       // Count lack of goal progress, not merely lack of body movement. This
       // catches tiny oscillations beside an obstacle that used to reset stuck.
       rt.stuck += dt;
-      if (rt.stuck > 1.5) {
+      if (rt.stuck > stuckThreshold) {
         agent.heading = wrapAngle(agent.heading + 1.15);
         // Negative stuck time marks a short escape window. During it, local
         // collision resolution may take a safe sideways step even if that step
@@ -240,7 +296,15 @@ function desiredSpeed(state: SimState, agent: AgentState, dist: number): number 
     case 'rest':
     case 'graze':
     case 'forage':
-    case 'drink':
+      speed = dist > 1.5 ? L.walkSpeed * 0.85 : 0;
+      break;
+    case 'drink': {
+      const followingWaterRoute = (rtOf(state, agent.id).waterPath?.length ?? 0) > 0;
+      speed = L.flight && agent.posture === 'airborne'
+        ? L.flight.minSpeed
+        : dist > (followingWaterRoute ? 0.65 : 1.5) ? L.walkSpeed * 0.85 : 0;
+      break;
+    }
     case 'bathe':
     case 'feed':
     case 'vigilance':
@@ -341,8 +405,11 @@ function occupiable(state: SimState, agent: AgentState, x: number, z: number): b
     }
   }
   const maxWater = agent.behavior === 'bathe' ? 3 : sp.locomotion.canSwim ? 1.55 : 0.45;
-  const slope = sp.locomotion.maxSlopeDeg + (agent.behavior === 'flee' ? 8 : 0);
-  return walkable(terrain, x, z, slope, maxWater);
+  // A panic sprint does not give an animal new climbing anatomy. The previous
+  // blanket +8° flee allowance let small prey enter slopes they could not
+  // traverse after the threat passed, stranding them far from water. Fleeing
+  // changes speed / destination, never the species' physical slope envelope.
+  return walkable(terrain, x, z, sp.locomotion.maxSlopeDeg, maxWater);
 }
 
 function walkable(terrain: Terrain, x: number, z: number, maxSlopeDeg: number, maxWater: number): boolean {
@@ -395,7 +462,16 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
   if (flight && (agent.behavior === 'soar' || agent.behavior === 'glide' || agent.posture === 'airborne' || (agent.behavior === 'perch' && rt.altitude > 0.4))) {
     const spring = nearestSpring(state, agent.pos.x, agent.pos.z);
     const overThermal = spring != null && distXZ(agent.pos.x, agent.pos.z, spring.x, spring.z) < spring.radius * 3.2;
-    const landing = agent.behavior === 'perch' || agent.behavior === 'sleep' || agent.behavior === 'rest' || agent.behavior === 'drink';
+    const targetDistance = agent.intent.target
+      ? distXZ(agent.pos.x, agent.pos.z, agent.intent.target.x, agent.intent.target.z)
+      : 0;
+    const drinkLandingDistance =
+      (rt.altitude * flight.minSpeed) / Math.max(0.1, flight.sinkRate * 1.6) + flight.takeoffDistance * 1.5;
+    const landing =
+      agent.behavior === 'perch' ||
+      agent.behavior === 'sleep' ||
+      agent.behavior === 'rest' ||
+      (agent.behavior === 'drink' && targetDistance <= Math.max(flight.takeoffDistance * 1.5, drinkLandingDistance));
     let mode: FlightMode;
     if (landing) {
       mode = 'landing';
@@ -436,9 +512,15 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
         emit(state, 'flight.soaring', [agent.id], { x: agent.pos.x, z: agent.pos.z }, { altitude: Math.round(rt.altitude) }, 0.35);
       }
       if (rt.altitude < 2) rt.soarAnnounced = false;
-      const min = mode === 'takeoff' ? flight.minSpeed * 0.3 : flight.minSpeed;
-      if (agent.speed < min) agent.speed = min;
-      if (agent.speed > flight.cruiseSpeed * 1.15) agent.speed = flight.cruiseSpeed;
+      if (mode === 'landing' && agent.behavior === 'drink') {
+        const remainingDescent = rt.altitude / Math.max(0.1, flight.sinkRate * 1.6);
+        const matchedSpeed = targetDistance / Math.max(0.1, remainingDescent);
+        agent.speed = Math.min(agent.speed, matchedSpeed);
+      } else {
+        const min = mode === 'takeoff' ? flight.minSpeed * 0.3 : flight.minSpeed;
+        if (agent.speed < min) agent.speed = min;
+        if (agent.speed > flight.cruiseSpeed * 1.15) agent.speed = flight.cruiseSpeed;
+      }
     }
     agent.pos.y = (Number.isFinite(ground) ? ground : 0) + rt.altitude;
     return;
@@ -455,4 +537,26 @@ function placeVertical(state: SimState, agent: AgentState, dt: number): void {
     agent.pos.y = ground;
   }
   if (!Number.isFinite(agent.pos.y)) agent.pos.y = agent.prevPos.y;
+}
+
+/**
+ * A fleeing animal should gain distance from danger without running out of its
+ * ecological home range. Repeatedly adding a 26 m escape vector used to push
+ * herds to the world boundary, where they could become trapped far from water.
+ */
+export function fleeDestination(
+  origin: { x: number; z: number },
+  threat: { x: number; z: number },
+  home: { x: number; z: number } | null,
+  radius: number,
+  escapeDistance = 26,
+): { x: number; z: number } {
+  const dx = origin.x - threat.x;
+  const dz = origin.z - threat.z;
+  const d = Math.hypot(dx, dz) || 1;
+  const proposed = {
+    x: origin.x + (dx / d) * Math.max(1, escapeDistance),
+    z: origin.z + (dz / d) * Math.max(1, escapeDistance),
+  };
+  return home ? constrainHomeRangeTarget(home, origin, proposed, radius) : proposed;
 }
