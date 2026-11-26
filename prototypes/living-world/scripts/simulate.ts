@@ -118,7 +118,7 @@ if (args.includes('--diagnose-water')) {
     const waterDepth = water ? sim.terrain.waterDepthAt(water.x, water.z) : null;
     const waterSurface = water ? sim.terrain.waterSurfaceAt(water.x, water.z) !== null : null;
     console.log(
-      `  #${agent.id} ${agent.alive ? 'alive' : agent.causeOfDeath ?? 'dead'} stage=${agent.lifeStage} thirst=${agent.needs.thirst.toFixed(3)} behavior=${agent.behavior} speed=${agent.speed.toFixed(2)} pos=(${agent.pos.x.toFixed(1)},${agent.pos.z.toFixed(1)}) water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})` : 'none'} waterDist=${waterDistance?.toFixed(1) ?? '—'} walkable=${waterWalkable ?? '—'} depth=${waterDepth?.toFixed(2) ?? '—'} hasSurface=${waterSurface ?? '—'} targetDist=${targetDistance?.toFixed(1) ?? '—'}`,
+      `  #${agent.id} ${agent.alive ? 'alive' : agent.causeOfDeath ?? 'dead'} stage=${agent.lifeStage} thirst=${agent.needs.thirst.toFixed(3)} fear=${agent.needs.fear.toFixed(3)} hunger=${agent.needs.hunger.toFixed(3)} fatigue=${agent.needs.fatigue.toFixed(3)} behavior=${agent.behavior} decision=${agent.decision?.chosen ?? '—'}(${agent.decision?.reason ?? '—'}) top=${agent.decision?.options.slice(0, 3).map((o) => `${o.behavior}:${o.score.toFixed(2)}`).join(',') ?? '—'} speed=${agent.speed.toFixed(2)} pos=(${agent.pos.x.toFixed(1)},${agent.pos.z.toFixed(1)}) water=${water ? `(${water.x.toFixed(1)},${water.z.toFixed(1)})` : 'none'} waterDist=${waterDistance?.toFixed(1) ?? '—'} walkable=${waterWalkable ?? '—'} depth=${waterDepth?.toFixed(2) ?? '—'} hasSurface=${waterSurface ?? '—'} targetDist=${targetDistance?.toFixed(1) ?? '—'} threat=${agent.memory.lastThreatPos ? `(${agent.memory.lastThreatPos.x.toFixed(1)},${agent.memory.lastThreatPos.z.toFixed(1)})` : '—'}`,
     );
   }
 }
