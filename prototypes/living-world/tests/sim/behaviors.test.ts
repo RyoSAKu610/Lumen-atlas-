@@ -213,6 +213,28 @@ describe('behaviour', () => {
     expect(herd.prey.alive).toBe(true);
   });
 
+  it('lets a critically thirsty herd adult abandon defense and seek water', () => {
+    const sim = Simulation.create(bundle, { seed: 82 });
+    const giant = sim.agents.find((agent) =>
+      agent.alive && agent.speciesId === 'giant_grazer' && agent.lifeStage === 'adult',
+    );
+    expect(giant).toBeTruthy();
+    const profile = sim.species.get('giant_grazer')!;
+    profile.utilityWeights.defend = 4;
+
+    calm(giant!);
+    giant!.behavior = 'idle';
+    giant!.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
+    giant!.needs.thirst = 1;
+    giant!.needs.fear = 0.4;
+    giant!.memory.lastThreatPos = { x: giant!.pos.x + 12, z: giant!.pos.z };
+    giant!.memory.lastThreatId = sim.agents.find((agent) => agent.alive && agent.speciesId === 'ridge_stalker')?.id ?? null;
+
+    sim.step();
+    expect(giant!.decision?.chosen).toBe('drink');
+    expect(giant!.behavior).toBe('drink');
+  });
+
   it('sends cold giants into a hot spring', () => {
     const sim = Simulation.create(bundle, { seed: 21 });
     sim.setOverrides({ season: 'winter', weather: 'snow' });
