@@ -177,6 +177,10 @@ export interface InteractionState {
   response: 'accept' | 'ignore' | 'reject' | 'counter' | null;
   outcome: InteractionOutcome | null;
   interruptReason: string | null;
+  /** Set when a countered territorial warning escalates into a physical contest. */
+  winnerId?: AgentId | null;
+  loserId?: AgentId | null;
+  injury?: number | null;
   /** World-space point both heads reach toward during `contact`. */
   contactPoint: Vec3 | null;
 }
