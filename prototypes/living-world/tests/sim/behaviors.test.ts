@@ -230,6 +230,7 @@ describe('behaviour', () => {
       if (other.id === drinker.id || group.some((member) => member.id === other.id)) continue;
       place(sim, other, far.x, far.z);
       calm(other);
+      other.needs.social = 0.01;
       other.behavior = 'idle';
       other.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
       other.memory.lastThreatId = null;
@@ -245,12 +246,14 @@ describe('behaviour', () => {
     for (let i = 0; i < followers.length; i++) {
       place(sim, followers[i], -138 - (i % 2) * 1.5, -64 + Math.floor(i / 2) * 1.3);
       calm(followers[i]);
+      followers[i].needs.social = 0.01;
       followers[i].behavior = 'idle';
       followers[i].intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
       followers[i].memory.lastThreatId = null;
       followers[i].memory.lastThreatPos = null;
     }
     calm(drinker);
+    drinker.needs.social = 0.01;
     drinker.needs.thirst = 1;
     drinker.behavior = 'idle';
     drinker.intent = { behavior: 'idle', target: null, targetAgent: null, place: null };
