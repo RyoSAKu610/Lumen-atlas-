@@ -705,16 +705,15 @@ function applyBehavior(state: SimState, agent: AgentState, sp: SpeciesProfile, b
           (route.distance / cruise) * 2.25 + 18,
         );
       } else {
-        const nearest = nearestDrink(state, agent.pos.x, agent.pos.z, sp.locomotion.maxSlopeDeg);
-        const remembered = agent.memory.water;
-        target = nearest ?? (
-          remembered && state.terrain.isWalkable(remembered.x, remembered.z, sp.locomotion.maxSlopeDeg, 0.35)
-            ? remembered
-            : null
-        );
+        // Never send a ground creature toward a bank unless a validated
+        // route exists. A straight-line nearest spot may lie across a cliff,
+        // deep channel or disconnected slope island; retaining it as memory
+        // caused juveniles to walk into terrain they could not traverse.
+        target = null;
+        agent.memory.water = null;
         rt.waterPath = [];
         rt.waterPathIndex = 0;
-        if (target) agent.memory.water = target;
+        rt.behaviorUntil = state.physTime + 2.5;
       }
     }
   } else if (behavior === 'bathe') {
