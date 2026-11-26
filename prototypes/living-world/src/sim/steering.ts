@@ -61,10 +61,10 @@ function steer(state: SimState, agent: AgentState, dt: number): void {
     }
     const path = rt.waterPath ?? [];
     let index = Math.min(rt.waterPathIndex ?? 0, Math.max(0, path.length - 1));
-    // desiredSpeed() stops walking at <= 1.5 m. The previous 1.35 m
-    // waypoint threshold left a dead zone (1.35–1.5 m) where the creature
-    // neither moved nor advanced to the next waypoint.
-    const waypointReachDistance = 1.9;
+    // For route following, desiredSpeed() keeps walking until 0.65 m.
+    // Advance well before that to avoid stopping between path nodes, while
+    // keeping the threshold below the ~1.75 m navigation lattice spacing.
+    const waypointReachDistance = 1.2;
     while (
       index < path.length - 1 &&
       distXZ(agent.pos.x, agent.pos.z, path[index].x, path[index].z) < waypointReachDistance
@@ -295,11 +295,15 @@ function desiredSpeed(state: SimState, agent: AgentState, dist: number): number 
     case 'rest':
     case 'graze':
     case 'forage':
-    case 'drink':
+      speed = dist > 1.5 ? L.walkSpeed * 0.85 : 0;
+      break;
+    case 'drink': {
+      const followingWaterRoute = (rtOf(state, agent.id).waterPath?.length ?? 0) > 0;
       speed = L.flight && agent.posture === 'airborne'
         ? L.flight.minSpeed
-        : dist > 1.5 ? L.walkSpeed * 0.85 : 0;
+        : dist > (followingWaterRoute ? 0.65 : 1.5) ? L.walkSpeed * 0.85 : 0;
       break;
+    }
     case 'bathe':
     case 'feed':
     case 'vigilance':
