@@ -86,7 +86,7 @@ export function weatherLightFactors(lightMultiplier: number, intensity: number):
   const directTarget = THREE.MathUtils.clamp(lightMultiplier, 0, 1.5);
   // Diffuse skylight is still present under cloud cover; preserve a floor so
   // shadow-side anatomy remains legible without flattening the direct lighting.
-  const ambientTarget = Math.max(0.72, Math.sqrt(directTarget));
+  const ambientTarget = directTarget >= 1 ? directTarget : Math.max(0.72, Math.sqrt(directTarget));
   return {
     direct: THREE.MathUtils.lerp(1, directTarget, k),
     ambient: THREE.MathUtils.lerp(1, ambientTarget, k),
